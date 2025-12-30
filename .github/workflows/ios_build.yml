@@ -14,102 +14,92 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          submodules: recursive  # 必须递归拉取所有子模块
+          submodules: recursive
 
-      - name: Inspect Directory (Debug)
+      - name: Find Project and Detect Scheme
+        id: setup_build
         run: |
-          # 列出前两层文件结构，方便调试
-          ls -R | grep ":$" | head -n 20
-          find . -maxdepth 3 -name "Podfile"
-          find . -maxdepth 3 -name "*.xcodeproj"
-          find . -maxdepth 3 -name "*.xcworkspace"
-
-      - name: Install CocoaPods Dependencies
-        run: |
-          # 查找 Podfile 位置
-          PODFILE_PATH=$(find . -name Podfile -print -quit)
-          
-          if [ -n "$PODFILE_PATH" ]; then
-            echo "✅ Found Podfile at: $PODFILE_PATH"
-            # 进入 Podfile 所在目录
-            cd "$(dirname "$PODFILE_PATH")"
-            # 安装依赖
-            pod install --repo-update
-          else
-            echo "⚠️ No Podfile found. Skipping CocoaPods installation."
-            echo "Assuming dependencies are managed by SPM or vendored."
-          fi
-
-      - name: Find Project and Scheme
-        id: find_project
-        run: |
-          # 查找 xcworkspace (优先级高) 或 xcodeproj
+          # 1. 查找项目文件 (优先 .xcworkspace)
           WORKSPACE=$(find . -name "*.xcworkspace" -print -quit)
           PROJECT=$(find . -name "*.xcodeproj" -print -quit)
           
           if [ -n "$WORKSPACE" ]; then
-            echo "Using Workspace: $WORKSPACE"
-            echo "path=$WORKSPACE" >> $GITHUB_OUTPUT
-            echo "is_workspace=true" >> $GITHUB_OUTPUT
-            # 获取 Workspace 所在的目录，用于后续 build 命令的基准
-            echo "dir=$(dirname "$WORKSPACE")" >> $GITHUB_OUTPUT
+            echo "✅ Found Workspace: $WORKSPACE"
+            TARGET_PATH="$WORKSPACE"
+            TARGET_FLAG="-workspace"
+            IS_WORKSPACE="true"
+            WORK_DIR="$(dirname "$WORKSPACE")"
           elif [ -n "$PROJECT" ]; then
-            echo "Using Project: $PROJECT"
-            echo "path=$PROJECT" >> $GITHUB_OUTPUT
-            echo "is_workspace=false" >> $GITHUB_OUTPUT
-            echo "dir=$(dirname "$PROJECT")" >> $GITHUB_OUTPUT
+            echo "✅ Found Project: $PROJECT"
+            TARGET_PATH="$PROJECT"
+            TARGET_FLAG="-project"
+            IS_WORKSPACE="false"
+            WORK_DIR="$(dirname "$PROJECT")"
           else
-            echo "❌ Error: No Xcode project or workspace found!"
+            echo "❌ Error: No Xcode project found!"
             exit 1
           fi
+
+          # 2. 自动检测 Scheme
+          # 进入项目目录执行 list 命令
+          cd "$WORK_DIR"
+          TARGET_NAME=$(basename "$TARGET_PATH")
+          
+          echo "🔍 Listing schemes for $TARGET_NAME..."
+          # 获取 schemes 列表，找到 "Schemes:" 下一行的第一个非空名称
+          SCHEME=$(xcodebuild -list $TARGET_FLAG "$TARGET_NAME" | \
+            awk '/Schemes:/{flag=1; next} flag && NF {print $0; exit}' | xargs)
+          
+          if [ -z "$SCHEME" ]; then
+            echo "❌ Error: Could not detect any schemes!"
+            echo "Full list output:"
+            xcodebuild -list $TARGET_FLAG "$TARGET_NAME"
+            exit 1
+          fi
+          
+          echo "✅ Detected Scheme: $SCHEME"
+          
+          # 3. 输出变量供后续步骤使用
+          echo "work_dir=$WORK_DIR" >> $GITHUB_OUTPUT
+          echo "target_name=$TARGET_NAME" >> $GITHUB_OUTPUT
+          echo "target_flag=$TARGET_FLAG" >> $GITHUB_OUTPUT
+          echo "scheme=$SCHEME" >> $GITHUB_OUTPUT
 
       - name: Build Archive (Unsigned)
         run: |
-          # 进入项目所在目录编译，避免路径问题
-          cd "${{ steps.find_project.outputs.dir }}"
+          cd "${{ steps.setup_build.outputs.work_dir }}"
           
-          # 确定编译目标文件路径
-          TARGET_PATH="${{ steps.find_project.outputs.path }}"
-          # 如果此时已经在同级目录下，去掉路径前缀（可选，xcodebuild通常能处理）
+          echo "🚀 Building Scheme: ${{ steps.setup_build.outputs.scheme }}"
           
           mkdir -p build_output
 
-          # 构建命令
-          BUILD_CMD="xcodebuild clean archive \
-            -scheme Moonlight \
+          xcodebuild clean archive \
+            -scheme "${{ steps.setup_build.outputs.scheme }}" \
             -configuration Release \
-            -archivePath build_output/Moonlight.xcarchive \
+            -archivePath build_output/App.xcarchive \
             -sdk iphoneos \
-            CODE_SIGN_IDENTITY=\"\" \
+            "${{ steps.setup_build.outputs.target_flag }}" "${{ steps.setup_build.outputs.target_name }}" \
+            CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO"
-
-          if [ "${{ steps.find_project.outputs.is_workspace }}" == "true" ]; then
-             # 注意：这里使用 basename 是因为我们已经 cd 到了目录中
-            $BUILD_CMD -workspace "$(basename "$TARGET_PATH")"
-          else
-            $BUILD_CMD -project "$(basename "$TARGET_PATH")"
-          fi
+            CODE_SIGNING_ALLOWED=NO
 
       - name: Export IPA
         run: |
-          # 提取 .app 并打包
-          # 注意：路径要对应上面 cd 后的相对位置
-          cd "${{ steps.find_project.outputs.dir }}"
+          cd "${{ steps.setup_build.outputs.work_dir }}"
           
           mkdir -p Payload
-          # 查找生成的 .app 文件
-          APP_PATH=$(find build_output/Moonlight.xcarchive -name "*.app" | head -n 1)
+          # 查找生成的 .app (文件名可能随 Scheme 变化，所以用通配符)
+          APP_PATH=$(find build_output/App.xcarchive -name "*.app" | head -n 1)
           
           if [ -z "$APP_PATH" ]; then
-            echo "❌ Error: .app file not found in archive!"
+            echo "❌ Error: .app file not found!"
             exit 1
           fi
           
+          echo "📦 Packaging $(basename "$APP_PATH") into IPA..."
           cp -r "$APP_PATH" Payload/
           zip -r VoidLink.ipa Payload
           
-          # 将 ipa 移动到根目录以便上传
           mv VoidLink.ipa $GITHUB_WORKSPACE/
 
       - name: Upload IPA Artifact
