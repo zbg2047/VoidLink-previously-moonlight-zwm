@@ -19,8 +19,7 @@ jobs:
       - name: Find Project and Detect Scheme
         id: setup_build
         run: |
-          # 1. 查找项目文件
-          # 关键修复：排除 .xcodeproj 内部的 xcworkspace，防止误入工程包内部
+          # 1. 查找项目文件 (排除 .xcodeproj 内部文件)
           WORKSPACE=$(find . -name "*.xcworkspace" -not -path "*.xcodeproj/*" -print -quit)
           PROJECT=$(find . -name "*.xcodeproj" -print -quit)
           
@@ -28,14 +27,11 @@ jobs:
             echo "✅ Found Workspace: $WORKSPACE"
             TARGET_PATH="$WORKSPACE"
             TARGET_FLAG="-workspace"
-            IS_WORKSPACE="true"
-            # 获取文件夹路径
             WORK_DIR="$(dirname "$WORKSPACE")"
           elif [ -n "$PROJECT" ]; then
             echo "✅ Found Project: $PROJECT"
             TARGET_PATH="$PROJECT"
             TARGET_FLAG="-project"
-            IS_WORKSPACE="false"
             WORK_DIR="$(dirname "$PROJECT")"
           else
             echo "❌ Error: No Xcode project found!"
@@ -46,9 +42,7 @@ jobs:
           cd "$WORK_DIR"
           TARGET_NAME=$(basename "$TARGET_PATH")
           
-          echo "🔍 Listing schemes for $TARGET_NAME in $WORK_DIR..."
-          
-          # 获取 schemes 列表
+          echo "🔍 Listing schemes..."
           SCHEME=$(xcodebuild -list $TARGET_FLAG "$TARGET_NAME" | \
             awk '/Schemes:/{flag=1; next} flag && NF {print $0; exit}' | xargs)
           
@@ -65,49 +59,46 @@ jobs:
           echo "target_flag=$TARGET_FLAG" >> $GITHUB_OUTPUT
           echo "scheme=$SCHEME" >> $GITHUB_OUTPUT
 
-      - name: Build Archive (Unsigned)
+      - name: Build App (Direct Build)
         run: |
           cd "${{ steps.setup_build.outputs.work_dir }}"
           
-          echo "🚀 Building Scheme: ${{ steps.setup_build.outputs.scheme }}"
+          echo "🚀 Building Scheme: ${{ steps.setup_build.outputs.scheme }} (Action: build)"
           
-          # 确保输出目录干净
-          rm -rf build_output
-          mkdir -p build_output
-
-          # 增加 -allowProvisioningUpdates 参数以防某些自动配置干扰
-          xcodebuild clean archive \
+          # 使用 build 而不是 archive
+          # 指定 -derivedDataPath 以便我们要知道输出文件在哪
+          xcodebuild build \
             -scheme "${{ steps.setup_build.outputs.scheme }}" \
             -configuration Release \
-            -archivePath "build_output/App.xcarchive" \
             -sdk iphoneos \
+            -derivedDataPath build_output \
             "${{ steps.setup_build.outputs.target_flag }}" "${{ steps.setup_build.outputs.target_name }}" \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
 
-      - name: Export IPA
+      - name: Package IPA
         run: |
           cd "${{ steps.setup_build.outputs.work_dir }}"
           
-          echo "🔍 Checking for .app in build_output/App.xcarchive..."
+          echo "🔍 Searching for .app in build_output..."
           
-          # 调试：列出归档文件内容，方便排错
-          ls -R build_output/App.xcarchive || echo "Archive directory not found"
-
-          mkdir -p Payload
-          # 查找生成的 .app
-          APP_PATH=$(find build_output/App.xcarchive -name "*.app" | head -n 1)
+          # 构建产物通常在 Build/Products/Release-iphoneos/ 下
+          APP_DIR=$(find build_output/Build/Products -type d -name "*.app" | head -n 1)
           
-          if [ -z "$APP_PATH" ]; then
-            echo "❌ Error: .app file not found! Build might have failed silently or structure is unexpected."
+          if [ -z "$APP_DIR" ]; then
+            echo "❌ Error: .app directory not found in build output!"
+            echo "Dumping build directory structure for debugging:"
+            find build_output -maxdepth 4
             exit 1
           fi
           
-          echo "✅ Found App at: $APP_PATH"
-          echo "📦 Packaging $(basename "$APP_PATH") into IPA..."
+          echo "✅ Found App at: $APP_DIR"
           
-          cp -r "$APP_PATH" Payload/
+          mkdir -p Payload
+          cp -r "$APP_DIR" Payload/
+          
+          # 制作 IPA
           zip -r VoidLink.ipa Payload
           
           mv VoidLink.ipa $GITHUB_WORKSPACE/
