@@ -1,0 +1,78 @@
+name: Build iOS IPA
+
+on:
+  push:
+    branches: [ "Integration" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build IPA
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive  # 必须递归拉取子模块
+
+      - name: Setup CocoaPods
+        uses: maxim-lobanov/setup-cocoapods@v1
+        with:
+          podfile-path: Podfile
+
+      - name: Install Dependencies
+        run: |
+          # 如果存在 Podfile 则安装 Pods
+          if [ -f "Podfile" ]; then
+            pod install --repo-update
+          fi
+
+      - name: Find Project Name
+        id: find_project
+        run: |
+          # 自动查找 .xcworkspace 或 .xcodeproj
+          if [ -d *.xcworkspace ]; then
+            echo "workspace=$(ls -d *.xcworkspace | head -n 1)" >> $GITHUB_OUTPUT
+            echo "scheme=Moonlight" >> $GITHUB_OUTPUT # 通常 Scheme 名为 Moonlight，如果不同请修改
+            echo "use_workspace=true" >> $GITHUB_OUTPUT
+          else
+            echo "project=$(ls -d *.xcodeproj | head -n 1)" >> $GITHUB_OUTPUT
+            echo "scheme=Moonlight" >> $GITHUB_OUTPUT
+            echo "use_workspace=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build Archive (Unsigned)
+        run: |
+          # 创建构建目录
+          mkdir build
+          
+          # 构建命令参数
+          BUILD_CMD="xcodebuild clean archive \
+            -scheme ${{ steps.find_project.outputs.scheme }} \
+            -configuration Release \
+            -archivePath build/Moonlight.xcarchive \
+            -sdk iphoneos \
+            CODE_SIGN_IDENTITY=\"\" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO"
+
+          if [ "${{ steps.find_project.outputs.use_workspace }}" == "true" ]; then
+            $BUILD_CMD -workspace "${{ steps.find_project.outputs.workspace }}"
+          else
+            $BUILD_CMD -project "${{ steps.find_project.outputs.project }}"
+          fi
+
+      - name: Export IPA
+        run: |
+          # 从 xcarchive 中提取 .app 并打包成 .ipa
+          mkdir Payload
+          cp -r build/Moonlight.xcarchive/Products/Applications/*.app Payload/
+          zip -r VoidLink.ipa Payload
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: VoidLink-IPA
+          path: VoidLink.ipa
+          retention-days: 5
