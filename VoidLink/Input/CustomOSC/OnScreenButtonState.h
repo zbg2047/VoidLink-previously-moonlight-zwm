@@ -24,7 +24,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property NSString *name;
 @property NSString *alias;
-@property NSString *identifier;
+@property (nonatomic, assign) BOOL folded;
+@property (nonatomic, assign) uint8_t revealMode;
+@property (nonatomic, assign) BOOL bulkMoveEnabled;
+@property (nonatomic, assign) int16_t sequence;
+@property (nonatomic, assign) int16_t parentSequence;
+@property NSSet *sequenceSet;
 @property CGPoint position;
 @property (nonatomic, assign) BOOL isHidden;
 @property (nonatomic, assign) uint8_t buttonMode;
@@ -32,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) uint8_t sizeReference;
 @property (nonatomic, assign) CGFloat widthFactor; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat heightFactor; // for OnScreenWidgetView
+@property (nonatomic, assign) CGFloat componentSizeFactor; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat borderWidth; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat highlightSizeFactor; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat sensitivityFactorX; // for OnScreenWidgetView
@@ -43,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) CGFloat decelerationRateX; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat decelerationRateY; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat stickIndicatorOffset; // for OnScreenWidgetView
+@property (nonatomic, assign) CGFloat walkModeThreshold; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat minStickOffset; // for OnScreenWidgetView
 @property NSString* widgetShape; // for OnScreenWidgetView
 
@@ -50,6 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) CGFloat backgroundAlpha;
 @property (nonatomic, assign) CGFloat labelAlpha;
 @property (nonatomic, assign) CGFloat borderAlpha;
+@property (nonatomic, assign) CGFloat highlightAlpha;
 @property (nonatomic, assign) uint8_t vibrationStyle;
 @property (nonatomic, assign) uint8_t mouseButtonAction;
 @property (nonatomic, assign) uint16_t autoTapInterval;
@@ -81,6 +89,11 @@ typedef NS_ENUM(NSInteger, ButtonMode) {
     regular,
     tapToToggle,
     movable
+};
+
+typedef NS_ENUM(NSInteger, RevealMode) {
+    coexist,
+    exclusive
 };
 
 - (id) initWithButtonName:(NSString*)name buttonType:(uint8_t)buttonType andPosition:(CGPoint)position;

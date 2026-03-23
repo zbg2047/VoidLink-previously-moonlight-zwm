@@ -53,7 +53,9 @@ import GameController
 @objc class ControllerUtil: NSObject {
     
     static private let stickMaxOffset:CGFloat = 0x7FFE
-    
+    @objc static var navigationActionTriggered:Bool = false
+    @objc static private(set) var navigationActionTriggeredPrivate:Bool = false
+
     @objc static func listen(
         controller: GCController,
         swapABXY: Bool,
@@ -73,6 +75,29 @@ import GameController
         
         // 单一 gamepad.valueChangedHandler
         gamepad.valueChangedHandler = { gamepad, element in
+            navigationActionTriggeredPrivate = (gamepad.dpad.up.isPressed
+                                                || gamepad.dpad.down.isPressed
+                                                || gamepad.dpad.left.isPressed
+                                                || gamepad.dpad.right.isPressed
+                                                || gamepad.buttonA.isPressed
+                                                || gamepad.buttonB.isPressed
+                                                || gamepad.buttonX.isPressed
+                                                || gamepad.leftShoulder.isPressed
+                                                || gamepad.rightShoulder.isPressed
+                                                || gamepad.leftTrigger.value != 0
+                                                || gamepad.rightTrigger.value != 0
+                                                || gamepad.rightThumbstick.xAxis.value != 0
+                                                || gamepad.rightThumbstick.yAxis.value != 0
+                                                || gamepad.leftThumbstick.xAxis.value != 0
+                                                || gamepad.leftThumbstick.yAxis.value != 0)
+            if navigationActionTriggeredPrivate { navigationActionTriggered = true}
+            else {
+                DispatchQueue.global().asyncAfter(deadline: .now() + 0.02) {
+                    if !navigationActionTriggeredPrivate {
+                        navigationActionTriggered = false
+                    }
+                }
+            }
             handler(buttonDict, gamepad, element)
         }
     }
@@ -156,6 +181,8 @@ import GameController
         return result
     }
     
+    @objc static var activeGCControllers:NSMutableSet = NSMutableSet()
+    
     @objc static func string(for button: ControllerButton) -> String {
         switch button {
         case .a: return "A"
@@ -189,15 +216,34 @@ import GameController
         case .rightTrigger: return "RT"
             
         case .null: return SwiftLocalizationHelper.localizedString(forKey: "Null")
+            
+        default: return "UNKNOWN"
         }
     }
     
-    @objc static func compensated(offsetVector: CGVector, withMinOffset minOffset: CGFloat) -> CGVector{
+    @objc static func compensated(offsetVector: CGVector, minOffset: CGFloat, circulate:Bool=false) -> CGVector{
         let vectorHypot = hypot(offsetVector.dx, offsetVector.dy)
         guard vectorHypot > 0 else {return CGVector(dx: 0, dy: 0)}
         let targetHypot = minOffset + (stickMaxOffset-minOffset)*(vectorHypot/stickMaxOffset)
-        let compensatedX = targetHypot * (offsetVector.dx/vectorHypot)
-        let compensatedY = targetHypot * (offsetVector.dy/vectorHypot)
-        return CGVector(dx: compensatedX, dy: compensatedY)
+        var compensatedX = targetHypot * (offsetVector.dx/vectorHypot)
+        var compensatedY = targetHypot * (offsetVector.dy/vectorHypot)
+        
+        if circulate {
+            return circulated(offsetVector: CGVector(dx: compensatedX, dy: compensatedY))
+        }
+        else {
+            compensatedX = max(min(compensatedX, stickMaxOffset),-stickMaxOffset)
+            compensatedY = max(min(compensatedY, stickMaxOffset),-stickMaxOffset)
+            return CGVector(dx: compensatedX, dy: compensatedY)
+        }
+    }
+    
+    @objc static func circulated(offsetVector: CGVector) -> CGVector{
+        let vectorHypot = hypot(offsetVector.dx, offsetVector.dy)
+        guard vectorHypot > 0 else {return CGVector(dx: 0, dy: 0)}
+        let targetHypot = min(vectorHypot, stickMaxOffset)
+        let circulatedX = targetHypot*(offsetVector.dx/vectorHypot)
+        let circulatedY = targetHypot*(offsetVector.dy/vectorHypot)
+        return CGVector(dx: circulatedX, dy: circulatedY)
     }
 }

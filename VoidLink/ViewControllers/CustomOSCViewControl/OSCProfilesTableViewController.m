@@ -19,9 +19,11 @@
 
 const double NAV_BAR_HEIGHT = 50;
 
-@interface OSCProfilesTableViewController ()
+@interface OSCProfilesTableViewController () <UIGestureRecognizerDelegate>
+@property (weak, nonatomic) IBOutlet UINavigationItem *profileTableViewNavigationItem;
 
 @end
+
 
 @implementation OSCProfilesTableViewController {
     OSCProfilesManager *profilesManager;
@@ -42,13 +44,20 @@ const double NAV_BAR_HEIGHT = 50;
     return [self getCurrentOrientation]; // 90 Degree rotation not allowed in streaming or app view
 }
 
+/*
 - (void) viewDidDisappear:(BOOL)animated{
     [[NSNotificationCenter defaultCenter] postNotificationName:@"OscLayoutTableViewCloseNotification" object:self]; // notify other view that oscLayoutManager is closing
     [super viewDidDisappear:animated];
+}*/
+
+- (void) viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"OscLayoutTableViewCloseNotification" object:self]; // notify other view that oscLayoutManager is closing
 }
 
 
 - (void) viewDidLayoutSubviews {
+    /*
     CGRect bounds = self.profileTableViewNavigationBar.bounds;
     CGSize cornerSize = CGSizeMake(15, 15);
     
@@ -61,12 +70,29 @@ const double NAV_BAR_HEIGHT = 50;
     CAShapeLayer *maskLayer = [CAShapeLayer layer];
     maskLayer.frame = bounds;
     maskLayer.path = path.CGPath;
+    */
+    
+    self.profileTableViewNavigationBar.layer.cornerRadius = 15;  // 设置圆角半径
+    self.profileTableViewNavigationBar.layer.maskedCorners = kCALayerMinXMinYCorner|kCALayerMaxXMinYCorner;
+
 
     self.profileTableViewNavigationBar.layer.masksToBounds = true;  // 使圆角生效
-    self.profileTableViewNavigationBar.layer.mask = maskLayer;
+    // self.profileTableViewNavigationBar.layer.mask = maskLayer;
     
-    self.tableView.layer.cornerRadius = 15;  // 设置圆角半径
-    self.tableView.layer.masksToBounds = true;  // 使圆角生效
+    self.tableView.layer.cornerRadius = 15;
+    self.tableView.layer.maskedCorners = kCALayerMinXMaxYCorner|kCALayerMaxXMaxYCorner;
+    self.tableView.layer.masksToBounds = true;
+    
+    tableView.separatorStyle = (GenericUtils.isIPhone&&GenericUtils.liquidGlassEnabled) ? UITableViewCellSeparatorStyleSingleLine : UITableViewCellSeparatorStyleSingleLine;
+    tableView.separatorInset = UIEdgeInsetsMake(0, 15, 0, 15);
+    
+    if(GenericUtils.liquidGlassEnabled){
+        tableView.separatorColor = [UIColor.whiteColor colorWithAlphaComponent:GenericUtils.isIPhone ? 0.28 : 0.165];
+    }
+    else{
+        tableView.separatorColor = [UIColor.whiteColor colorWithAlphaComponent:0.3];
+    }
+    
 }
 
 - (void) viewDidLoad {
@@ -76,25 +102,47 @@ const double NAV_BAR_HEIGHT = 50;
     
     profilesManager = [OSCProfilesManager sharedManager:_layoutViewBounds];
     
-    self.tableView.tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, NAV_BAR_HEIGHT)];
+    self.tableView.tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
     
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     
     [self.tableView registerNib:[UINib nibWithNibName:@"ProfileTableViewCell" bundle:nil]
          forCellReuseIdentifier:@"Cell"]; // Register the custom cell nib file with the table view
-    self.tableView.alpha = 0.7;
+    self.tableView.alpha = 1;
     //self.tableView.backgroundColor = [[UIColor colorWithRed:0.5 green:0.7 blue:1.0 alpha:1.0] colorWithAlphaComponent:0.2]; // set background color & transparency
-    self.tableView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5]; // set background color & transparency
+    self.tableView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.43]; // set background color & transparency
     // self.tableView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.2]; // set background color & transparency
 
+    UITapGestureRecognizer *tap =
+        [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                action:@selector(dismissSelf)];
+    tap.cancelsTouchesInView = NO;
+    tap.delegate = (id<UIGestureRecognizerDelegate>)self;
+
+    [self.view addGestureRecognizer:tap];
+        
+    if(GenericUtils.liquidGlassEnabled){
+        if (@available(iOS 26.0, *)) {
+            for(UIBarButtonItem* button in self.profileTableViewNavigationItem.leftBarButtonItems){
+                button.hidesSharedBackground = true;
+            }
+            for(UIBarButtonItem* button in self.profileTableViewNavigationItem.rightBarButtonItems){
+                button.hidesSharedBackground = true;
+            }
+        }
+    }
+}
+
+- (void)dismissSelf {
+    [self dismissViewControllerAnimated:NO completion:nil];
 }
 
 - (void) viewDidAppear:(BOOL)animated {
     [super viewDidAppear: animated];
     
 
-    self.tableView.tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, NAV_BAR_HEIGHT)];
+    self.tableView.tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     
@@ -180,6 +228,7 @@ const double NAV_BAR_HEIGHT = 50;
     //[self dismissViewControllerAnimated:YES completion:nil];
     //[selfparentLayoutOSCViewController]
     [self.tableView reloadData]; // table view will be refreshed by calling reloadData
+    // if(_pickProfileEnabled) return;
     if (self.needToUpdateOscLayoutTVC) {    // tells the presenting view controller to lay out the on screen buttons according to the selected profile's instructions
         self.needToUpdateOscLayoutTVC();
     }
@@ -214,8 +263,9 @@ const double NAV_BAR_HEIGHT = 50;
     [self presentViewController:documentPicker animated:YES completion:nil];
 }
 
-- (IBAction) exitTapped:(id)sender {
-    [self dismissViewControllerAnimated:YES completion:nil];
+- (IBAction) restoreTapped:(id)sender {
+    [profilesManager importDefaultTemplates];
+    [self profileViewRefresh];
 }
 
 #pragma mark - UIDocumentPickerDelegate
@@ -309,11 +359,11 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
     cell.name.text = profile.name;
     cell.name.backgroundColor = [UIColor clearColor];
     cell.name.alpha = 1.0;
-    cell.name.textColor = [UIColor whiteColor];  // Opaque white text
-    cell.name.font =[UIFont systemFontOfSize:20 weight:UIFontWeightMedium];
+    cell.name.textColor = [UIColor.whiteColor colorWithAlphaComponent:GenericUtils.isIPhone ? 0.9 : 0.9];  // Opaque white text
+    cell.name.font =[UIFont systemFontOfSize:GenericUtils.isIPhone ? 18.5 : 18.5 weight:UIFontWeightMedium];
     cell.name.shadowColor = [UIColor blackColor];  // Black shadow
     // Set the shadow offset
-    cell.name.shadowOffset = CGSizeMake(1.0, 1.5);
+   cell.name.shadowOffset = CGSizeMake(0.5, 0.5);
 
     // Set cell and contentView background colors
     cell.backgroundColor = [UIColor clearColor];
@@ -327,21 +377,9 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
     }
     
     // Remove existing custom separators to avoid duplicates
-    UIView *existingSeparator = [cell.contentView viewWithTag:100];
-    if (existingSeparator) {
-        [existingSeparator removeFromSuperview];
-    }
 
-    // Add custom separator with increased height (thickness)
-    CGFloat separatorHeight = 1.0; // Adjust this value for thicker line
-    UIView *separatorView = [[UIView alloc] initWithFrame:CGRectMake(0, cell.contentView.frame.size.height - separatorHeight, cell.contentView.frame.size.width, separatorHeight)];
-    
-    separatorView.backgroundColor = [UIColor whiteColor];  // Set your desired color
-    separatorView.tag = 100;  // Assign a tag to identify the separator view
-    separatorView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
-
-    [cell.contentView addSubview:separatorView];
-    [cell.contentView bringSubviewToFront:separatorView];
+    // [cell.contentView addSubview:separatorView];
+    // [cell.contentView bringSubviewToFront:separatorView];
 
     // Replace the default checkmark with a UILabel displaying a checkmark character
     if (indexPath.row == [profilesManager getIndexOfSelectedProfile]) {
@@ -355,9 +393,6 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
     } else {
         cell.accessoryView = nil;  // Remove checkmark if not selected
     }
-    [cell.contentView bringSubviewToFront:separatorView];
-    separatorView.layer.zPosition = 1; // Bring separator to the top layer
-
     
     return cell;
 }
@@ -438,5 +473,13 @@ didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
     [self profileViewRefresh]; // update OSC layout when table view option is changed
 }
 
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+        shouldReceiveTouch:(UITouch *)touch {
+    if (_pickProfileEnabled && [touch.view isDescendantOfView:self.tableView]) {
+        return true;
+    }
+    if(touch.view == self.view) return true;
+    return false;
+}
 
 @end

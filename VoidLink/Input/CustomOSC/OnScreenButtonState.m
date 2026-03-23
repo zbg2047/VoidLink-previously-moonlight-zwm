@@ -32,7 +32,12 @@
 
 - (void) encodeWithCoder:(NSCoder*)encoder {
     [encoder encodeObject:self.name forKey:@"name"];
-    [encoder encodeObject:([self.identifier isEqualToString:@""]||!self.identifier) ? [UUIDHelper newUUID] : self.identifier forKey:@"identifier"];
+    [encoder encodeBool:self.folded forKey:@"folded"];
+    [encoder encodeInt32:self.revealMode forKey:@"revealMode"];
+    [encoder encodeBool:self.bulkMoveEnabled forKey:@"bulkMoveEnabled"];
+    [encoder encodeInt32:self.sequence forKey:@"sequence"];
+    [encoder encodeInt32:self.parentSequence forKey:@"parentSequence"];
+    [encoder encodeObject:self.sequenceSet forKey:@"sequenceSet"];
     [encoder encodeObject:self.alias forKey:@"alias"];
     [encoder encodeInt:self.widgetType forKey:@"buttonType"]; // keep original key
     [encoder encodeInt:self.sizeReference forKey:@"sizeReference"];
@@ -44,6 +49,7 @@
     [encoder encodeBool:self.isHidden forKey:@"isHidden"];
     [encoder encodeFloat:self.widthFactor forKey:@"widthFactor"];
     [encoder encodeFloat:self.heightFactor forKey:@"heightFactor"];
+    [encoder encodeFloat:self.componentSizeFactor forKey:@"componentSizeFactor"];
     [encoder encodeFloat:self.sensitivityFactorX forKey:@"sensitivityFactorX"];
     [encoder encodeFloat:self.sensitivityFactorY forKey:@"sensitivityFactorY"];
     [encoder encodeFloat:self.slideThreshold forKey:@"slideThreshold"];
@@ -57,16 +63,23 @@
     [encoder encodeFloat:self.backgroundAlpha forKey:@"backgroundAlpha"];
     [encoder encodeFloat:self.labelAlpha forKey:@"labelAlpha"];
     [encoder encodeFloat:self.borderAlpha forKey:@"borderAlpha"];
+    [encoder encodeFloat:self.highlightAlpha forKey:@"highlightAlpha"];
     [encoder encodeFloat:self.borderWidth forKey:@"borderWidth"];
     [encoder encodeFloat:self.highlightSizeFactor forKey:@"highlightSizeFactor"];
     [encoder encodeObject:self.widgetShape forKey:@"widgetShape"];
+    [encoder encodeFloat:self.walkModeThreshold forKey:@"walkModeThreshold"];
     [encoder encodeFloat:self.minStickOffset forKey:@"minStickOffset"];
 }
 
 - (id) initWithCoder:(NSCoder*)decoder {
     if (self = [super init]) {
         self.name = [decoder decodeObjectForKey:@"name"];
-        self.identifier = [decoder containsValueForKey:@"identifier"] ? [decoder decodeObjectForKey:@"identifier"] : [UUIDHelper newUUID];
+        self.folded = [decoder containsValueForKey:@"folded"] ? [decoder decodeBoolForKey:@"folded"] : false;
+        self.revealMode = [decoder containsValueForKey:@"revealMode"] ? [decoder decodeInt32ForKey:@"revealMode"] : coexist;
+        self.bulkMoveEnabled = [decoder containsValueForKey:@"bulkMoveEnabled"] ? [decoder decodeBoolForKey:@"bulkMoveEnabled"] : true;
+        self.sequence = [decoder containsValueForKey:@"sequence"] ? [decoder decodeInt32ForKey:@"sequence"] : -1;
+        self.parentSequence = [decoder containsValueForKey:@"parentSequence"] ? [decoder decodeInt32ForKey:@"parentSequence"] : -1;
+        self.sequenceSet = [decoder containsValueForKey:@"sequenceSet"] ? [decoder decodeObjectForKey:@"sequenceSet"] : [NSSet set];
         self.alias = [decoder decodeObjectForKey:@"alias"];
         self.widgetType = [decoder decodeIntForKey:@"buttonType"];
         self.sizeReference = [decoder containsValueForKey:@"sizeReference"] ? [decoder decodeIntForKey:@"sizeReference"] : longSide;
@@ -78,6 +91,7 @@
         self.isHidden = [decoder decodeBoolForKey:@"isHidden"];
         self.widthFactor = [decoder decodeFloatForKey:@"widthFactor"];
         self.heightFactor = [decoder decodeFloatForKey:@"heightFactor"];
+        self.componentSizeFactor = [decoder containsValueForKey:@"componentSizeFactor"] ? [decoder decodeFloatForKey:@"componentSizeFactor"] : 1.0;
         self.sensitivityFactorX = [decoder containsValueForKey:@"sensitivityFactorX"] ? [decoder decodeFloatForKey:@"sensitivityFactorX"] : 1.0;
         self.sensitivityFactorY = [decoder containsValueForKey:@"sensitivityFactorY"] ? [decoder decodeFloatForKey:@"sensitivityFactorY"] : 1.0;
         self.slideThreshold = [decoder containsValueForKey:@"slideThreshold"] ? [decoder decodeFloatForKey:@"slideThreshold"] : 6.0;
@@ -91,9 +105,11 @@
         self.backgroundAlpha = [decoder containsValueForKey:@"backgroundAlpha"] ? [decoder decodeFloatForKey:@"backgroundAlpha"] : 0.5;
         self.labelAlpha = [decoder containsValueForKey:@"labelAlpha"] ? [decoder decodeFloatForKey:@"labelAlpha"] : 0.82;
         self.borderAlpha = [decoder containsValueForKey:@"borderAlpha"] ? [decoder decodeFloatForKey:@"borderAlpha"] : 0.19;
+        self.highlightAlpha = [decoder containsValueForKey:@"highlightAlpha"] ? [decoder decodeFloatForKey:@"highlightAlpha"] : 0.77;
         self.borderWidth = [decoder decodeFloatForKey:@"borderWidth"];
         self.highlightSizeFactor = [decoder containsValueForKey:@"highlightSizeFactor"] ? [decoder decodeFloatForKey:@"highlightSizeFactor"] : 1.0;
         self.widgetShape = [decoder decodeObjectForKey:@"widgetShape"];
+        self.walkModeThreshold = [decoder containsValueForKey:@"walkModeThreshold"] ? [decoder decodeFloatForKey:@"walkModeThreshold"] : 16383;
         self.minStickOffset = [decoder decodeFloatForKey:@"minStickOffset"];
     }
     return self;

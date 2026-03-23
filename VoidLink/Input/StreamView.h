@@ -34,11 +34,14 @@
 @interface StreamView : UIView <X1KitMouseDelegate, UITextFieldDelegate, UIPointerInteractionDelegate>
 #endif
 
-@property (assign, nonatomic) UIView* streamFrameTopLayerView;
+@property (weak, nonatomic) UIView* streamFrameTopLayerView;
+@property (weak, nonatomic) id<UserInteractionDelegate> interactionDelegate;
 @property (assign, nonatomic) CGFloat streamAspectRatio;
 @property (assign, nonatomic) CGRect originalFrame;
 @property (assign, nonatomic) bool widgetToolOpened;
 @property (strong, nonatomic) OnScreenControls* onScreenControls;
+@property (weak, nonatomic) PencilHandler* pencilHandler;
+@property (weak, nonatomic) UIViewController* streamFrameVC;
 
 - (void) setupStreamView:(ControllerSupport*)controllerSupport
      interactionDelegate:(id<UserInteractionDelegate>)interactionDelegate
@@ -46,7 +49,9 @@
  streamFrameTopLayerView:(UIView* )topLayerView
 ;
 
-- (void) showOnScreenControls;
+- (void)cleanUp;
+
+- (void) reloadLegacyWidgets:(OSCProfile* )profile;
 - (void) setOnScreenControls;
 - (void) disableOnScreenControls;
 - (void) reloadOnScreenControlsRealtimeWith:(ControllerSupport*)controllerSupport
@@ -54,8 +59,8 @@
 - (void) reloadOnScreenControlsWith:(ControllerSupport*)controllerSupport
                           andConfig:(StreamConfiguration*)streamConfig;
 - (void) clearOnScreenWidgets;
-- (void) reloadOnScreenWidgetViews;
-- (void) saveRelocatedWidgetViews;
+- (void) reloadOnScreenWidgetViews:(bool)reload;
+- (void) saveStreamViewWidgetChanges;
 - (bool) isOnScreenWidgetEnabled;
 
 - (CGSize) getVideoAreaSize;
@@ -70,6 +75,11 @@
 - (void)liftMetalVideoViewIfNeeded:(CGFloat)liftHeight;
 
 - (void)alterAbsTouchDragWith:(int32_t)mouseButton;
+
+- (void)enablePencilHover;
+- (void)disablePencilHover;
+- (void)setAllowSingleTouchEnabled:(BOOL)enabled;
+- (void)toggleTouchDisabled:(bool)disabled;
 
 #if !TARGET_OS_TV
 - (void) updateCursorLocation:(CGPoint)location isMouse:(BOOL)isMouse;

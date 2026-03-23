@@ -16,7 +16,7 @@
 #import "CustomEdgeSlideGestureRecognizer.h"
 #import "MenuSectionView.h"
 
-@interface SettingsViewController : UIViewController <RearNavigationBarMenuDelegate, MenuSectionDelegate, MicHandlerDelegate>
+@interface SettingsViewController : UIViewController <RearNavigationBarMenuDelegate, MenuSectionDelegate, MicHandlerDelegate, UITextFieldDelegate>
 
 @property (strong, nonatomic) IBOutlet UINavigationBar *navigationBar;
 @property (strong, nonatomic) UIStackView *parentStack;
@@ -216,6 +216,9 @@
 @property (strong, nonatomic) IBOutlet UIStackView *passthroughGesturesStack;
 @property (strong, nonatomic) IBOutlet UISwitch *passthroughGesturesSwitch;
 
+@property (weak, nonatomic) IBOutlet UIStackView *softKeyboardHeightStack;
+@property (weak, nonatomic) IBOutlet UISwitch *softKeyboardHeightSwitch;
+
 @property (strong, nonatomic) IBOutlet UIStackView *controllerToMouseStack;
 @property (strong, nonatomic) IBOutlet UISwitch *controllerToMouseSwitch;
 
@@ -240,9 +243,49 @@
 @property (strong, nonatomic) IBOutlet UIStackView *rightStickMinOffsetStack;
 @property (strong, nonatomic) IBOutlet UISlider *rightStickMinOffsetSlider;
 
+@property (strong, nonatomic) IBOutlet UIStackView *pressureCurveStack;
+@property (strong, nonatomic) IBOutlet UISwitch *pressureCurveSwitch;
+
+@property (weak, nonatomic) IBOutlet UIStackView *frameTimebaseStack;
+@property (weak, nonatomic) IBOutlet UISwitch *frameTimebaseSwitch;
+
+@property (weak, nonatomic) IBOutlet UIStackView *asyncFrameDequeueStack;
+@property (weak, nonatomic) IBOutlet UISwitch *asyncFrameDequeueSwitch;
+
+@property (weak, nonatomic) IBOutlet UIStackView *sdrPerformanceWorkaroundStack;
+@property (weak, nonatomic) IBOutlet UISwitch *sdrPerformanceWorkaroundSwitch;
+
+@property (weak, nonatomic) IBOutlet UIStackView *trackTouchPointStack;
+@property (weak, nonatomic) IBOutlet UISwitch *trackTouchPointSwitch;
+
 @property (strong, nonatomic) IBOutlet UIStackView *testStack;
 
+
 @property (nonatomic, strong) MicHandler *micHandler;
+
+
+
+@property (strong, nonatomic) IBOutlet UIStackView *pencilTickStack;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *pencilTickSelector;
+
+@property (strong, nonatomic) IBOutlet UIStackView *pencilTickIntervalStack;
+@property (strong, nonatomic) IBOutlet UISlider *pencilTickIntervalSlider;
+
+@property (weak, nonatomic) IBOutlet UIStackView *doubleTapShortcutStack;
+@property (weak, nonatomic) IBOutlet UISwitch *doubleTapShortcutSwitch;
+
+@property (weak, nonatomic) IBOutlet UIStackView *squeezeShortcutStack;
+@property (weak, nonatomic) IBOutlet UISwitch *squeezeShortcutSwitch;
+
+@property (weak, nonatomic) IBOutlet UIStackView *pencilPausesNativeTouchStack;
+@property (weak, nonatomic) IBOutlet UISwitch *pencilPausesNativeTouchSwitch;
+
+@property (weak, nonatomic) IBOutlet UIStackView *disablePencilSlideGestureStack;
+@property (weak, nonatomic) IBOutlet UISwitch *disablePencilSlideGestureSwitch;
+
+@property (weak, nonatomic) IBOutlet UIStackView *hoverModeStack;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *hoverModeSelector;
+
 
 
 #pragma clang diagnostic push

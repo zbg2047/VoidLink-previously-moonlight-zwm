@@ -25,7 +25,8 @@
 #import "LocalizationHelper.h"
 #import "VoidLink-Swift.h"
 #import "OSCProfilesManager.h"
-#import "ThemeManager.h"
+#import "VoidLink-Swift.h"
+#import "NativeTouchPointer.h"
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -46,8 +47,8 @@
 
 @implementation StreamFrameViewController {
     ControllerSupport *_controllerSupport;
-    StreamManager *_streamMan;
     TemporarySettings *_settings;
+    OSCProfile* _oscProfile;
     NSTimer *_inactivityTimer;
     NSTimer *_statsUpdateTimer;
     PaddedLabel *_overlayView;
@@ -61,7 +62,6 @@
     StreamView *_streamView;
     UIScrollView *_scrollView;
     BOOL _userIsInteracting;
-    bool viewJustLoaded;
     bool viewIsBeingResized;
     bool previousOnScreenWidgetEnabled;
     CGSize _keyboardSize;
@@ -80,7 +80,7 @@
     dispatch_block_t _delayedRemoveExtScreen;
     VideoDecoderRenderer *_videoRenderer;
     BOOL _isRestoringFromPiP;
-    CADisplayLink *_displayLink;
+    SafeTimer* safeTimer;
 
 #if !TARGET_OS_TV
     CustomEdgeSlideGestureRecognizer *_slideToSettingsRecognizer;
@@ -281,6 +281,7 @@
 
 - (void)configGestures{
     _slideToSettingsRecognizer = [[CustomEdgeSlideGestureRecognizer alloc] initWithTarget:self action:@selector(edgeSwiped)];
+    _slideToSettingsRecognizer.excludePencilEvent = _oscProfile.disablePencilSlideGestures;
     _slideToSettingsRecognizer.edgeTolerance = _settings.edgeSlidingSensitivity.floatValue;
     _slideToSettingsRecognizer.edges = _settings.slideToSettingsScreenEdge.intValue;
     _slideToSettingsRecognizer.normalizedThresholdDistance = _settings.slideToSettingsDistance.floatValue;
@@ -290,6 +291,7 @@
     
     
     _slideToToolboxRecognizer = [[CustomEdgeSlideGestureRecognizer alloc] initWithTarget:self action:@selector(bringUpToolboxMenu)];
+    _slideToToolboxRecognizer.excludePencilEvent = _oscProfile.disablePencilSlideGestures;
     _slideToToolboxRecognizer.edgeTolerance = _settings.edgeSlidingSensitivity.floatValue;
     if(_settings.slideToSettingsScreenEdge.intValue == UIRectEdgeLeft) _slideToToolboxRecognizer.edges = UIRectEdgeRight;
     else _slideToToolboxRecognizer.edges = UIRectEdgeLeft;  // _commandManager triggered by sliding from another side.
@@ -360,6 +362,8 @@
     if (reloadSettings) {
         _settings = [[[DataManager alloc] init] getSettings];  //StreamFrameViewController retrieve the settings here.
     }
+    _oscProfile = [[OSCProfilesManager sharedManager:CGRectZero] getSelectedProfile];
+    
     overlayLevel = _settings.statsOverlayLevel.intValue;
     [self setupOverlayView];
     
@@ -378,7 +382,7 @@
     
     Connection.muteInBackground = _settings.muteInBackground;
     
-    if(!viewJustLoaded) [_controllerSupport updateControllerSupport:self.streamConfig delegate:self];
+    if(!_viewJustLoaded) [_controllerSupport updateControllerSupport:self.streamConfig delegate:self];
     // reload controllerSupport obj, this is mandatory for OSC reload,especially when the stream view is launched without OSC
     [_streamView setupStreamView:_controllerSupport interactionDelegate:self config:self.streamConfig streamFrameTopLayerView:self.view]; //reinitiate setupStreamView process.
         // we got self.view passed to streamView class as the topLayerView, will be useful in many cases
@@ -387,7 +391,9 @@
     
     bool onScreenWidgetSwitched = previousOnScreenWidgetEnabled != [_streamView isOnScreenWidgetEnabled];
     bool needReload = onScreenWidgetSwitched && !previousOnScreenWidgetEnabled;
-    if(viewJustLoaded||reloadOnscreenWidgets||needReload) [_streamView reloadOnScreenWidgetViews]; //reload keyboard buttons here. the keyboard widget view will be added to the streamframe view instead streamview, the highest layer, which saves a lot of reengineering
+    OnScreenWidgetView.trackPointEnabled = _settings.touchPointTracking;
+    [_streamView reloadOnScreenWidgetViews:_viewJustLoaded||reloadOnscreenWidgets||needReload]; //reload keyboard buttons here. the keyboard widget view will be added to the streamframe view instead streamview, the highest layer, which saves a lot of reengineering
+    
     if(onScreenWidgetSwitched && previousOnScreenWidgetEnabled) [_streamView clearOnScreenWidgets];
     previousOnScreenWidgetEnabled = [_streamView isOnScreenWidgetEnabled];
     
@@ -438,19 +444,17 @@
         [self.view bringSubviewToFront:self.imguiView.mtkView];
     }
     
-    [self stopDisplayLink];
+    // [self pauseTimer];
     if(_settings.sendDummyEvent){
-        [self setupDisplayLink];
-        [self startDisplayLink];
+        if(!safeTimer) [self setupTimer];
+        if(!_viewJustLoaded) [safeTimer start];
     }
+    else [safeTimer pause];
     
-    _motionHandler = [MotionHandler sharedInstance];
+    _motionHandler = [MotionHandler sharedWithProfile: nil];
     _motionHandler.gyroBiasX = _settings.gyroBiasX.doubleValue;
     _motionHandler.gyroBiasY = _settings.gyroBiasY.doubleValue;
     _motionHandler.gyroBiasZ = _settings.gyroBiasZ.doubleValue;    
-
-    _streamView.onScreenControls.instanceReceiverDelegate = _motionHandler;
-    [_streamView.onScreenControls sendInstance];
     
     TouchPadGestureHandler.enablePinch = _settings.enablePinch;
     TouchPadGestureHandler.ctrlDownForPinch = _settings.ctrlDownForPinch;
@@ -463,18 +467,17 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    if(_settings.sendDummyEvent) [self startDisplayLink];
+    // if(_settings.sendDummyEvent) [self startTimer];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    [self stopDisplayLink];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    viewJustLoaded = false;
+    _viewJustLoaded = false;
     _deviceWindow = self.view.window;
     previousOnScreenWidgetEnabled = [_streamView isOnScreenWidgetEnabled];
     if (@available(iOS 13.0, *)) {
@@ -499,6 +502,11 @@
     }
 
     self->_streamView.originalFrame = self->_streamView.frame;
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5*NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSLog(@"pausing...");
+        nil;
+    });
 
     // check to see if external screen is connected/disconnected
 
@@ -538,7 +546,8 @@
                                              selector:@selector(keyboardWillHide)
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
-
+    
+    [safeTimer start];
     #endif
 }
 
@@ -576,14 +585,14 @@
 }
 
 - (void)updateTheme {
-    self.view.backgroundColor = [ThemeManager appBackgroundColor];
-    _stageLabel.textColor = [[ThemeManager textColor] colorWithAlphaComponent:0.9];
-    _spinner.color = [ThemeManager textColor];
+    self.view.backgroundColor = ThemeManager.menuBackgroundColor;
+    _stageLabel.textColor = [ThemeManager.textColor colorWithAlphaComponent:0.9];
+    _spinner.color = ThemeManager.textColor;
 }
 
 - (void)viewDidLoad
 {
-    viewJustLoaded = true;
+    _viewJustLoaded = true;
     viewIsBeingResized = false;
     [super viewDidLoad];
 
@@ -758,7 +767,7 @@
 }
 
 - (void)openWidgetLayoutTool{
-    [_streamView saveRelocatedWidgetViews];
+    [_streamView saveStreamViewWidgetChanges];
     _streamView.widgetToolOpened = true;
     [self->_streamView disableOnScreenControls];
     [self->_streamView clearOnScreenWidgets]; // clear all onScreenKeyboardButtons before entering edit mode
@@ -768,8 +777,8 @@
     [self presentViewController:_layoutOnScreenControlsVC animated:YES completion:nil];
 }
 
-- (void)switchWidgetProfile{
-    [_streamView saveRelocatedWidgetViews];
+- (void)openWidgetProfileTableWithPickProfile:(BOOL)pickProfile{
+    [_streamView saveStreamViewWidgetChanges];
     _streamView.widgetToolOpened = true;
     [self->_streamView disableOnScreenControls];
     [self->_streamView clearOnScreenWidgets]; // clear all onScreenKeyboardButtons before entering edit mode
@@ -777,7 +786,7 @@
     _layoutOnScreenControlsVC.toolbarStackView.hidden = true;
     _layoutOnScreenControlsVC.toolbarRootView.hidden = true;
     [self presentViewController:_layoutOnScreenControlsVC animated:NO completion:^{
-        [self->_layoutOnScreenControlsVC presentProfilesTableView];
+        [self->_layoutOnScreenControlsVC presentProfilesTableViewWithPickProfile:pickProfile];
     }];
 }
 
@@ -799,8 +808,8 @@
     [self->_streamView disableOnScreenControls]; // add this to get realtime back menu working.
     [self->_streamView reloadOnScreenControlsWith:(ControllerSupport*)_controllerSupport
                                         andConfig:(StreamConfiguration*)_streamConfig];
-    [self->_streamView showOnScreenControls];
-    [self->_streamView reloadOnScreenWidgetViews]; //update keyboard buttons here
+    // [self->_streamView reloadLegacyWidgets];
+    [self->_streamView reloadOnScreenWidgetViews:true]; //update keyboard buttons here
 }
 
 - (void)setUserInteractionEnabledForStreamView:(bool)enabled{
@@ -817,7 +826,8 @@
 - (void)willMoveToParentViewController:(UIViewController *)parent {
     // Only cleanup when we're being destroyed
     if (parent == nil) {
-        //NSLog(@"gyro cleanup, count: %ld", _controller.count);
+        _streamView = nil;
+        [_streamView cleanUp];
         [_controllerSupport cleanup];
 
         [UIApplication sharedApplication].idleTimerDisabled = NO;
@@ -832,7 +842,14 @@
             self.metalViewController = nil;
             NSLog(@"Metal renderer stopped and cleaned up.");
         }
+        [NativeTouchPointer cleanUpContext];
         [[NSNotificationCenter defaultCenter] removeObserver:self];
+        for(UIView* view in self.view.subviews){
+            [view removeFromSuperview];
+        }
+        
+        [safeTimer pause];
+        [safeTimer clean];
     }
 }
 
@@ -936,6 +953,7 @@
 - (void) returnToMainFrame {
     [_streamView clearOnScreenWidgets];
     if(micHandler) [micHandler clean];
+    PencilHandler.shared = nil;
     
     // Reset display mode back to default
     [self updatePreferredDisplayMode:NO];
@@ -1056,8 +1074,8 @@
     //[self.pipController startPictureInPicture];
     //sleep(1);
     appDidEnterBackgroundWithoutPip = true;
-
-    [_streamView saveRelocatedWidgetViews];
+    NSLog(@"applicationWillResignActive %f", CACurrentMediaTime());
+    [_streamView saveStreamViewWidgetChanges];
 
 #if !TARGET_OS_TV
 #endif
@@ -1073,6 +1091,7 @@
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification {
     appDidEnterBackgroundWithoutPip = false;
+    [_streamMan setNeedRequeuing:true];
     // Stop the background timer, since we're foregrounded again
     if (_inactivityTimer != nil) {
         Log(LOG_I, @"Stopping inactivity timer after becoming active again");
@@ -1141,7 +1160,7 @@
 
 - (void)expandSettingsView{
     self.mainFrameViewcontroller.settingsExpandedInStreamView = true; //notify mainFrameViewContorller that this is a setting expansion in stream view, some settings shall be disabled.
-    [_streamView saveRelocatedWidgetViews];
+    [_streamView saveStreamViewWidgetChanges];
     [self.mainFrameViewcontroller expandSettingsView];
 }
 
@@ -1187,7 +1206,7 @@
             [self.view sendSubviewToBack:self->_streamView];
         }
         
-        [self->_streamView showOnScreenControls];
+        // [self->_streamView showOnScreenControls];
         
         [self->_controllerSupport connectionEstablished];
         
@@ -1310,6 +1329,27 @@
     
     if(strcmp(stageName, "mic stream unsupported or unintialized")==0){
         _micStreamInitialized = false;
+    }
+    
+    // 8bit 444 degration workaround
+    if(strcmp(stageName, "video stream establishment")==0){
+        NSLog(@"sendAutoReleaseComboCommandWithCmdStrings %f", CACurrentMediaTime());
+        if(!_settings.enableHdr
+           && _settings.sdrPerformanceWorkaround
+           && [Utils hdrSupported]
+           ){
+            dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(4 * NSEC_PER_SEC));
+            dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                if(LiGetCurrentHostDisplayHdrMode()){
+                    NSArray* hdrCommand = [CommandManager.shared extractAutoReleaseButtonStringsFrom:@"WIN+ALT+B"];
+                    [CommandManager.shared sendAutoReleaseComboCommandWithCmdStrings:hdrCommand delay:0.15 index:0 pressOnly:false releaseOnly:false];
+                    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC));
+                    dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                        [self->_streamMan setNeedRequeuing:true];
+                    });
+                }
+            });
+        }
     }
 }
 
@@ -1600,6 +1640,53 @@
     [_motionHandler stopAccelUpdate];
 }
 
+- (void)enablePencilHover{
+    [_streamView enablePencilHover];
+}
+
+- (void)disablePencilHover{
+    [_streamView disablePencilHover];
+}
+
+- (void)setAllowSingleTouchEnabled:(BOOL)enabled{
+    [_streamView setAllowSingleTouchEnabled:enabled];
+}
+
+- (void)replaceBrushWithShortcut:(NSString *)shortcut{
+    if(PencilHandler.shared){
+        [PencilHandler.shared replaceBrushWith:shortcut];
+    }
+}
+
+- (void)replaceEraserWithShortcut:(NSString *)shortcut{
+    if(PencilHandler.shared){
+        [PencilHandler.shared replaceEraserWith:shortcut];
+    }
+}
+
+- (void)toggleTouchWithDisabled:(BOOL)disabled{
+    [_streamView toggleTouchDisabled:disabled];
+}
+
+- (void)presentPressureCurveVC{
+    if(_oscProfile.pressureCurveEnabled){
+        PressureCurveViewController* pressureCurveVC = [[PressureCurveViewController alloc] init];
+        pressureCurveVC.modalPresentationStyle = UIModalPresentationOverFullScreen;
+        [self presentViewController:pressureCurveVC animated:YES completion:nil];
+    }
+    else{
+        AlertControllerUtil.autoCompletion = true;
+        [AlertControllerUtil showAlertIn:self
+                                        title:@""
+                                      message:[LocalizationHelper localizedStringForKey:@"Please enable pressure curve in settings menu"]
+                                   withCancel:NO
+                                  buttonTitle:@""
+                                    countdown:2
+                                       action:^{}
+                                   completion:^{}];
+    }
+}
+
 #if !TARGET_OS_TV
 // Require a confirmation when streaming to activate a system gesture
 - (UIRectEdge)preferredScreenEdgesDeferringSystemGestures {
@@ -1636,21 +1723,42 @@
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
+    // handle view size change for on-screen widgets
+    CGSize oldSize = self.view.bounds.size;
+    CGFloat scaleX = size.width  / oldSize.width;
+    CGFloat scaleY = size.height / oldSize.height;
+    for(OnScreenWidgetView* widget in OnScreenWidgetView.mapping.allValues){
+        CGPoint oldCenter = widget.center;
+        CGPoint oldStoredCenter = widget.storedCenter;
+        [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+            widget.center = CGPointMake(oldCenter.x * scaleX,oldCenter.y * scaleY);
+            widget.storedCenter = CGPointMake(oldStoredCenter.x * scaleX,oldStoredCenter.y * scaleY);
+        } completion:nil];
+    }
+
     
+    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC));
+    dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self->_streamMan setNeedRequeuing:true];
+    });
+
+    /*
     if (_isRestoringFromPiP) {
         Log(LOG_I, @"View size changed during PiP restore, skipping redundant reconfiguration.");
         return;
-    }
+    } */
 
-    Log(LOG_I, @"View size changed, terminating stream");
-    
+    // Log(LOG_I, @"View size changed, terminating stream");
+
     double delayInSeconds = 0.2;
     if (_delayedRemoveExtScreen) {
         dispatch_block_cancel(_delayedRemoveExtScreen);
     }
+        
     dispatch_block_t block = dispatch_block_create(0, ^{
         [self handleViewResize];
-        [self reConfigStreamViewRealtimeAndReloadSettings:YES reloadOnscreenWidgets:YES];
+        [self reConfigStreamViewRealtimeAndReloadSettings:YES reloadOnscreenWidgets:NO];
     });
     _delayedRemoveExtScreen = block;
     dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
@@ -1658,36 +1766,17 @@
 }
 
 - (void)dealloc {
-    [self stopDisplayLink];
+    NSLog(@"dealloc StreamFrameViewController %f", CACurrentMediaTime());
 }
 
-- (void)setupDisplayLink {
-    if (_displayLink != nil) return;
+- (void)setupTimer {
     TemporarySettings* tempSettings = [[[DataManager alloc] init] getSettings];  //StreamFrameViewController retrieve the settings here.
-    if (@available(iOS 15.0, tvOS 15.0, *)) {
-        [_displayLink setPreferredFrameRateRange:CAFrameRateRangeMake(tempSettings.framerate.intValue,tempSettings.framerate.intValue, tempSettings.framerate.intValue)];
-    }
-    else {
-        _displayLink.preferredFramesPerSecond = tempSettings.framerate.intValue;
-    }
-    _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayLinkTick:)];
-    [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+    safeTimer = [[SafeTimer alloc] initWithInterval:1.0/tempSettings.framerate.intValue delay:0 queueLabel:@"streamview.timer" handler:^{
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
+            LiSendKeyboardEvent(0xFF, KEY_ACTION_UP, 0);
+            // LiSendTouchEvent(LI_TOUCH_EVENT_UP, 200, 1, 1, 0, 0, 0, 0);
+        });
+    }];
 }
-
-- (void)startDisplayLink {
-    _displayLink.paused = NO;
-}
-
-- (void)stopDisplayLink {
-    [_displayLink invalidate];
-    _displayLink = nil;
-}
-
-- (void)displayLinkTick:(CADisplayLink *)link {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        LiSendKeyboardEvent(0xFF, KEY_ACTION_UP, 0);
-    });
-}
-
 
 @end

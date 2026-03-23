@@ -53,12 +53,14 @@
     CODEC_PREF_AV1,
 } preferredCodec;
 @property (nonatomic) BOOL enableYUV444;
+@property (nonatomic) BOOL sdrPerformanceWorkaround;
 @property (nonatomic) BOOL enablePIP;
 @property (nonatomic) BOOL fullColorRange;
 @property (nonatomic) BOOL reverseMouseWheelDirection;
 @property (nonatomic, retain) NSNumber * asyncNativeTouchPriority;
 @property (nonatomic) BOOL multiController;
 @property (nonatomic) BOOL buttonVisualFeedback;
+@property (nonatomic) BOOL touchPointTracking;
 @property (nonatomic) BOOL swapABXYButtons;
 @property (nonatomic) BOOL playAudioOnPC;
 @property (nonatomic) BOOL redirectMic;
@@ -72,8 +74,11 @@
 @property (nonatomic) BOOL statsOverlayEnabled;
 @property (nonatomic) BOOL liftStreamViewForKeyboard;
 @property (nonatomic) BOOL showKeyboardToolbar;
+@property (nonatomic) CGFloat softKeyboardHeight;
 @property (nonatomic) BOOL unlockDisplayOrientation;
 @property (nonatomic) BOOL enableGraphs;
+@property (nonatomic) BOOL enableFrameTimebase;
+@property (nonatomic) BOOL asyncFrameDequeue;
 @property (nonatomic, retain) NSNumber * frameQueueSize;
 @property (nonatomic, retain) NSNumber * graphOpacity;
 @property (nonatomic, retain) NSNumber * renderingBackend;
@@ -103,6 +108,12 @@
 @property (nonatomic) BOOL mapControllerToMouse;
 @property (nonatomic, retain) NSNumber * controllerMousePointerVelocity;
 @property (nonatomic, retain) NSNumber * controllerMouseExpo;
+
+
+// Pencil settings:
+@property (nonatomic, retain) NSNumber * pencilTickMode;
+@property (nonatomic, retain) NSNumber * pencilTickIntervalUs;
+
 
 - (id) initFromSettings:(Settings*)settings;
 

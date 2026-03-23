@@ -5,6 +5,10 @@
 //  Created by Cameron Gutman on 10/18/14.
 //  Copyright (c) 2014 Moonlight Stream. All rights reserved.
 //
+//  Modified by True砖家 since 2026.2
+//  Copyright © 2026 True砖家 @ Bilibili. All rights reserved.
+//
+
 
 @import AVFoundation;
 @import VideoToolbox;
@@ -36,7 +40,7 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
 @implementation VideoDecoderRenderer {
     dispatch_queue_t _sq, _vtq;
     StreamView* _view;
-    id<ConnectionCallbacks> _callbacks;
+    __weak id<ConnectionCallbacks> _callbacks;
     float _streamAspectRatio;
 
     AVSampleBufferDisplayLayer* _displayLayer;
@@ -52,11 +56,15 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     VTDecompressionSessionRef _decompressionSession;
 
     CADisplayLink *_displayLink;
-    FrameQueue *_frameQueue;
     NSInteger _maxRefreshRate;
     RenderingBackend _renderingBackend;
 
     FramePacingMode _framePacingMode;
+    bool _enableTimebase;
+    bool _asyncFrameDequeue;
+        
+    // CMTime playTime;
+    // NSTimeInterval previousLinkTime;
 }
 
 - (void)reinitializeDisplayLayer
@@ -125,21 +133,28 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     _vtq = dispatch_queue_create("com.moonlight.VideoDecoderRenderer.VTDecoder",
                                  dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INTERACTIVE, 0));
 
-    _view = view;
+    _view = (StreamView*) view;
     _callbacks = callbacks;
     _streamAspectRatio = aspectRatio;
     _maxRefreshRate = [[UIScreen mainScreen] maximumFramesPerSecond];
     _parameterSetBuffers = [[NSMutableArray alloc] init];
 
     DataManager* dataMan = [[DataManager alloc] init];
+    TemporarySettings* tempSettings = [dataMan getSettings];
 
-    _framePacingMode = [[dataMan getSettings].framePacingMode integerValue];
+    _framePacingMode = tempSettings.framePacingMode.integerValue;
+    _asyncFrameDequeue = tempSettings.asyncFrameDequeue;
+    NSLog(@"_asyncFrameDequeue %d", _asyncFrameDequeue);
+    _enableTimebase = false;
+    _queueSize = tempSettings.frameQueueSize.intValue;
+    _needRequeuing = _queueSize>0;
 
     _frameQueue = [FrameQueue sharedInstance];
     [_frameQueue start];
-    [_frameQueue setHighWaterMark:(int)[[dataMan getSettings].frameQueueSize integerValue]];
+    [_frameQueue setHighWaterMark:MAX(1, _queueSize)];
 
     [self reinitializeDisplayLayer];
+    // NSTimeInterval interval = 1.0/tempSettings.framerate.intValue;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reinitializeDisplayLayer)
@@ -245,7 +260,7 @@ extern int ff_isom_write_av1c(AVIOContext *pb, const uint8_t *buf, int size,
     // Check for issues with the SampleBuffer, this should be much less likely since
     // AVSB is not actually decoding the frames anymore
     if (self->_displayLayer.status == AVQueuedSampleBufferRenderingStatusFailed) {
-        Log(LOG_E, @"Display layer rendering failed: %@", _displayLayer.error);
+        // Log(LOG_E, @"Display layer rendering failed: %@", _displayLayer.error);
 
         // Recreate the display layer. We are already on the main thread,
         // so this is safe to do right here.
@@ -261,67 +276,84 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
 
 #pragma mark DisplayLink - Frame Pacing - Vsync with FrameQueue
 
+/*
 // This frame pacing method was inspired by the behavior of moonlight-qt's Pacer class, although it has evolved
 // a few additional features. Incoming frames from Sunshine are asynchronously processed into a queue by the VideoRecv thread.
 // DisplayLink calls us every vsync we we try to present the most recent frame. We try to maintain a user-configurable buffer
-// of 1-5 frames. If the buffer is full, every other frame is dropped which just appears to the user as a lower framerate stream.
+// of 1-5 frames. If the buffer is full, every other frame is dropped which just appears to the user as a lower framerate stream. */
 - (void)renderModeAVSB:(CADisplayLink *)link {
+    // NSTimeInterval current = link.targetTimestamp;
+    // NSLog(@"link %f", link.duration);
+    // previousLinkTime = current;
     
     CFTimeInterval start = link.timestamp;
-    CFTimeInterval deadline = link.targetTimestamp;
+    CFTimeInterval targetTime = link.targetTimestamp;
     static CFTimeInterval lastTargetLocal = 0.0f;
     CFTimeInterval dl0 = CACurrentMediaTime();
-
+     
+    /*
     static int lateCallbacks = 0;
-    if (dl0 > deadline) {
+    if (dl0 > nextFrameTime) {
         // we already missed it, count how often this happens
         lateCallbacks++;
         return;
-    }
-
+    }*/
+    
     [self checkDisplayLayer];
-
-    static CFTimeInterval avgOverhead = 0.004f; // averaged each callback
-    CFTimeInterval waitFor = deadline - dl0 - avgOverhead;
+    
+    CFTimeInterval waitFor = targetTime - dl0;
+    
+    /*
     if (waitFor < 0.001f) {
+        NSLog(@"waitFor %f", waitFor);
+        // waitFor = isIPhone ? waitFor : 0.0f;
         waitFor = 0.0f;
     }
-
-    // Get the next frame or wait if necessary. If no frame arrives the previous one will be redisplayed automatically.
-    Frame *frame = [_frameQueue dequeueWithTimeout:waitFor];
-    if (frame) {
-        CFTimeInterval dl1 = CACurrentMediaTime();
-
-        LogOnce(LOG_I, @"Frame pacing: using AVSampleBufferDisplayLayer target %f Hz with %d FPS stream", 1.0f / (deadline - start), self->_frameRate);
-
-        // The system works best with properly timed video frames, which we time to the end of the next vsync period,
-        // the earliest they can be displayed due to double-buffering.
-        CFTimeInterval targetLocal = deadline + link.duration;
-
-        [self renderFrame:frame atTime:CMTimeMakeWithSeconds(targetLocal, NSEC_PER_SEC)];
-
+    */
+        
+    if(_needRequeuing ? _frameQueue.count>MAX(_queueSize-1,0) : true){
+    // if(true){
+        _needRequeuing = false;
+        if(_asyncFrameDequeue){
+            [_frameQueue dequeueWithTimeout:waitFor completion:^(Frame *frame) {
+                if (frame) {
+                    // LogOnce(LOG_I, @"Frame pacing: using AVSampleBufferDisplayLayer target %f Hz with %d FPS stream", 1.0f / (deadline - start), self->_frameRate);
+                    [self renderFrame:frame atTime:CMTimeMakeWithSeconds(targetTime, NSEC_PER_SEC)];
+                }
+            }];
+        }
+        else{
+            Frame *frame = [_frameQueue dequeueWithTimeoutSync:waitFor];
+            if (frame) {
+                // CFTimeInterval dl1 = CACurrentMediaTime();
+                
+                // LogOnce(LOG_I, @"Frame pacing: using AVSampleBufferDisplayLayer target %f Hz with %d FPS stream", 1.0f / (deadline - start), self->_frameRate);
+                
+                // The system works best with properly timed video frames, which we time to the end of the next vsync period,
+                // the earliest they can be displayed due to double-buffering.
+                CFTimeInterval targetLocal = targetTime;
+                
+                [self renderFrame:frame atTime:CMTimeMakeWithSeconds(targetLocal, NSEC_PER_SEC)];
+                
 #ifdef DISPLAYLINK_VERBOSE
-        Log(LOG_I, @"[%.3f] rendering frame %d, waitFor %.3f ms, overhead %.3f ms, lateCallbacks %d, queue size %d",
-            deadline, frame.frameNumber, waitFor * 1000.0, avgOverhead * 1000.0, lateCallbacks, [_frameQueue count]);
+                Log(LOG_I, @"[%.3f] rendering frame %d, waitFor %.3f ms, overhead %.3f ms, lateCallbacks %d, queue size %d",
+                    deadline, frame.frameNumber, waitFor * 1000.0, avgOverhead * 1000.0, lateCallbacks, [_frameQueue count]);
 #endif
-
-        // Update metrics
-        if (lastTargetLocal != 0) {
-            CFTimeInterval frametime = targetLocal - lastTargetLocal;
-            if (frametime > deadline - start + 0.0005f) {
-                // we missed a callback
-                // Log(LOG_W, @"*** slow frametime %.3f ms", frametime * 1000.0);
-            }
-            if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
-                [[ImGuiPlots sharedInstance] observeFloat:PLOT_FRAMETIME value:frametime * 1000.0];
+                
+                // Update metrics
+                if (lastTargetLocal != 0) {
+                    CFTimeInterval frametime = targetLocal - lastTargetLocal;
+                    if (frametime > targetTime - start + 0.0005f) {
+                        // we missed a callback
+                        // Log(LOG_W, @"*** slow frametime %.3f ms", frametime * 1000.0);
+                    }
+                    if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
+                        [[ImGuiPlots sharedInstance] observeFloat:PLOT_FRAMETIME value:frametime * 1000.0];
+                    }
+                }
+                lastTargetLocal = targetLocal;
             }
         }
-        lastTargetLocal = targetLocal;
-
-        // weighted moving average of how much time displayLink needs after dequeuing a frame.
-        // This is used to avoid overshooting a vsync by waiting too long.
-        const double alpha = 0.1f;
-        avgOverhead = ((CACurrentMediaTime() - dl1) * alpha) + (avgOverhead * (1.0 - alpha));
     }
 }
 
@@ -330,8 +362,6 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
 // Legacy frame pacing callback - matches upstream/Integration behavior exactly
 - (void)displayLinkCallback:(CADisplayLink *)sender
 {
-    if(appDidEnterBackgroundWithoutPip) return;
-    
     VIDEO_FRAME_HANDLE handle;
     PDECODE_UNIT du;
     
@@ -361,7 +391,7 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
 - (void)renderFrame:(Frame *)frame atTime:(CMTime)targetTime {
     CMSampleBufferSetOutputPresentationTimeStamp(frame.sampleBuffer, targetTime);
 
-    if ([self->_displayLayer controlTimebase] == NULL) {
+    if (_enableTimebase && [self->_displayLayer controlTimebase] == NULL) {
         // On first frame, set timebase to the initial presentation time.
         // This will let us present frames using the local clock (vsync pacing) or
         // the pts timestamps from the host.
@@ -380,7 +410,8 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
         Log(LOG_I, @"Setting timebase for stream to %d / %d", pts.value, pts.timescale);
     }
 
-    if(!appDidEnterBackgroundWithoutPip) [self->_displayLayer enqueueSampleBuffer:frame.sampleBuffer];
+    if(appDidEnterBackgroundWithoutPip) [self->_displayLayer flush];
+    else [self->_displayLayer enqueueSampleBuffer:frame.sampleBuffer];
 
 #ifdef DISPLAYLINK_VERBOSE
     // Some OS-level metrics I'm not sure what to do with
@@ -412,21 +443,22 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [_displayLink invalidate];
 }
-- (void)cleanup
-{
-    [_frameQueue stop];
 
-    if (_renderingBackend == RENDER_AVSB) {
-        [_displayLink invalidate];
-    }
-
-    @synchronized(self) {
-        if (_decompressionSession != NULL) {
-            VTDecompressionSessionInvalidate(_decompressionSession);
-            CFRelease(_decompressionSession);
-            _decompressionSession = nil;
+- (void)cleanup{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self->_frameQueue stop];
+        
+        if (self->_renderingBackend == RENDER_AVSB) {
+            [self->_displayLink invalidate];
         }
-    }
+        @synchronized(self) {
+            if (self->_decompressionSession != NULL) {
+                VTDecompressionSessionInvalidate(self->_decompressionSession);
+                CFRelease(self->_decompressionSession);
+                self->_decompressionSession = nil;
+            }
+        }
+    });
 }
 
 #define NALU_START_PREFIX_SIZE 3
@@ -892,7 +924,8 @@ int DrSubmitDecodeUnit(PDECODE_UNIT decodeUnit);
 
     if (_framePacingMode == FramePacingModeLegacy || _framePacingMode == FramePacingModeOff) {
         // Enqueue the next frame
-        [self->_displayLayer enqueueSampleBuffer:sampleBuffer];
+        if(appDidEnterBackgroundWithoutPip) [self->_displayLayer flush];
+        else [self->_displayLayer enqueueSampleBuffer:sampleBuffer];
 
         if (du->frameType == FRAME_TYPE_IDR) {
             // Ensure the layer is visible now

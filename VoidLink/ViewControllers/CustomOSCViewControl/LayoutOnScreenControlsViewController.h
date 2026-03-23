@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface LayoutOnScreenControlsViewController : UIViewController <OnScreenWidgetGuidelineUpdateDelegate,UITextFieldDelegate>
 - (void)profileRefresh;
 - (void)reloadOnScreenWidgetViews;
-- (void)presentProfilesTableView;
+- (void)presentProfilesTableViewWithPickProfile:(bool)pickProfile;
 
 @property LayoutOnScreenControls *layoutOSC;    // object that contains a view which contains the on screen controller buttons that allows the user to drag and positions each button on the screen using touch
 @property (nonatomic) NSMutableSet* onScreenWidgetViews;
@@ -120,6 +120,22 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) IBOutlet UIStackView *minStickOffsetStack;
 @property (strong, nonatomic) IBOutlet UILabel *minStickOffsetLabel;
 @property (strong, nonatomic) IBOutlet UISlider *minStickOffsetSlider;
+
+@property (strong, nonatomic) IBOutlet UIStackView *componentSizeStack;
+@property (strong, nonatomic) IBOutlet UILabel *componentSizeLabel;
+@property (strong, nonatomic) IBOutlet UISlider *componentSizeSlider;
+
+@property (strong, nonatomic) IBOutlet UIStackView *walkModeThresholdStack;
+@property (strong, nonatomic) IBOutlet UILabel *walkModeThresholdLabel;
+@property (strong, nonatomic) IBOutlet UISlider *walkModeThresholdSlider;
+
+@property (weak, nonatomic) IBOutlet UIStackView *collectedWidgetsStack;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *collectedWidgetsSelector;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *revealModeSelector;
+
+@property (weak, nonatomic) IBOutlet UIStackView *bulkMoveStack;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *bulkMoveSelector;
+
 
 @property (weak, nonatomic) IBOutlet UIStackView *widgetPanelStack;
 

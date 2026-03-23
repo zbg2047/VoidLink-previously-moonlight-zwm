@@ -42,8 +42,8 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     
     NSLock *_controllerStreamLock;
     NSMutableDictionary *_voidControllers;
-    id<ControllerSupportDelegate> _delegate;
     StreamConfiguration* _streamConfig;
+    __weak id<ControllerSupportDelegate> _delegate;
     
     float accumulatedDeltaX;
     float accumulatedDeltaY;
@@ -73,10 +73,9 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
 
     OnScreenControls *_osc;
     VoidController *_oscController;
-    NSMutableSet* _activeGCControllers;
     TemporarySettings* tempSettings;
-    OSCProfilesManager* oscProfileMan;
     OSCProfile* oscProfile;
+    OSCProfilesManager* oscProfileMan;
 
 #define EMULATING_SELECT     0x1
 #define EMULATING_SPECIAL    0x2
@@ -98,7 +97,7 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
     bool _controllerGyroSwitchHoldPressed;
     ControllerGyroSwitchMode _gyroSwitchMode;
 
-    MotionHandler* motionHandler;
+    __weak MotionHandler* motionHandler;
 }
 
 // UPDATE_BUTTON_FLAG(controller, flag, pressed)
@@ -1218,11 +1217,10 @@ double rc_expo(double x, double expo) {
                 
                 CGFloat rightStickXRaw = gamepad.rightThumbstick.xAxis.value * self->stickMaxOffset;
                 CGFloat rightStickYRaw = gamepad.rightThumbstick.yAxis.value * self->stickMaxOffset;
+                
+                CGVector leftStickOffset = [ControllerUtil compensatedWithOffsetVector:CGVectorMake(leftStickXRaw, leftStickYRaw) minOffset:self->_leftStickMinOffset circulate:false];
 
-                
-                CGVector leftStickOffset = [ControllerUtil compensatedWithOffsetVector:CGVectorMake(leftStickXRaw, leftStickYRaw) withMinOffset:self->_leftStickMinOffset];
-                
-                CGVector rightStickOffset = [ControllerUtil compensatedWithOffsetVector:CGVectorMake(rightStickXRaw, rightStickYRaw) withMinOffset:self->_rightStickMinOffset];
+                CGVector rightStickOffset = [ControllerUtil compensatedWithOffsetVector:CGVectorMake(rightStickXRaw, rightStickYRaw) minOffset:self->_rightStickMinOffset circulate:false];
                 
                 leftStickX = self->_controllerMouseEnabledFlag ? 0 : leftStickOffset.dx;
                 leftStickY = self->_controllerMouseEnabledFlag ? 0 : leftStickOffset.dy;
@@ -1601,7 +1599,7 @@ double rc_expo(double x, double expo) {
 -(VoidController* )assignController:(GCController*)controller {
     NSLog(@"run assignController");
 
-    bool newGCControllerArrival = ![_activeGCControllers containsObject:controller];
+    bool newGCControllerArrival = ![ControllerUtil.activeGCControllers containsObject:controller];
     
     if(!newGCControllerArrival){
         VoidController* voidController = [_voidControllers objectForKey:@(controller.playerIndex)];
@@ -1623,7 +1621,7 @@ double rc_expo(double x, double expo) {
             VoidController* voidController = [[VoidController alloc] init];
 
 
-            [_activeGCControllers addObject:controller];
+            [ControllerUtil.activeGCControllers addObject:controller];
             controller.playerIndex = i;
             voidController.playerIndex = i;
             [self updateVoidController:voidController withGCController:controller];
@@ -1701,9 +1699,9 @@ double rc_expo(double x, double expo) {
 - (void)assignControllers{
     for (GCController* controller in [GCController controllers]) {
         NSLog(@"controller count: iterating");
-
+        
         if ([ControllerSupport isSupportedGamepad:controller]) {
-            NSLog(@"controller count: is supported,is contained by dict: %d", [_activeGCControllers containsObject:controller]);
+            NSLog(@"controller count: is supported,is contained by dict: %d", [ControllerUtil.activeGCControllers containsObject:controller]);
                 NSLog(@"controller obj +1 in dic");
                 [self assignController:controller];
                 NSLog(@"controller obj num in dict: %lu", (unsigned long)_voidControllers.allValues.count);
@@ -1723,6 +1721,7 @@ double rc_expo(double x, double expo) {
     _oscController.playerIndex = 0;
 
     oscProfile = [oscProfileMan getSelectedProfile];
+    motionHandler = [MotionHandler sharedWithProfile:oscProfile];
     DataManager* dataMan = [[DataManager alloc] init];
     tempSettings = [dataMan getSettings];
 
@@ -1819,7 +1818,7 @@ double rc_expo(double x, double expo) {
     _delegate = delegate;
     _controllerStreamLock = [[NSLock alloc] init];
     _voidControllers = [[NSMutableDictionary alloc] init];
-    _activeGCControllers = [[NSMutableSet alloc] init];
+    [ControllerUtil.activeGCControllers removeAllObjects];
     _controllerNumbers = 0;
     
     _captureMouse = (streamConfig.localMousePointerMode == 0);
@@ -1872,8 +1871,8 @@ double rc_expo(double x, double expo) {
         
         [self unregisterControllerCallbacks:controller];
         
-        if([self->_activeGCControllers containsObject:controller]){
-            [self->_activeGCControllers removeObject:controller];
+        if([ControllerUtil.activeGCControllers containsObject:controller]){
+            [ControllerUtil.activeGCControllers removeObject:controller];
             self->_controllerNumbers &= ~(1 << controller.playerIndex);
         }
         Log(LOG_I, @"Unassigning controller index: %ld", (long)controller.playerIndex);
@@ -1965,7 +1964,6 @@ double rc_expo(double x, double expo) {
     _controllerMouseEnabledFlag = false;
     
     _gyroEnabledFlag = false;
-    motionHandler = [MotionHandler sharedInstance];
     oscProfileMan = [OSCProfilesManager sharedManager:CGRectZero];
 
     [self updateCommonConfig:streamConfig];

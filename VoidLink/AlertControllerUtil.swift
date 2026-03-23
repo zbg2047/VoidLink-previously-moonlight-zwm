@@ -20,6 +20,8 @@ import UIKit
     
     @objc public static var actionCancelled:Bool = false
     @objc public static var alertController:UIAlertController = UIAlertController()
+    @objc public static var cancelButtonString:String = "Cancel"
+    @objc public static var autoCompletion:Bool = false
 
     @objc class func showAlert(
         in viewController: UIViewController,
@@ -38,17 +40,19 @@ import UIKit
         let confirmAction = UIAlertAction(title: "\(remainingSeconds)", style: .default) { _ in
             actionCancelled = false
             completion?()
+            cancelButtonString = "Cancel"
         }
         
-        let cancelAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Cancel"), style: .cancel) { _ in
+        let cancelAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: cancelButtonString), style: .cancel) { _ in
             actionCancelled = true
             completion?()
+            cancelButtonString = "Cancel"
         }
         
         confirmAction.isEnabled = false
         
         if withCancel {alertController.addAction(cancelAction)}
-        if buttonTitle != "" {alertController.addAction(confirmAction)}
+        if buttonTitle != "" && !autoCompletion {alertController.addAction(confirmAction)}
         
         if(countdown == 0) {
             confirmAction.setValue(buttonTitle, forKey: "title")
@@ -69,6 +73,12 @@ import UIKit
                 timer.cancel()
                 confirmAction.isEnabled = true
                 confirmAction.setValue(buttonTitle, forKey: "title")
+                if autoCompletion {
+                    autoCompletion = false
+                    completion?()
+                    alertController.dismiss(animated: false)
+                    return
+                }
             } else {
                 confirmAction.setValue("\(remainingSeconds)", forKey: "title")
             }
