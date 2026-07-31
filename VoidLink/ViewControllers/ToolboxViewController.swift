@@ -18,7 +18,7 @@ import UIKit
 }
 
 
-@objc public class ToolboxViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate {
+@objc public class ToolboxViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate, WidgetPickerViewControllerDelegate {
     
     @objc weak var specialEntryDelegate: ToolboxSpecialEntryDelegate?
     public let tableView = UITableView()
@@ -34,12 +34,12 @@ import UIKit
 
     @objc public var specialEntries : NSMutableArray = ["widgetSwitchTool", "widgetLayoutTool", "bringUpSoftKeyboard", "enterPip", "toggleStatsOverlay", "disconnectAndQuitApp"]
     private let specialEntryAliasDic : [String:String] = [
-        "widgetSwitchTool":SwiftLocalizationHelper.localizedString(forKey: "[ Switch on-screen widget profile ]"),
-        "widgetLayoutTool":SwiftLocalizationHelper.localizedString(forKey: "[ On-screen widget tool ]"),
-        "bringUpSoftKeyboard":SwiftLocalizationHelper.localizedString(forKey: "[ Bring up soft keyboard ]"),
-        "enterPip":SwiftLocalizationHelper.localizedString(forKey: "[ Enter picture-in-picture mode ]"),
-        "toggleStatsOverlay":SwiftLocalizationHelper.localizedString(forKey: "[ Toggle stats overlay ]"),
-        "disconnectAndQuitApp":SwiftLocalizationHelper.localizedString(forKey: "[ Disconnect & quit app ]")
+        "widgetSwitchTool":LocalizationHelper.localizedString(forKey: "[ Switch game profile ]"),
+        "widgetLayoutTool":LocalizationHelper.localizedString(forKey: "[ Edit on-screen widget layout ]"),
+        "bringUpSoftKeyboard":LocalizationHelper.localizedString(forKey: "[ Bring up soft keyboard ]"),
+        "enterPip":LocalizationHelper.localizedString(forKey: "[ Enter picture-in-picture mode ]"),
+        "toggleStatsOverlay":LocalizationHelper.localizedString(forKey: "[ Toggle stats overlay ]"),
+        "disconnectAndQuitApp":LocalizationHelper.localizedString(forKey: "[ Disconnect & quit app ]")
     ]
     
     private var viewPinned: Bool = false
@@ -83,6 +83,19 @@ import UIKit
         //setupConstraints()
     }
 
+    public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now()+0.2) {
+            self.pinButton.isHidden = !GenericUtils.viewIsLandscape(self.view) && GenericUtils.isIPhone()
+        }
+        
+        view.setNeedsUpdateConstraints()
+        coordinator.animate(alongsideTransition: { _ in
+            self.view.layoutIfNeeded()
+        })
+    }
+
     private func setupViews() {
         contentView = UIView(frame: self.view.frame)
                 
@@ -91,7 +104,7 @@ import UIKit
         contentView.layer.masksToBounds = true
         
         // Set up the title label
-        titleLabel.text = SwiftLocalizationHelper.localizedString(forKey: "Toolbox")
+        titleLabel.text = LocalizationHelper.localizedString(forKey: "Toolbox")
         titleLabel.font = UIFont.boldSystemFont(ofSize: 20)  // Adjust font size as needed
         titleLabel.textColor = UIColor.white  // Adjust color as needed
         titleLabel.textAlignment = .center
@@ -111,10 +124,10 @@ import UIKit
         
         tableView.separatorInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         // Configure buttons
-        addButton.setTitle(SwiftLocalizationHelper.localizedString(forKey: "Add / Duplicate"), for: .normal)
-        deleteButton.setTitle(SwiftLocalizationHelper.localizedString(forKey: "Delete"), for: .normal)
-        editButton.setTitle(SwiftLocalizationHelper.localizedString(forKey: "Edit"), for: .normal)
-        exitButton.setTitle(SwiftLocalizationHelper.localizedString(forKey: "Exit"), for: .normal)
+        addButton.setTitle(LocalizationHelper.localizedString(forKey: "Add"), for: .normal)
+        deleteButton.setTitle(LocalizationHelper.localizedString(forKey: "Delete"), for: .normal)
+        editButton.setTitle(LocalizationHelper.localizedString(forKey: "Edit"), for: .normal)
+        exitButton.setTitle(LocalizationHelper.localizedString(forKey: "Exit"), for: .normal)
         pinButton.setTitle("📌", for: .normal)
         addButton.titleLabel?.font = UIFont.systemFont(ofSize: 20) // Adjust the size as needed
         deleteButton.titleLabel?.font = UIFont.systemFont(ofSize: 20)
@@ -129,6 +142,7 @@ import UIKit
         contentView.addSubview(editButton)
         // contentView.addSubview(exitButton)
         contentView.addSubview(pinButton)
+        pinButton.isHidden = !GenericUtils.isLandscape()
         
         self.view.addSubview(contentView)
         
@@ -149,6 +163,18 @@ import UIKit
     private func isIPhone()->Bool {
         return UIDevice.current.userInterfaceIdiom == .phone
     }
+
+    private func contentWidthMultiplier() -> CGFloat {
+        /*
+        if isIPhone() && GenericUtils.viewIsLandscape(self.view) {
+            return 0.85
+        }*/
+
+        return isIPhone()
+                ? (GenericUtils.viewIsLandscape(self.view) ?  0.6 : 0.85)
+                : (GenericUtils.viewIsLandscape(self.view) ?  0.6 : 0.85)
+    }
+    
     
     @objc public func setupConstraints() {
                 
@@ -167,7 +193,7 @@ import UIKit
         NSLayoutConstraint.activate([
             
             // Set the width and height of the view
-            contentView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: isIPhone() ? 0.6 : 0.52),
+            contentView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: contentWidthMultiplier()),
             contentView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.93),
             // Set the width and height of the view
             //view.leadingAnchor.constraint(equalTo: view.superview!.leadingAnchor, constant: 60),
@@ -218,8 +244,8 @@ import UIKit
     private func updateEditingMode() {
         addButton.isEnabled = isEditingMode
         deleteButton.isEnabled = isEditingMode
-        if(isEditingMode){ editButton.setTitle(SwiftLocalizationHelper.localizedString(forKey: "Done"), for: .normal) }
-        else{ editButton.setTitle(SwiftLocalizationHelper.localizedString(forKey: "Edit"), for: .normal) }
+        if(isEditingMode){ editButton.setTitle(LocalizationHelper.localizedString(forKey: "Done"), for: .normal) }
+        else{ editButton.setTitle(LocalizationHelper.localizedString(forKey: "Edit"), for: .normal) }
     }
     
     @objc private func pinButtonTapped() {
@@ -231,49 +257,72 @@ import UIKit
             pinButton.backgroundColor = .clear
         }
     }
-    
-    @objc private func addButtonTapped() {
-        let previouslySelectedIndexPath = tableView.indexPathForSelectedRow //memorize selected indexpath
-        let alert = UIAlertController(title: SwiftLocalizationHelper.localizedString(forKey: "New Command"), message: SwiftLocalizationHelper.localizedString(forKey: "Enter a new command and alias"), preferredStyle: .alert)
-        alert.addTextField { $0.placeholder = SwiftLocalizationHelper.localizedString(forKey:"Command") }
-        alert.addTextField { $0.placeholder = SwiftLocalizationHelper.localizedString(forKey: "Alias (optional)") }
-        alert.textFields?[0].keyboardType = .asciiCapable
-        alert.textFields?[0].autocorrectionType = .no
-        alert.textFields?[0].spellCheckingType = .no
-        alert.textFields?[1].keyboardType = .default
-        alert.textFields?[1].autocorrectionType = .no
-        alert.textFields?[1].spellCheckingType = .no
 
-        let submitAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey: "Add"), style: .default) { [unowned alert] _ in
-            let keyboardCmdString = alert.textFields?[0].text ?? ""
-            let alias = alert.textFields?[1].text ?? keyboardCmdString
-            let newCommand = RemoteCommand(cmdString: keyboardCmdString, alias: alias)
-            let addCommandSuceeded = CommandManager.shared.addCommand(newCommand)
-            //self.reloadTableView() // don't know why but this reload has to be called from the CommandManager, it doesn't work here.
+    @available(iOS 13.0, *)
+    public func widgetPickerViewController(_ controller: WidgetPickerViewController, didCreateWidget payload: NSDictionary) {
+        createEntry(cmdString: payload["cmdString"] as? String, alias: payload["buttonLabel"] as? String)
+    }
+    
+    private func createEntry(cmdString: String?, alias: String?){
+        
+        let cmdString = cmdString ?? ""
+        let alias = alias ?? cmdString
+        let previouslySelectedIndexPath = tableView.indexPathForSelectedRow //memorize selected indexpath
+        
+        let newCommand = RemoteCommand(cmdString: cmdString, alias: alias)
+        let addCommandSuceeded = CommandManager.shared.addCommand(newCommand)
+        //self.reloadTableView() // don't know why but this reload has to be called from the CommandManager, it doesn't work here.
+        
+        //if previouslySelectedIndexPath == nil { return }
+        if addCommandSuceeded {
+            let lastRow = self.tableView.numberOfRows(inSection: 0) - 1  //for now there's only 1 section for the tableview, just use setion 0
+            let newEntryIndexPath = IndexPath(row: lastRow, section: 0)
+            self.tableView.selectRow(at: newEntryIndexPath, animated: true, scrollPosition: .middle) // shift the highlight to the newly added entry
+        }
+        else {
+            self.tableView.selectRow(at: previouslySelectedIndexPath, animated: true, scrollPosition: .middle) // keep the highlight on the previous entry if failed to add command
+        }
+    }
+
+    @objc private func addButtonTapped() {
+        if #available(iOS 13.0, *) {
+            let pickerViewController = WidgetPickerViewController()
+            pickerViewController.delegate = (self as WidgetPickerViewControllerDelegate)
+            pickerViewController.keyboardPickerMode = .shortcutPicker
+            pickerViewController.shortcutPickerNeedAlias = true
+            pickerViewController.tabIdentifiers = ["keyboard", "shortcuts"]
+            pickerViewController.initialTabIdentifier = "keyboard"
+            pickerViewController.presentOverFullScreen(from: self)
+            return
+        }
+        else{
+            let alert = UIAlertController(title: LocalizationHelper.localizedString(forKey: "New Command"), message: LocalizationHelper.localizedString(forKey: "Enter a new command and alias"), preferredStyle: .alert)
+            alert.addTextField { $0.placeholder = LocalizationHelper.localizedString(forKey:"Command") }
+            alert.addTextField { $0.placeholder = LocalizationHelper.localizedString(forKey: "Alias (optional)") }
+            alert.textFields?[0].keyboardType = .asciiCapable
+            alert.textFields?[0].autocorrectionType = .no
+            alert.textFields?[0].spellCheckingType = .no
+            alert.textFields?[1].keyboardType = .default
+            alert.textFields?[1].autocorrectionType = .no
+            alert.textFields?[1].spellCheckingType = .no
             
-            //if previouslySelectedIndexPath == nil { return }
-            if addCommandSuceeded {
-                let lastRow = self.tableView.numberOfRows(inSection: 0) - 1  //for now there's only 1 section for the tableview, just use setion 0
-                let newEntryIndexPath = IndexPath(row: lastRow, section: 0)
-                self.tableView.selectRow(at: newEntryIndexPath, animated: true, scrollPosition: .middle) // shift the highlight to the newly added entry
+            let submitAction = UIAlertAction(title: LocalizationHelper.localizedString(forKey: "Add"), style: .default) { [unowned alert] _ in
+                self.createEntry(cmdString: alert.textFields?[0].text ?? "", alias: alert.textFields?[1].text)
             }
-            else {
-                self.tableView.selectRow(at: previouslySelectedIndexPath, animated: true, scrollPosition: .middle) // keep the highlight on the previous entry if failed to add command
+            
+            let cancelAction = UIAlertAction(title: LocalizationHelper.localizedString(forKey:"Cancel"), style: .cancel)
+            alert.addAction(submitAction)
+            alert.addAction(cancelAction)
+            
+            if let selectedIndexPath = self.tableView.indexPathForSelectedRow {
+                if isSpecialEntrySelected() {return}
+                let selectedCommand = CommandManager.shared.getAllCommands()[selectedIndexPath.row-specialEntries.count]
+                alert.textFields?[0].text = selectedCommand.cmdString // load selected keyboard cmd string
+                //alert.textFields?[1].text = selectedCommand.alias // leave the alias input field empty
             }
+            
+            self.present(alert, animated: true)
         }
-        
-        let cancelAction = UIAlertAction(title: SwiftLocalizationHelper.localizedString(forKey:"Cancel"), style: .cancel)
-        alert.addAction(submitAction)
-        alert.addAction(cancelAction)
-        
-        if let selectedIndexPath = self.tableView.indexPathForSelectedRow {
-            if isSpecialEntrySelected() {return}
-            let selectedCommand = CommandManager.shared.getAllCommands()[selectedIndexPath.row-specialEntries.count]
-            alert.textFields?[0].text = selectedCommand.cmdString // load selected keyboard cmd string
-            //alert.textFields?[1].text = selectedCommand.alias // leave the alias input field empty
-        }
-        
-        self.present(alert, animated: true)
     }
     
     
@@ -344,7 +393,7 @@ import UIKit
         }
         else {
             let command = CommandManager.shared.getAllCommands()[indexPath.row-specialEntries.count]
-            cell.textLabel?.text = command.alias
+            cell.textLabel?.text = LocalizationHelper.localizedString(forKey: command.alias) 
         }
         return cell
     }

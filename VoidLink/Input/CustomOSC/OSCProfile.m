@@ -34,6 +34,8 @@
     [encoder encodeInt32:self.unfoldedExclusiveFolderSequence forKey:@"unfoldedExclusiveFolderSequence"];
     [encoder encodeObject:self.postExclusiveUnfoldedSequences forKey:@"postExclusiveUnfoldedSequences"];
     [encoder encodeBool:self.isSelected forKey:@"isSelected"];
+    [encoder encodeBool:self.useBuiltinGyro forKey:@"useBuiltinGyro"];
+    [encoder encodeBool:self.swapYawAndRoll forKey:@"swapYawAndRoll"];
     [encoder encodeInt64:self.mapGyroTo forKey:@"mapGyroTo"];
     [encoder encodeBool:self.yawPitchToRightStick forKey:@"yawPitchToRightStick"];
     [encoder encodeBool:self.rollToLeftStick forKey:@"rollToLeftStick"];
@@ -51,6 +53,13 @@
     [encoder encodeBool:self.reverseGyroHoldButton forKey:@"reverseGyroHoldButton"];
     [encoder encodeInt:self.controllerGyroSwitchHold forKey:@"controllerGyroSwitchHold"];
     [encoder encodeInt:self.controllerGyroSwitchToggle forKey:@"controllerGyroSwitchToggle"];
+    [encoder encodeFloat:self.pointerVelocityModeDivider forKey:@"pointerVelocityModeDivider"];
+    [encoder encodeInt:self.touchMode forKey:@"touchMode"];
+    [encoder encodeFloat:self.touchPointerVelocityFactor forKey:@"touchPointerVelocityFactor"];
+    [encoder encodeCGPoint:self.normalizedStreamViewOffset forKey:@"normalizedStreamViewOffset"];
+    [encoder encodeFloat:self.streamViewScale forKey:@"streamViewScale"];
+    [encoder encodeBool:self.gamepadOverlayEnabled forKey:@"gamepadOverlayEnabled"];
+    
     [encoder encodeObject:self.pressureCurvePoints forKey:@"pressureCurvePoints"];
     // [encoder encodeObject:self.initialTouchPressureCurvePoints forKey:@"initialTouchPressureCurvePoints"];
     [encoder encodeInt:self.phase1StrokeSampleIndexEnd forKey:@"phase1StrokeSampleIndexEnd"];
@@ -95,6 +104,8 @@
                                     forKey:@"postExclusiveUnfoldedSequences"] :
             [NSSet set];
         self.isSelected = [decoder decodeBoolForKey:@"isSelected"];
+        self.useBuiltinGyro = [decoder containsValueForKey:@"useBuiltinGyro"] ? [decoder decodeBoolForKey:@"useBuiltinGyro"] : true;
+        self.swapYawAndRoll = [decoder containsValueForKey:@"swapYawAndRoll"] ? [decoder decodeBoolForKey:@"swapYawAndRoll"] : false;
         self.mapGyroTo = [decoder containsValueForKey:@"mapGyroTo"] ? [decoder decodeInt64ForKey:@"mapGyroTo"] : mapGyroToMouse;
         self.yawPitchToRightStick = [decoder containsValueForKey:@"yawPitchToRightStick"] ? [decoder decodeBoolForKey:@"yawPitchToRightStick"] : true;
         self.rollToLeftStick = [decoder containsValueForKey:@"rollToLeftStick"] ? [decoder decodeBoolForKey:@"rollToLeftStick"] : false;
@@ -113,6 +124,17 @@
         self.controllerGyroSwitchHold = [decoder containsValueForKey:@"controllerGyroSwitchHold"] ? [decoder decodeIntForKey:@"controllerGyroSwitchHold"] : ControllerButtonNull;
         self.controllerGyroSwitchToggle = [decoder containsValueForKey:@"controllerGyroSwitchToggle"] ? [decoder decodeIntForKey:@"controllerGyroSwitchToggle"] : ControllerButtonNull;
         
+        self.touchMode = [decoder containsValueForKey:@"touchMode"] ? [decoder decodeIntForKey:@"touchMode"] : NativeTouch;
+        if(self.touchMode == NativeTouchOnly) self.touchMode = NativeTouch;
+        
+        self.pointerVelocityModeDivider = [decoder containsValueForKey:@"pointerVelocityModeDivider"] ? [decoder decodeFloatForKey:@"pointerVelocityModeDivider"] : 0.5;
+        self.touchPointerVelocityFactor = [decoder containsValueForKey:@"touchPointerVelocityFactor"] ? [decoder decodeFloatForKey:@"touchPointerVelocityFactor"] : 1.0;
+        
+        self.normalizedStreamViewOffset = [decoder containsValueForKey:@"normalizedStreamViewOffset"] ? [decoder decodeCGPointForKey:@"normalizedStreamViewOffset"] : CGPointZero;
+        self.streamViewScale = [decoder containsValueForKey:@"streamViewScale"] ? [decoder decodeFloatForKey:@"streamViewScale"] : 1.0;
+        
+        self.gamepadOverlayEnabled = [decoder containsValueForKey:@"gamepadOverlayEnabled"] ? [decoder decodeBoolForKey:@"gamepadOverlayEnabled"] : false;
+
         self.pressureCurvePoints =
             [decoder containsValueForKey:@"pressureCurvePoints"]
             ? [decoder decodeObjectOfClasses:
@@ -192,6 +214,8 @@
     copy.unfoldedExclusiveFolderSequence = self.unfoldedExclusiveFolderSequence;
     copy.postExclusiveUnfoldedSequences = [self.postExclusiveUnfoldedSequences copy];
     copy.isSelected = self.isSelected;
+    copy.useBuiltinGyro = self.useBuiltinGyro;
+    copy.swapYawAndRoll = self.swapYawAndRoll;
     copy.mapGyroTo = self.mapGyroTo;
     copy.yawPitchToRightStick = self.yawPitchToRightStick;
     copy.rollToLeftStick = self.rollToLeftStick;
@@ -209,6 +233,12 @@
     copy.reverseGyroHoldButton = self.reverseGyroHoldButton;
     copy.controllerGyroSwitchHold = self.controllerGyroSwitchHold;
     copy.controllerGyroSwitchToggle = self.controllerGyroSwitchToggle;
+    copy.touchMode = self.touchMode;
+    copy.pointerVelocityModeDivider = self.pointerVelocityModeDivider;
+    copy.touchPointerVelocityFactor = self.touchPointerVelocityFactor;
+    copy.normalizedStreamViewOffset = self.normalizedStreamViewOffset;
+    copy.streamViewScale = self.streamViewScale;
+    copy.gamepadOverlayEnabled = self.gamepadOverlayEnabled;
     copy.pressureCurvePoints = [[NSMutableArray alloc] initWithArray:self.pressureCurvePoints copyItems:YES];
     // copy.initialTouchPressureCurvePoints = [[NSMutableArray alloc] initWithArray:self.initialTouchPressureCurvePoints copyItems:YES];
     copy.phase1StrokeSampleIndexEnd = self.phase1StrokeSampleIndexEnd;

@@ -11,12 +11,16 @@
 
 #import <UIKit/UIKit.h>
 #import "AppDelegate.h"
-#import "CustomOSCViewControl/LayoutOnScreenControlsViewController.h"
 #import "MainFrameViewController.h"
 #import "CustomEdgeSlideGestureRecognizer.h"
 #import "MenuSectionView.h"
 
-@interface SettingsViewController : UIViewController <RearNavigationBarMenuDelegate, MenuSectionDelegate, MicHandlerDelegate, UITextFieldDelegate>
+@class LayoutOnScreenControlsViewController;
+@class MicHandler;
+@class WidgetPickerViewController;
+@protocol WidgetPickerViewControllerDelegate;
+
+@interface SettingsViewController : UIViewController <RearNavigationBarMenuDelegate, MenuSectionDelegate, UITextFieldDelegate, WidgetPickerViewControllerDelegate>
 
 @property (strong, nonatomic) IBOutlet UINavigationBar *navigationBar;
 @property (strong, nonatomic) UIStackView *parentStack;
@@ -149,11 +153,19 @@
 @property (strong, nonatomic) IBOutlet UIStackView *rememberFoldStateStack;
 @property (strong, nonatomic) IBOutlet UISwitch *rememberFoldStateSwitch;
 
+@property (weak, nonatomic) IBOutlet UIStackView *gyroSourceStack;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *gyroSourceSelector;
+
+@property (weak, nonatomic) IBOutlet UIStackView *swapYawAndRollStack;
+@property (weak, nonatomic) IBOutlet UISwitch *swapYawAndRollSwitch;
+
 @property (strong, nonatomic) IBOutlet UIStackView *mapGyroToStack;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *mapGyroToSelector;
 
 @property (strong, nonatomic) IBOutlet UIStackView *gyroToStickSwitchStack;
+@property (weak, nonatomic) IBOutlet UIStackView *yawPitchToRightStickStack;
 @property (strong, nonatomic) IBOutlet UISwitch *yawPitchToRightStickSwitch;
+@property (weak, nonatomic) IBOutlet UIStackView *rollToLeftStickStack;
 @property (strong, nonatomic) IBOutlet UISwitch *rollToLeftStickSwitch;
 
 @property (strong, nonatomic) IBOutlet UIStackView *yawPitchSensitivityStack;
@@ -258,8 +270,10 @@
 @property (weak, nonatomic) IBOutlet UIStackView *trackTouchPointStack;
 @property (weak, nonatomic) IBOutlet UISwitch *trackTouchPointSwitch;
 
-@property (strong, nonatomic) IBOutlet UIStackView *testStack;
+@property (weak, nonatomic) IBOutlet UIStackView *globeAsEscapeStack;
+@property (weak, nonatomic) IBOutlet UISwitch *globeAsEscapeSwitch;
 
+@property (strong, nonatomic) IBOutlet UIStackView *testStack;
 
 @property (nonatomic, strong) MicHandler *micHandler;
 
@@ -305,5 +319,6 @@
 - (void)hideDynamicLabelsWhenOverlapped:(UIView* )view;
 - (void)setHidden:(BOOL)hidden forStack:(UIStackView* )stack;
 - (void)updateCodecDependentSwitches;
+- (void)mainFrameGameProfileButtonTapped;
 
 @end

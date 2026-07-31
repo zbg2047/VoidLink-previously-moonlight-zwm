@@ -30,6 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) int16_t sequence;
 @property (nonatomic, assign) int16_t parentSequence;
 @property NSSet *sequenceSet;
+@property (nonatomic, assign) int16_t autoDockTimer;
+@property (nonatomic, assign) CGFloat dockedAlpha;
+
 @property CGPoint position;
 @property (nonatomic, assign) BOOL isHidden;
 @property (nonatomic, assign) uint8_t buttonMode;
@@ -48,6 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) CGFloat rollFactor; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat decelerationRateX; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat decelerationRateY; // for OnScreenWidgetView
+@property (nonatomic, assign) bool touchPointAnchored;
 @property (nonatomic, assign) CGFloat stickIndicatorOffset; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat walkModeThreshold; // for OnScreenWidgetView
 @property (nonatomic, assign) CGFloat minStickOffset; // for OnScreenWidgetView
@@ -60,7 +64,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) CGFloat highlightAlpha;
 @property (nonatomic, assign) uint8_t vibrationStyle;
 @property (nonatomic, assign) uint8_t mouseButtonAction;
+@property (nonatomic, assign) bool animatesTransition;
 @property (nonatomic, assign) uint16_t autoTapInterval;
+@property (nonatomic, assign) uint32_t autoTapRepeats;
+
+@property (nonatomic, assign) uint8_t walkKeyActionType;
+@property (nonatomic, assign) CGFloat walkKeyThreshold;
+@property (nonatomic, assign) uint8_t sprintKeyActionType;
+@property (nonatomic, assign) CGFloat sprintKeyThreshold;
+
 
 // @property (nonatomic, assign) BOOL hasValidPosition;
 

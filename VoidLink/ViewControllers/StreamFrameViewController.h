@@ -15,19 +15,20 @@
 #import "MetalViewController.h"
 #import "StreamConfiguration.h"
 #import "StreamView.h"
-#import "LayoutOnScreenControlsViewController.h"
 #import "MainFrameViewController.h"
 #import "StreamManager.h"
 
 #import <AVKit/AVKit.h>
 #import <UIKit/UIKit.h>
 
+@class LayoutOnScreenControlsViewController;
+
 #if TARGET_OS_TV
 @import GameController;
 
 @interface StreamFrameViewController : GCEventViewController <ConnectionCallbacks, ControllerSupportDelegate, UserInteractionDelegate, UIScrollViewDelegate, AVPictureInPictureControllerDelegate>
 #else
-@interface StreamFrameViewController : UIViewController <ConnectionCallbacks, ControllerSupportDelegate, UserInteractionDelegate, UIScrollViewDelegate, ToolboxSpecialEntryDelegate, AVPictureInPictureControllerDelegate, OnScreenFunctionalButtonDelegate>
+@interface StreamFrameViewController : UIViewController <ConnectionCallbacks, ControllerSupportDelegate, UserInteractionDelegate, UIScrollViewDelegate, ToolboxSpecialEntryDelegate, AVPictureInPictureControllerDelegate, OnScreenFunctionalWidgetDelegate, AbstractGamepadOverlayCloseButtonDelegate>
 
 #endif
 @property (nonatomic, strong) StreamManager* streamMan;
@@ -40,11 +41,21 @@
 
 @property (nonatomic, strong) MetalViewController *metalViewController;
 @property (nonatomic, strong) ImGuiRenderer *imguiView;
+@property (nonatomic, strong) UIView* virtualGamepadOverlay;
+@property (nonatomic, strong) UIScrollView* scrollView;
+
+@property (nonatomic, assign) CGPoint streamViewMagnifierContentOffset;
+@property (nonatomic, assign) CGFloat streamViewMagnifierZoomScale;
+
 
 
 - (void)updatePreferredDisplayMode:(BOOL)streamActive;
 - (void)setUserInteractionEnabledForStreamView:(bool)enabled;
 - (bool)shallDisableGyroHotSwitch;
 - (void)loadGameProfileConfigs:(OSCProfile* )profile;
+- (void)toggleGamepadOverlayWithOverlayEnabled:(BOOL)overlayEnabled API_AVAILABLE(ios(13.0));
+- (void)loadAbstractGamepadOverlayIfNeeded API_AVAILABLE(ios(13.0));
+- (void)restorePersistedStreamViewOffsetAndScaleWithProfile:(OSCProfile* )profile;
+- (void)updateMagnifierViewportMetrics;
 
 @end

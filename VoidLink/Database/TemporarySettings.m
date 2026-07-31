@@ -140,6 +140,9 @@
     self.gyroBiasX = settings.gyroBiasX;
     self.gyroBiasY = settings.gyroBiasY;
     self.gyroBiasZ = settings.gyroBiasZ;
+    self.controllerGyroBiasX = settings.controllerGyroBiasX;
+    self.controllerGyroBiasY = settings.controllerGyroBiasY;
+    self.controllerGyroBiasZ = settings.controllerGyroBiasZ;
     self.singleTapSensitivity = settings.singleTapSensitivity;
     self.backgroundSessionTimer = settings.backroundSessionTimer;
     self.edgeSlidingSensitivity = settings.edgeSlidingSensitivity;
@@ -165,7 +168,7 @@
     self.controllerMouseStick = settings.controllerMouseStick;
     self.controllerMousePointerVelocity = settings.controllerMousePointerVelocity;
     self.controllerMouseExpo = settings.controllerMouseExpo;
-    
+    self.globeAsEscape = settings.globeAsEscape;
     
     // Pencil settings:
     self.pencilTickMode = settings.pencilTickMode;

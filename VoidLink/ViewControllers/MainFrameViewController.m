@@ -80,6 +80,7 @@
     
     id _controllerConnectObserver;
     id _controllerDisconnectObserver;
+    UIView* _debugGamepadOverlay;
 
 
 #if TARGET_OS_TV
@@ -786,6 +787,12 @@ static NSMutableSet* hostList;
 }
 
 - (void) prepareToStreamApp:(TemporaryApp *)app {
+    
+    self.navigationController.navigationBar.hidden = true;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        self.navigationController.navigationBar.hidden = false;
+    });
+    
     launchedApp = app;
     [self updateResolutionAccordingly];
     self.revealViewController.isStreaming = true; // tell the revealViewController streaming is started.
@@ -1159,6 +1166,59 @@ static NSMutableSet* hostList;
     }
 }
 
+- (void)profilesButtonTapped {
+    if([GenericUtils isFirstTappingGameProfileSelectorFromMainFrame]){
+        
+        DataManager* dataMan = [[DataManager alloc] init];
+        Settings* settings = [dataMan retrieveSettings];
+
+        
+        NSString* edgeSide = settings.slideToSettingsScreenEdge.intValue != UIRectEdgeLeft ? [LocalizationHelper localizedStringForKey:@"left"] : [LocalizationHelper localizedStringForKey:@"right"];
+        NSString* slideDist = [NSString stringWithFormat:@"%d%%", (int)(settings.slideToSettingsDistance.floatValue*100)];
+
+        [AlertControllerUtil showAlertIn:self
+                                        title:[LocalizationHelper localizedStringForKey:@"Game Profile"]
+                                      message:[LocalizationHelper localizedStringForKey:@"gameProfileIntroduction", edgeSide, slideDist]
+                                   withCancel:NO
+                                  buttonTitle:[LocalizationHelper localizedStringForKey:@"Got it!"]
+                                    countdown:6
+                                       action:^{}
+                                   completion:^{
+            [self openGameProfileSeletor];
+        }];
+    }
+    else [self openGameProfileSeletor];
+}
+
+- (void)openGameProfileSeletor{
+    if(settingsViewController){
+        [settingsViewController mainFrameGameProfileButtonTapped];
+        return;
+    }
+    
+    LayoutOnScreenControlsViewController* layoutToolVC;
+    BOOL isIPhone = ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
+    if (isIPhone) {
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"iPhone" bundle:nil];
+        layoutToolVC = [storyboard instantiateViewControllerWithIdentifier:@"LayoutOnScreenControlsViewController"];
+    }
+    else {
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"iPad" bundle:nil];
+        layoutToolVC = [storyboard instantiateViewControllerWithIdentifier:@"LayoutOnScreenControlsViewController"];
+        layoutToolVC.modalPresentationStyle = UIModalPresentationFullScreen;
+    }
+    layoutToolVC.view.backgroundColor = UIColor.clearColor;
+    layoutToolVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    
+    
+    layoutToolVC.profileTableLoadingMode = OSCProfilesTableViewLoadingModeSelectProfileFromMainFrame;
+    layoutToolVC.toolbarStackView.hidden = true;
+    layoutToolVC.toolbarRootView.hidden = true;
+    [self presentViewController:layoutToolVC animated:NO completion:^{
+        [layoutToolVC presentProfilesTableViewWithLoadingMode:OSCProfilesTableViewLoadingModeSelectProfileFromMainFrame];
+    }];
+}
+
 // currently obselete:
 - (void) setNeedsUpdateAllowedOrientation{
     if (@available(iOS 16.0, *)) {
@@ -1173,7 +1233,11 @@ static NSMutableSet* hostList;
     revealController.navBarMenuDelegate = settingsViewController;
     _settingsViewExpanded = position != FrontViewPositionLeft;
     if (position == FrontViewPositionLeft) {
-        self.navigationItem.leftBarButtonItems = @[_settingsButton];
+       if (@available(iOS 26.0, *)) {
+            _settingsButton.sharesBackground = false;
+            _profilesButton.sharesBackground = false;
+        }
+        self.navigationItem.leftBarButtonItems = @[_settingsButton, _profilesButton];
         
         if(streamFrameViewController.streamMan){
             // NSLog(@"setNeedRequeuing %f", CACurrentMediaTime());
@@ -1185,7 +1249,7 @@ static NSMutableSet* hostList;
         }
     }
     else {
-        self.navigationItem.leftBarButtonItems = @[];
+        self.navigationItem.leftBarButtonItems = @[_profilesButton];
         [settingsViewController updateTheme];
     }
 
@@ -1204,8 +1268,8 @@ static NSMutableSet* hostList;
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.optimizeGamesStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.audioOnPcStack];
     [settingsViewController setHidden:_settingsExpandedInStreamView forStack:settingsViewController.sdrPerformanceWorkaroundStack];
-    [settingsViewController.touchModeSelector1 setEnabled:!_settingsExpandedInStreamView || !(settingsViewController.touchModeSelector1.selectedSegmentIndex == AbsoluteTouch && !settingsViewController.passthroughGesturesSwitch.isOn)];
-    [settingsViewController.touchModeSelector2 setEnabled:settingsViewController.touchModeSelector1.enabled];
+    // [settingsViewController.touchModeSelector1 setEnabled:!_settingsExpandedInStreamView || !(settingsViewController.touchModeSelector1.selectedSegmentIndex == AbsoluteTouch && !settingsViewController.passthroughGesturesSwitch.isOn)];
+    // [settingsViewController.touchModeSelector2 setEnabled:settingsViewController.touchModeSelector1.enabled];
     
     [settingsViewController.codecSelector setEnabled:!_settingsExpandedInStreamView];
     if(_settingsExpandedInStreamView){
@@ -1245,7 +1309,7 @@ static NSMutableSet* hostList;
     BOOL shouldEnableFramePacingSelector = !_settingsExpandedInStreamView && (settingsViewController.renderingBackendSelector.selectedSegmentIndex != RENDER_METAL);
     [settingsViewController.framePacingModeSelector setEnabled:shouldEnableFramePacingSelector];
     // [settingsViewController.frameTimebaseSwitch setEnabled:shouldEnableFramePacing];
-    [settingsViewController.asyncFrameDequeueSwitch setEnabled:shouldEnableFramePacingSelector && settingsViewController.framePacingModeSelector.selectedSegmentIndex == FramePacingModeQueue];
+    [settingsViewController.asyncFrameDequeueSwitch setEnabled:shouldEnableFramePacingSelector];
     [settingsViewController setHidden:_settingsExpandedInStreamView || !(shouldEnableFramePacingSelector && settingsViewController.framePacingModeSelector.selectedSegmentIndex == FramePacingModeQueue) forStack:settingsViewController.frameQueueSizeStack];
 
     // Disable mic switch if sunshine does not support mic redirection
@@ -1253,7 +1317,7 @@ static NSMutableSet* hostList;
     if(_settingsExpandedInStreamView && !streamFrameViewController.micStreamInitialized) [settingsViewController.redirectMicSwitch setOn:false];
     [settingsViewController setHidden:!settingsViewController.redirectMicSwitch.isOn forStack:settingsViewController.useBuiltinMicStack];
     [settingsViewController.useBuiltinMicSwitch setEnabled:!_settingsExpandedInStreamView];
-    [settingsViewController.passthroughGesturesSwitch setEnabled:!_settingsExpandedInStreamView];
+    // [settingsViewController.passthroughGesturesSwitch setEnabled:!_settingsExpandedInStreamView];
 }
 
 - (void)revealController:(SWRevealViewController *)revealController didMoveToPosition:(FrontViewPosition)position {
@@ -1551,7 +1615,39 @@ static NSMutableSet* hostList;
         [_settingsButton setTitle:[LocalizationHelper localizedStringForKey:@"Settings"]];
     }
 
+    [_profilesButton setTarget:self];
+    [_profilesButton setAction:@selector(profilesButtonTapped)];
+    if (@available(iOS 13.0, *)) {
+        [_profilesButton setTitle:nil];
+        
+        UIImageSymbolConfiguration *config;
+        UIImage *image;
+        if(GenericUtils.iOS18Available){
+            config = [UIImageSymbolConfiguration configurationWithPointSize:GenericUtils.liquidGlassEnabled ? 20.5 : 23 weight:UIImageSymbolWeightRegular ];
+            image = [[UIImage systemImageNamed: @"gamecontroller.circle" withConfiguration:config] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            [_profilesButton setImage:image];
+            _profilesButton.imageInsets = GenericUtils.liquidGlassEnabled ? UIEdgeInsetsMake(0, 0, 0, 0.55) : UIEdgeInsetsMake(10, 10, 0, 0);
+            if(GenericUtils.liquidGlassEnabled){
+                _profilesButton.tintColor = ThemeManager.appPrimaryColor;
+            }
+        }
+        else{
+            image = [[UIImage imageNamed: @"gamecontroller.circle.regular"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            [_profilesButton setImage:image];
+            _profilesButton.imageInsets = UIEdgeInsetsMake(-1.5, 0, -1.5, 0);
+            _profilesButton.tintColor = ThemeManager.appPrimaryColor;
+        }
+        
+        
+    } else {
+        [_profilesButton setTitle:[LocalizationHelper localizedStringForKey:@"Game Profile"]];
+    }
     
+    if (@available(iOS 26.0, *)) {
+         _settingsButton.sharesBackground = false;
+         _profilesButton.sharesBackground = false;
+     }
+
     
     
     // Set the host name button action. When it's tapped, it'll show the host selection view.
@@ -1627,7 +1723,7 @@ static NSMutableSet* hostList;
             settings.sdrPerformanceWorkaround = true;
             settings.framePacingMode = @(FramePacingModeQueue);
             settings.asyncFrameDequeue = false;
-            settings.touchMoveEventInterval = @(45);
+            settings.touchMoveEventInterval = @(0);
             break;
         case UIUserInterfaceIdiomPad:
         default:
@@ -1642,9 +1738,22 @@ static NSMutableSet* hostList;
     if([UIScreen mainScreen].maximumFramesPerSecond < 65) settings.framerate = @(60);
 
     // if([UIScreen mainScreen].maximumFramesPerSecond < 65) settings.touchMoveEventInterval = @(60);
-    
+    settings.onscreenControls = @(OnScreenControlsLevelCustom);
     settings.pencilTickIntervalUs = @(1750);
-    
+    settings.oscLayoutToolFingers = @(99);
+    settings.keyboardToggleFingers = @(99);
+
+    [dataMan saveData];
+}
+
+- (void)updatePartialSettings{
+    if(![GenericUtils needUpdatePartialSettings]) return;
+    DataManager* dataMan = [[DataManager alloc] init];
+    Settings* settings = [dataMan retrieveSettings];
+    settings.touchMoveEventInterval = @(0);
+    settings.localMousePointerMode = @(0);
+    if (@available(iOS 14.0, tvOS 14.0, *)) nil;
+    else settings.appTheme = @(UIUserInterfaceStyleDark);
     [dataMan saveData];
 }
 
@@ -1768,9 +1877,11 @@ static NSMutableSet* hostList;
     
     [self prewarmSoftKeyboard];
         
-    [IAPManager.shared fetchProducts];
-    
     [self changeDefaultSettings];
+    [self updatePartialSettings];
+    
+    [IAPManager.shared fetchProducts];
+    [GenericUtils handleAddOnProductPurchaseIntentFor:AddOnProductPencilProPack];
 
     /*
     if (@available(iOS 15.0, *)) {
@@ -2495,4 +2606,3 @@ static NSMutableSet* hostList;
 }
 
 @end
-

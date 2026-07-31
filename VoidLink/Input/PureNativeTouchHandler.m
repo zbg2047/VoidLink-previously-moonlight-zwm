@@ -47,11 +47,11 @@
     int64_t moveEventIntervalNSec;
 }
 
-- (id)initWithView:(StreamView*)view andSettings:(TemporarySettings*)settings{
+- (id)initWithView:(StreamView*)view settings:(TemporarySettings*)settings profile:(OSCProfile *)profile{
     self = [super init];
     self->streamView = view;
 
-    self->activateCoordSelector = settings.pointerVelocityModeDivider.floatValue != 1.0;
+    self->activateCoordSelector = profile.pointerVelocityModeDivider != 1.0;
     self->moveEventIntervalNSec =  (int64_t)(settings.touchMoveEventInterval.intValue * 1000);;
     self->streamViewBounds = view.bounds;
     
@@ -94,9 +94,9 @@
     slideGestureVerticalThreshold = CGRectGetHeight([[UIScreen mainScreen] bounds]) * 0.4;
     screenWidthWithThreshold = CGRectGetWidth([[UIScreen mainScreen] bounds]) - _edgeTolerance;
 
-    self->pointerVelocityDividerLocationByPoints = self->streamView.bounds.size.width * settings.pointerVelocityModeDivider.floatValue;
+    self->pointerVelocityDividerLocationByPoints = self->streamView.bounds.size.width * profile.pointerVelocityModeDivider;
     
-    [NativeTouchPointer initContextWithView:self->streamView andSettings:settings];
+    [NativeTouchPointer initContextWithView:self->streamView profile:profile];
     //_touchesCapturedByOnScreenButtons = [[NSMutableSet alloc] init];
     return self;
 }
@@ -193,7 +193,9 @@
 
 
 - (void)sendTouchEvent:(UITouch*)touch withTouchtype:(uint8_t)touchType{
-    //if(touchPointSpawnedAtUpperScreenEdge && touchType != LI_TOUCH_EVENT_UP) return; //  we're done here. this touch event will not be sent to the remote PC. and this must be checked after coord selector finishes populating new relative coords, or the app will crash
+    //if(touchPointSpawnedAtUpperScreenEdge && touchType != LI_TOUCH_EVENT_UP) return; //  we're done here. this touch event will not be sent to the remote PC. and this must be checked after coord selector finishes populating new relative coords, or the app will crash    
+    if(!touch) return;
+
     if([blacklistedTouches containsObject:@((uintptr_t)touch)]) return;
     
     CGPoint targetCoords;
@@ -208,7 +210,8 @@
     CGFloat normalizedY = location.y / videoSize.height;
     uint8_t pointerId = [self retrievePointerIdFromDict:touch];
 
-    if([self getPointerObjFromDict:touch].needResetCoords){ // access whether the current pointer has reached the boundary, and need a coord reset.
+    NativeTouchPointer *pointer = [self getPointerObjFromDict:touch];
+    if(pointer != nil && pointer.needResetCoords){ // access whether the current pointer has reached the boundary, and need a coord reset.
         LiSendTouchEvent(LI_TOUCH_EVENT_UP, pointerId, normalizedX, normalizedY, 0, 0, 0, 0);  //event must sent from the lowest level directy by LiSendTouchEvent to simulate continous dragging to another point on screen
         LiSendTouchEvent(LI_TOUCH_EVENT_DOWN, pointerId, 0.3, 0.4, 0, 0, 0, 0);
     }else LiSendTouchEvent(touchType, pointerId, normalizedX, normalizedY,(touch.force / touch.maximumPossibleForce) / sin(touch.altitudeAngle),0.0f, 0.0f,[self getRotationFromAzimuthAngle:[touch azimuthAngleInView:streamView]]);

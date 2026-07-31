@@ -18,7 +18,7 @@
     #import <CoreMotion/CoreMotion.h>
 #endif
 #import "OnScreenButtonState.h"
-#import "OSCProfilesManager.h"
+#import "VoidLink-Swift.h"
 #import "DataManager.h"
 
 #define UPDATE_BUTTON(x, y) (buttonFlags = \
@@ -77,6 +77,7 @@ static NSSet *validPositionButtonNames;
     BOOL _swapABXY;
     BOOL _visualFeedbackEnabled;
     BOOL _largerStickLR1;
+    BOOL _firstTapFromOsc;
     CGFloat _oscTapExlusionAreaSizeFactor;
     OSCProfilesManager *profilesManager;
     NSMutableDictionary *_activeCustomOscButtonPositionDict;
@@ -187,6 +188,10 @@ static float L3_Y;
 - (void) pressDownControllerButton: (int)flag{
     [_controllerSupport setButtonFlag:_controller flags:flag];
     [_controllerSupport updateFinished:_controller];
+    if(_firstTapFromOsc){
+        _firstTapFromOsc = false;
+        [_controllerSupport updateTimerStateForOsc];
+    }
 }
 
 - (void) releaseControllerButton: (int)flag{
@@ -300,6 +305,7 @@ static float L3_Y;
 
     _activeCustomOscButtonPositionDict = [[NSMutableDictionary alloc] init];
     touchesCapturedByOnScreenControls = [[NSMutableSet alloc] init];
+    _firstTapFromOsc = true;
     
     if(![self isKindOfClass:[LayoutOnScreenControls class]]) OnScreenControls.shared = self;
     
@@ -913,7 +919,7 @@ static float L3_Y;
                     [buttonLayer.name isEqualToString:@"rightButton"] ||
                     [buttonLayer.name isEqualToString:@"downButton"] ||
                     [buttonLayer.name isEqualToString:@"leftButton"]){
-                    // NSLog(@"layerName: %@, alpha: %f", buttonLayer.name, buttonStateDecoded.backgroundAlpha);
+                    // NSLog(@"layerName: %@, opacity: %f", buttonLayer.name, buttonStateDecoded.backgroundAlpha);
                     [self adjustControllerLayerOpacityWith:buttonLayer and:buttonStateDecoded.backgroundAlpha];
                 }
                 if([buttonLayer.name isEqualToString:@"leftStickBackground"]){
@@ -2050,7 +2056,7 @@ static float L3_Y;
     if (layer == self._rightStickBackground) {
         self._rightStick.opacity = targetAlpha;
         self._rightStickBackground.opacity = targetAlpha + 1.0f/6.0f;
-        NSLog(@"right stick init alpha: %f", targetAlpha);
+        NSLog(@"right stick init opacity: %f", targetAlpha);
     }
 
     if (layer == self._leftStickBackground){

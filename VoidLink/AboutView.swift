@@ -53,7 +53,7 @@ public struct AboutView: View {
             }
             
             // 说明文字
-            Text(SwiftLocalizationHelper.localizedString(forKey: "From the player community, to the player community."))
+            Text(LocalizationHelper.localizedString(forKey: "From the player community, to the player community."))
                 .multilineTextAlignment(.center)
                 .font(Font.caption.italic())
                 .lineLimit(nil)
@@ -61,31 +61,81 @@ public struct AboutView: View {
                 .padding()
 
             
-            Text(SwiftLocalizationHelper.localizedString(forKey: "VoidLink delivers better performance now!"))
+            Text(LocalizationHelper.localizedString(forKey: "VoidLink delivers better performance now!"))
                 .multilineTextAlignment(.center)
                 .font(Font.callout.bold())
                 .lineLimit(nil)
                 .frame(maxWidth: 570) // ✅ 避免 Text 被拉得太宽无法换行
+            
 
             // 链接按钮
             if #available(iOS 14.0, *) {
-                Link(SwiftLocalizationHelper.localizedString(forKey: "Learn more & join us"), destination: URL(string: SwiftLocalizationHelper.localizedString(forKey: "supportLink"))!)
-                    .padding(.top, 10)
-                Spacer()
-                // OK 按钮
-                Button(SwiftLocalizationHelper.localizedString(forKey: "OK")) {
-                    aboutVC.dismiss(animated:true)
+                
+                HStack(spacing: 20) {
+                    Link(LocalizationHelper.localizedString(forKey: "Learn more"), destination: URL(string: LocalizationHelper.localizedString(forKey: "supportLink"))!)
+
+                    if #available(iOS 16, *) {
+                        let languageCode = Locale.current.language.languageCode?.identifier
+                        if languageCode == "zh" {
+                            Link(LocalizationHelper.localizedString(forKey: "加入QQ群"), destination: URL(string: LocalizationHelper.localizedString(forKey: "https://qm.qq.com/q/uM51CYWLS2"))!)
+                        }
+                    }
+                    if GenericUtils.isIPhone() {
+                        Link(LocalizationHelper.localizedString(forKey: "joinCommunity"), destination: URL(string: LocalizationHelper.localizedString(forKey: "communityLink"))!)
+                    }
                 }
-                .padding()
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .frame(height: 46)
-                .cornerRadius(12)
+                .padding(.top, 10)
+                
+                if !GenericUtils.isIPhone() {
+                    Link(LocalizationHelper.localizedString(forKey: "joinCommunity"), destination: URL(string: LocalizationHelper.localizedString(forKey: "communityLink"))!)
+                }
+
+                HStack(spacing: 15) {
+                    if #available(iOS 15.0, *) {
+                        if GenericUtils.isIPad() {
+                            Button(LocalizationHelper.localizedString(forKey: "I'm an artist")) {
+                                IAPManager.checkPurchaseInfo(.PencilProPack) { info in
+                                    if !info.valid {
+                                        IAPManager.inAppPurchaseAction(viewController: self.aboutVC, product: .PencilProPack)
+                                    }
+                                    else {
+                                        AlertControllerUtil.showAlert(
+                                            in: self.aboutVC,
+                                            title: "",
+                                            message: LocalizationHelper.localizedString(forKey:"Drawing Toolkit already purchased"),
+                                            withCancel: false,
+                                            buttonTitle: LocalizationHelper.localizedString(forKey: "OK"),
+                                            countdown: 0)
+                                    }
+                                }
+                            }
+                            .padding()
+                            .background(Color.blue.opacity(1))
+                            .foregroundColor(.white)
+                            .frame(height: 46)
+                            .cornerRadius(12)
+                            .padding(.top, 10)
+                        }
+                    }
+                    
+                    // OK 按钮
+                    Button(LocalizationHelper.localizedString(forKey: "OK")) {
+                        aboutVC.dismiss(animated:true)
+                    }
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .frame(height: 46)
+                    .cornerRadius(12)
+                    .padding(.top, 10)
+                }
+                
+                
             } else {
                 HStack(spacing: 20) {
-                    Button(SwiftLocalizationHelper.localizedString(forKey: "Join us")) {
+                    Button(LocalizationHelper.localizedString(forKey: "Join us")) {
                         // 打开链接
-                        if let url = URL(string: SwiftLocalizationHelper.localizedString(forKey: "supportLink")) {
+                        if let url = URL(string: LocalizationHelper.localizedString(forKey: "supportLink")) {
                             UIApplication.shared.open(url)
                         }
                     }
@@ -96,7 +146,7 @@ public struct AboutView: View {
                     .frame(height: 33)
                     .frame(minWidth: 100)
                     /*
-                    Button(SwiftLocalizationHelper.localizedString(forKey: "OK")) {
+                    Button(LocalizationHelper.localizedString(forKey: "OK")) {
                         presentationMode.wrappedValue.dismiss()
                     }
                     .padding()
@@ -105,7 +155,7 @@ public struct AboutView: View {
                     .cornerRadius(12)
                     .frame(height: 33)
                     .frame(minWidth: 100)*/
-                    Button(SwiftLocalizationHelper.localizedString(forKey: "OK")) {
+                    Button(LocalizationHelper.localizedString(forKey: "OK")) {
                         aboutVC.dismiss(animated:true)
                     }
                     .padding()
