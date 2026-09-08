@@ -33,20 +33,69 @@ class ThemeManager: NSObject {
         _ = setPublicUIStyle()
         return _userInterfaceStyle
     }
+
+    @objc class func overrideUserInterfaceStyle() -> UIUserInterfaceStyle {
+        return _privateUserInterfaceStyle
+    }
     
     @objc class func setUserInterfaceStyle(_ style: UIUserInterfaceStyle) {
+        let oldUserInterfaceStyle = _userInterfaceStyle
         _privateUserInterfaceStyle = style
-        
-        if _userInterfaceStyle == style {
-            return
-        }
+        applyUserInterfaceStyleOverride(style)
         
         _ = setPublicUIStyle()
+
+        if oldUserInterfaceStyle == _userInterfaceStyle {
+            return
+        }
         
         NotificationCenter.default.post(
             name: Notification.Name(ThemeDidChangeNotification),
             object: nil
         )
+    }
+
+    @objc class func systemUserInterfaceStyleDidChange(_ style: UIUserInterfaceStyle) {
+        guard #available(iOS 13.0, *) else { return }
+
+        if _privateUserInterfaceStyle != .unspecified {
+            applyUserInterfaceStyleOverride(_privateUserInterfaceStyle)
+            return
+        }
+
+        let oldUserInterfaceStyle = _userInterfaceStyle
+        _userInterfaceStyle = style
+        applyUserInterfaceStyleOverride(.unspecified)
+
+        if oldUserInterfaceStyle == _userInterfaceStyle {
+            return
+        }
+
+        NotificationCenter.default.post(
+            name: Notification.Name(ThemeDidChangeNotification),
+            object: nil
+        )
+    }
+
+    @objc class func applyUserInterfaceStyleOverride(_ style: UIUserInterfaceStyle) {
+        guard #available(iOS 13.0, *) else { return }
+
+        let applyOverride = {
+            let sceneWindows = UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .flatMap { $0.windows }
+
+            let allWindows = sceneWindows + UIApplication.shared.windows
+            Set(allWindows).forEach { window in
+                window.overrideUserInterfaceStyle = style
+            }
+        }
+
+        if Thread.isMainThread {
+            applyOverride()
+        } else {
+            DispatchQueue.main.async(execute: applyOverride)
+        }
     }
     
     @objc static var menuBackgroundColor: UIColor {
@@ -148,7 +197,7 @@ class ThemeManager: NSObject {
         case .light:
             if #available(iOS 13.0, *) {
                 let lightTraits = UITraitCollection(userInterfaceStyle: .light)
-                return GenericUtils.liquidGlassEnabled ? legacySepratorColor : UIColor.separator.resolvedColor(with: lightTraits)
+                return PublicUtils.liquidGlassEnabled ? legacySepratorColor : UIColor.separator.resolvedColor(with: lightTraits)
             } else {
                 return UIColor(
                     red: 214.0/255.0,
@@ -160,7 +209,7 @@ class ThemeManager: NSObject {
         default:
             if #available(iOS 13.0, *) {
                 let darkTraits = UITraitCollection(userInterfaceStyle: .dark)
-                return GenericUtils.liquidGlassEnabled ? legacySepratorColor : UIColor.separator.resolvedColor(with: darkTraits)
+                return PublicUtils.liquidGlassEnabled ? legacySepratorColor : UIColor.separator.resolvedColor(with: darkTraits)
             } else {return UIColor(white: 0.28, alpha: 1)}
         }
     }

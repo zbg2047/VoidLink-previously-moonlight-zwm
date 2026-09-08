@@ -536,6 +536,35 @@
         }
       }
     },
+    "%.0f%% velocity" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.0f%% velocity"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.0f%% 移速缩放"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.0f%% 移速縮放"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.0f%% 移速縮放"
+          }
+        }
+      }
+    },
     "%@ is currently running" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -744,6 +773,35 @@
         }
       }
     },
+    "=brush" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brush"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "笔刷"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆刷"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆刷"
+          }
+        }
+      }
+    },
     "=brushShortcut" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -866,7 +924,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Close"
+            "value" : "Close Window"
           }
         },
         "zh-Hans" : {
@@ -1034,6 +1092,35 @@
         }
       }
     },
+    "=deselect" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deselect"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取消选择"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取消選取"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取消選取"
+          }
+        }
+      }
+    },
     "=desktop" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1088,6 +1175,64 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "停用單點觸控"
+          }
+        }
+      }
+    },
+    "=DisableSingleTouch" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🚫 SingleTouch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🚫 单指触摸"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🚫 單指觸摸"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🚫 單指觸摸"
+          }
+        }
+      }
+    },
+    "=disableTilt" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🚫 Tilt"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🚫 笔刷倾斜"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🚫 筆刷傾斜"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🚫 筆刷傾斜"
           }
         }
       }
@@ -1161,7 +1306,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "绘画"
           }
         },
@@ -1237,6 +1382,64 @@
         }
       }
     },
+    "=EnableSingleTouch" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🟢 SingleTouch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🟢 单指触摸"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🟢 單指觸摸"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "🟢 單指觸摸"
+          }
+        }
+      }
+    },
+    "=enableTilt" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🟢 Tilt"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🟢 笔刷倾斜"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🟢 筆刷傾斜"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🟢 筆刷傾斜"
+          }
+        }
+      }
+    },
     "=EnableTouch" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1291,6 +1494,35 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "子母畫面"
+          }
+        }
+      }
+    },
+    "=eraser" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eraser"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "橡皮擦"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "橡皮擦"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "橡皮擦"
           }
         }
       }
@@ -1451,7 +1683,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "功能键"
           }
         },
@@ -1552,6 +1784,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "🎮 疊加 開關"
+          }
+        }
+      }
+    },
+    "=groupLayers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Group Layers"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "组合图层"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "群組圖層"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "群組圖層"
           }
         }
       }
@@ -1846,6 +2107,35 @@
         }
       }
     },
+    "=labeledFolder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Labeled Folder"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "带标签的控件夹"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "帶標籤的控制項夾"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "帶標籤的控制項夾"
+          }
+        }
+      }
+    },
     "=lang" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1900,6 +2190,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "雷射"
+          }
+        }
+      }
+    },
+    "=lasso" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lasso"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "套索"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "套索"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "套索"
           }
         }
       }
@@ -2107,6 +2426,35 @@
         }
       }
     },
+    "=mergeLayers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Merge Layers"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "合并图层"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "合併圖層"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "合併圖層"
+          }
+        }
+      }
+    },
     "=mic" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2161,6 +2509,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最小化"
+          }
+        }
+      }
+    },
+    "=more" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "More"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "其他"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "其他"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "其他"
           }
         }
       }
@@ -2281,6 +2658,35 @@
         }
       }
     },
+    "=move" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Move"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移动"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移動"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移動"
+          }
+        }
+      }
+    },
     "=navigation" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2368,35 +2774,6 @@
         }
       }
     },
-    "=noSingleTouch" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "🚫SingleTouch"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "🚫单指触摸"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "🚫單指觸摸"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "🚫單指觸摸"
-          }
-        }
-      }
-    },
     "=null" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2461,25 +2838,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nvidia Rec"
+            "value" : "NVIDIA Recording"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "N卡录屏"
+            "value" : "NVIDIA 录屏"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "N卡錄影"
+            "value" : "NVIDIA 螢幕錄影"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "N卡錄影"
+            "value" : "NVIDIA 螢幕錄影"
           }
         }
       }
@@ -2490,25 +2867,54 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nvidia Shot"
+            "value" : "NVIDIA Screenshot"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "N卡截图"
+            "value" : "NVIDIA 截图"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "N卡截圖"
+            "value" : "NVIDIA 螢幕截圖"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "N卡截圖"
+            "value" : "NVIDIA 螢幕截圖"
+          }
+        }
+      }
+    },
+    "=paintBucket" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paint Bucket"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "油漆桶"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "油漆桶"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "油漆桶"
           }
         }
       }
@@ -2538,6 +2944,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "貼上"
+          }
+        }
+      }
+    },
+    "=pen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "钢笔"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "鋼筆"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "鋼筆"
           }
         }
       }
@@ -2770,6 +3205,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "版面清單"
+          }
+        }
+      }
+    },
+    "=projectDisplay" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Project Display"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "投影显示"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "投影顯示"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "投影顯示"
           }
         }
       }
@@ -3412,6 +3876,64 @@
         }
       }
     },
+    "=steamOverlay" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Steam Overlay"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Steam 覆盖层"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Steam 覆蓋介面"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Steam 覆蓋介面"
+          }
+        }
+      }
+    },
+    "=switchDesktop" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Switch to Desktop"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切换到桌面"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切換到桌面"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切換到桌面"
+          }
+        }
+      }
+    },
     "=switchWindow" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3524,6 +4046,151 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "工具箱"
+          }
+        }
+      }
+    },
+    "=toolboxDisconnectQuit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disconnect & Quit"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "断开并退出"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "斷線並退出"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "斷線並退出"
+          }
+        }
+      }
+    },
+    "=toolboxSoftKeyboard" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soft Keyboard"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "软键盘"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "軟體鍵盤"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "軟體鍵盤"
+          }
+        }
+      }
+    },
+    "=toolboxStatsOverlay" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stats Overlay"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "统计覆盖层"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "統計覆蓋層"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "統計覆蓋層"
+          }
+        }
+      }
+    },
+    "=toolboxSwitchProfile" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Switch Profile"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切换配置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切換配置"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切換配置"
+          }
+        }
+      }
+    },
+    "=toolboxWidgetLayout" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit Layout"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "编辑布局"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "編輯佈局"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "編輯佈局"
           }
         }
       }
@@ -3690,7 +4357,7 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "虛擬手把"
           }
         },
@@ -3800,20 +4467,49 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "修改布局"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "修改佈局"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "修改佈局"
+          }
+        }
+      }
+    },
+    "=xboxGameBar" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xbox Game Bar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xbox 游戏栏"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xbox 遊戲列"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xbox 遊戲列"
           }
         }
       }
@@ -3964,6 +4660,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "將建立一個帶有觸控板功能的按鍵"
+          }
+        }
+      }
+    },
+    "A folder whose collected buttons show command labels." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "收纳其中的按键会显示命令标签。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "收納其中的按鍵會顯示命令標籤。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "收納其中的按鍵會顯示命令標籤。"
           }
         }
       }
@@ -4198,6 +4917,35 @@
         }
       }
     },
+    "addEntry" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add Entry"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新增条目"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新增條目"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新增條目"
+          }
+        }
+      }
+    },
     "Adjust the pressure curve by adding or dragging the purple squares." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4217,6 +4965,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "透過新增或移動紫色方塊點來調整筆壓曲線。"
+          }
+        }
+      }
+    },
+    "All Profiles" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部配置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部設定檔"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部設定檔"
           }
         }
       }
@@ -4267,6 +5038,35 @@
         }
       }
     },
+    "applications" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Applications"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "应用"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "應用"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "應用"
+          }
+        }
+      }
+    },
     "Applications" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4286,6 +5086,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "應用程式"
+          }
+        }
+      }
+    },
+    "Apply" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "应用"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "套用"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "套用"
           }
         }
       }
@@ -4534,6 +5357,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最低: 50 ms, 輸入 0 關閉. 單位：ms 秒, s秒, m分鐘. ⏎ 儲存."
+          }
+        }
+      }
+    },
+    "awdlTipLink" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/hpxq8qrp141nd79t"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/kb1zrydulh8uweca"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/kb1zrydulh8uweca"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/kb1zrydulh8uweca"
           }
         }
       }
@@ -5126,6 +5978,35 @@
         }
       }
     },
+    "Exit Directly" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exit Directly"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "直接退出"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "直接退出"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "直接退出"
+          }
+        }
+      }
+    },
     "Cannot select two touchpad controls at the same time" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5145,6 +6026,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "不能同時選擇兩個觸控板控制項"
+          }
+        }
+      }
+    },
+    "Centered (PlayStation)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "居中(PS手柄)"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "居中(PS手把)"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "居中(PS手把)"
           }
         }
       }
@@ -5713,6 +6617,52 @@
         }
       }
     },
+    "Controller Mouse" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手柄鼠标"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手把滑鼠"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手把滑鼠"
+          }
+        }
+      }
+    },
+    "Controller Navigation" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手柄导航"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手把導覽"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手把導覽"
+          }
+        }
+      }
+    },
     "controllerGyroSwitchButtonStackTip" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5771,31 +6721,60 @@
         }
       }
     },
-    "controllerToMouseStackTip" : {
+    "controllerNavigationStackTip" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Long press to switch to mouse mode: %@\nStick for moving mouse pointer: %@\nMouse left button: %@\nMouse right button: %@"
+            "value" : "Local radial menu button: %@\nStreaming radial menu button: %@\nStick for moving mouse pointer: %@\nMouse left button: %@\nMouse right button: %@"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "长按切换鼠标模式: %@\n控制鼠标的摇杆: %@\n鼠标左键: %@\n鼠标右键: %@"
+            "value" : "App本地手柄菜单按键: %@\n串流手柄菜单按键: %@\n控制鼠标的摇杆: %@\n鼠标左键: %@\n鼠标右键: %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "長按切換滑鼠模式: %@\n控制滑鼠的搖桿: %@\n滑鼠左鍵: %@\n滑鼠右鍵: %@"
+            "value" : "App 本地手把選單按鈕: %@\n串流手把選單按鈕: %@\n控制滑鼠的搖桿: %@\n滑鼠左鍵: %@\n滑鼠右鍵: %@"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "長按切換滑鼠模式: %@\n控制滑鼠的搖桿: %@\n滑鼠左鍵: %@\n滑鼠右鍵: %@"
+            "value" : "App 本地手把選單按鈕: %@\n串流手把選單按鈕: %@\n控制滑鼠的搖桿: %@\n滑鼠左鍵: %@\n滑鼠右鍵: %@"
+          }
+        }
+      }
+    },
+    "controllerNavigationTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "VoidLink now supports global controller navigation! Go to [Settings Menu] → [Controller] section → turn [Controller Navigation] off and on again to customize radial menu buttons and controller mouse mode. \nRadial menu button is by default:\n[RT], and long pressing [Start] during streaming.\n"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "VoidLink已支持全局手柄导航！前往 [设置菜单] → [手柄] 分区 → 关闭再打开 [手柄导航]，即可自定义环形菜单按键与手柄鼠标模式。\n默认环形菜单按键为 [右板机]，串流状态下为长按 [Start] 键。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "VoidLink 已支援全域手把導航！前往 [設定選單] → [手把] 分區 → 關閉再開啟 [手把導航]，即可自訂環形選單按鍵與手把滑鼠模式。\n預設環形選單按鍵為 [右扳機]，串流狀態下為長按 [Start] 鍵。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "VoidLink 已支援全域手把導航！前往 [設定選單] → [手把] 分區 → 關閉再開啟 [手把導航]，即可自訂環形選單按鍵與手把滑鼠模式。\n預設環形選單按鍵為 [右扳機]，串流狀態下為長按 [Start] 鍵。"
           }
         }
       }
@@ -5917,6 +6896,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "關閉此選項時, 捏合縮手勢相當於垂直滾動. 對一些使用垂直滾動縮放畫面的遊戲有效."
+          }
+        }
+      }
+    },
+    "Current Profile" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当前配置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目前設定檔"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目前設定檔"
+          }
+        }
+      }
+    },
+    "Cursor Speed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "光标速度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "游標速度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "游標速度"
           }
         }
       }
@@ -6163,6 +7188,35 @@
         }
       }
     },
+    "descendants" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "descendants"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "衍生版"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "衍生版"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "衍生版"
+          }
+        }
+      }
+    },
     "Detailed Tutorial" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6343,6 +7397,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "停用單點觸控"
+          }
+        }
+      }
+    },
+    "Disable tilt for apple pencil" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "禁用笔刷倾斜"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停用筆刷傾斜"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停用筆刷傾斜"
           }
         }
       }
@@ -6537,6 +7614,93 @@
         }
       }
     },
+    "doublePressPinExecute" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double Press Pin Execute"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双击执行不退出"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "雙擊執行不退出"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "雙擊執行不退出"
+          }
+        }
+      }
+    },
+    "doublePressToAddFavorite" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double Press to Favorite"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双击收藏"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "雙擊收藏"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "雙擊收藏"
+          }
+        }
+      }
+    },
+    "doublePressToDelete" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double Press to Delete"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双击删除"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "雙擊刪除"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "雙擊刪除"
+          }
+        }
+      }
+    },
     "doubleTapShortcutStackTip" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6562,29 +7726,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "筆刷快速鍵: %@\n橡皮擦快速鍵: %@"
-          }
-        }
-      }
-    },
-    "Down" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "下"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "下"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "下"
           }
         }
       }
@@ -6631,6 +7772,98 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "手把十字鍵"
+          }
+        }
+      }
+    },
+    "DPadD" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "十字键下"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "十字鍵下"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "十字鍵下"
+          }
+        }
+      }
+    },
+    "DPadL" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "十字键左"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "十字鍵左"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "十字鍵左"
+          }
+        }
+      }
+    },
+    "DPadR" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "十字键右"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "十字鍵右"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "十字鍵右"
+          }
+        }
+      }
+    },
+    "DPadU" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "十字键上"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "十字鍵上"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "十字鍵上"
           }
         }
       }
@@ -6773,6 +8006,10 @@
         }
       }
     },
+    "DualSense Haptic EQ" : {
+      "comment" : "The title of the view that allows users to adjust the haptic feedback intensity of their DualSense controllers.",
+      "isCommentAutoGenerated" : true
+    },
     "dummyPadTip" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6790,7 +8027,7 @@
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "一塊啥都不幹的擋板區域"
           }
         },
@@ -6798,6 +8035,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "一塊啥都不幹的擋板區域"
+          }
+        }
+      }
+    },
+    "Duplicate" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "复制"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "複製"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "複製"
           }
         }
       }
@@ -6981,28 +8241,52 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sunshine emulates game controller via VigemBus, which support DS4 & Xbox360. \n\n- Xbox360 does not support gyro.\n\n- When “both” is selected, the app will map built-in gyro as player0 & external game controller as player1"
+            "value" : "Sunshine emulates game controller via VigemBus, which support DS4 & Xbox360. \n- Xbox360 does not support gyro.\n- When “both” is selected, the app will map built-in gyro as player0 & external game controller as player1\n\nWhen DualSense sidecar is running on Sunshine-Foundation, VigemBus will be taken over, left DualSense to be the emulated Controller on your host. In this case:\n- The option “PS (Enhanced Haptic)” provides better haptic feedback for a real DualSense controller.\n- The option “PS” provides DualSense haptic feedback translation to traditional rumbling for all controllers.\n- Enhanced haptics are also available with iPhone motor by setting “Haptic Engine” to “Device”.\n"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sunshine 通过 VigemBus 模拟游戏手柄，支持 DS4 和 Xbox 360。\n\n- Xbox 360 不支持陀螺仪。\n\n- 当选择“同时映射”时，app会将内置陀螺仪映射为玩家0，外接手柄映射为玩家1。"
+            "value" : "Sunshine 通过 VigemBus 模拟游戏手柄，支持 DS4 和 Xbox 360。\n- Xbox 360 不支持陀螺仪。\n- 当选择“同时映射”时，app会将内置陀螺仪映射为玩家0，外接手柄映射为玩家1。\n\n当 DualSense 组件在【Sunshine 基地版】上运行时，它会接管 ViGEmBus，并使 DualSense 成为主机端的模拟手柄。在这种情况下：\n- 选择“PS（触觉增强）”将为真实的DualSense 手柄提供更好的触觉反馈。\n- 选择“PS”：将 DualSense 触觉反馈转换为传统震动，适用于所有手柄。\n- 将 “振动引擎” 设置为 “内置”，也可以通过 iPhone 马达获得增强触觉反馈。\n\nDualSense的自适应板机、触觉反馈仅与Sunshine基地版配合使用时有效。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sunshine 透過 VigemBus 模擬遊戲控制器，支援 DS4 和 Xbox 360。\n\n- Xbox 360 不支援陀螺儀。\n\n- 當選擇「同時映射」時，app 會將內建陀螺儀對應為玩家0，外接控制器對應為玩家1。"
+            "value" : "Sunshine 透過 VigemBus 模擬遊戲控制器，支援 DS4 和 Xbox 360。\n- Xbox 360 不支援陀螺儀。\n- 當選擇「同時映射」時，app 會將內建陀螺儀對應為玩家0，外接控制器對應為玩家1。\n\n當 DualSense 元件在 「Sunshine 基地版」上執行時，它會接管 ViGEmBus，並使 DualSense 成為主機端的模擬手把。在這種情況下：\n- 選擇「PS（觸覺增強）」將為真實的 DualSense 手把提供更好的觸覺回饋。\n- 選擇「PS」：將 DualSense 觸覺回饋轉換為傳統震動，適用於所有手把。\n- 將「振動引擎」設定為「內建」，也可以透過 iPhone 馬達獲得增強觸覺回饋。\n\nDualSense 的自適應扳機、觸覺回饋僅在與 Sunshine 基地版配合使用時有效。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sunshine 透過 VigemBus 模擬遊戲控制器，支援 DS4 和 Xbox 360。\n\n- Xbox 360 不支援陀螺儀。\n\n- 當選擇「同時映射」時，app 會將內建陀螺儀對應為玩家0，外接控制器對應為玩家1。"
+            "value" : "Sunshine 透過 VigemBus 模擬遊戲控制器，支援 DS4 和 Xbox 360。\n- Xbox 360 不支援陀螺儀。\n- 當選擇「同時映射」時，app 會將內建陀螺儀對應為玩家0，外接控制器對應為玩家1。\n\n當 DualSense 元件在 「Sunshine 基地版」上執行時，它會接管 ViGEmBus，並使 DualSense 成為主機端的模擬手把。在這種情況下：\n- 選擇「PS（觸覺增強）」將為真實的 DualSense 手把提供更好的觸覺回饋。\n- 選擇「PS」：將 DualSense 觸覺回饋轉換為傳統震動，適用於所有手把。\n- 將「振動引擎」設定為「內建」，也可以透過 iPhone 馬達獲得增強觸覺回饋。\n\nDualSense 的自適應扳機、觸覺回饋僅在與 Sunshine 基地版配合使用時有效。"
           }
         }
       }
+    },
+    "Enable Metal Renderer?" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启用 Metal 渲染？"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟用 Metal 渲染？"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟用 Metal 渲染？"
+          }
+        }
+      },
+      "shouldTranslate" : false
     },
     "enableOswForNativeTouchSwitchTip" : {
       "extractionState" : "manual",
@@ -7029,6 +8313,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "關閉此選項將停用螢幕控制元件與實體滑鼠。Apple Pencil 也將無法正常使用。"
+          }
+        }
+      }
+    },
+    "Enhanced Touch Control for Genshin Game Streaming" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enhanced Touch Control for Genshin Game Streaming"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "原神串流增强触控"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "原神串流增強觸控"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "原神串流增強觸控"
           }
         }
       }
@@ -7436,6 +8749,64 @@
         }
       }
     },
+    "execute" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Execute"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "执行"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "執行"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "執行"
+          }
+        }
+      }
+    },
+    "exit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exit"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "退出"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "退出"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "退出"
+          }
+        }
+      }
+    },
     "Exit" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -7501,6 +8872,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "實驗性"
+          }
+        }
+      }
+    },
+    "Export" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导出"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "匯出"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "匯出"
           }
         }
       }
@@ -7730,25 +9124,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n1. By default, The widget menu button will be automatically docked to bottom edge, then become almost transparent after staying idle for 2 seconds. \nThis timeout can be changed by entering “Edit” in the widget menu.\n\n2. From %@ edge, slide %d%% screen width to open settings menu\n\n3. From %@ edge, slide %d%% screen width to open toolbox menu\n\n4. Slide from top 40%% of screen edge to avoid sending touch events to PC side\n\nIf the screen shows large green or purple color artifacts: \n\n- Disable variable display refresh rate (G-Sync, Free-Sync) on the PC and set the display refresh rate to match the streaming frame rate.\n\n- If the issue still persists switch to “Legacy” frame pacing, or “Metal” rendering (side menu -> experimental section)"
+            "value" : "\n1. By default, The widget menu button will be automatically docked to bottom edge, then become almost transparent after staying idle for 2 seconds. \nThis timeout can be changed by entering “Edit” in the widget menu.\n\n2. From %@ edge, slide %d%% screen width to open settings menu\n\n3. From %@ edge, slide %d%% screen width to open toolbox menu\n\n4. Slide from top 40%% of screen edge to avoid sending touch events to PC side"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n1. 默认状态下，控件菜单按键在闲置2秒后将自动吸附屏幕【右下方边缘】，并进入高透明状态。\n可展开控件菜单，进入“修改布局”修改该延迟。\n\n2. 展开设置菜单: 从%@边缘滑动%d%%屏幕宽度\n\n3. 展开工具箱菜单: 从%@边缘滑动%d%%屏幕宽度\n\n4. 从40%%上半边缘滑动避免触控事件影响PC端\n\n若画面出现大片发绿、发紫的颜色异常:\n\n- 请在主机端关闭【可变显示刷新率(G-Sync, Free-Sync)】，并将显示刷新率设定为与串流帧率一致。\n\n- 若问题仍未解决，请在设置菜单中选择“传统” 帧步进，或实验性分区的“Metal” 渲染。"
+            "value" : "\n1. 默认状态下，控件菜单按键在闲置2秒后将自动吸附屏幕【右下方边缘】，并进入高透明状态。\n可展开控件菜单，进入“修改布局”修改该延迟。\n\n2. 展开设置菜单: 从%@边缘滑动%d%%屏幕宽度\n\n3. 展开工具箱菜单: 从%@边缘滑动%d%%屏幕宽度\n\n4. 从40%%上半边缘滑动避免触控事件影响PC端"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n1. 預設狀態下，控件選單按鍵在閒置3秒後將自動吸附至螢幕【右下方邊緣】，並進入高透明狀態。\n可展開控件選單，進入「修改佈局」修改該延遲。\n\n2. 展開設定選單: 從%@邊緣滑動%d%%螢幕寬度\n\n3. 展開工具箱選單: 從%@邊緣滑動%d%%螢幕寬度\n\n4. 從40%%上半邊緣滑動避免觸控事件影響PC端\n\n若畫面出現大片發綠、發紫等色彩異常：\n\n- 請在主機端關閉「可變顯示更新率(G-Sync, Free-Sync)」，並將顯示更新率設定為與串流幀率一致。\n\n- 若問題仍未解決，請在設定選單中選擇「傳統」影格步調，或使用實驗性功能中的「Metal」渲染。"
+            "value" : "\n1. 預設狀態下，控件選單按鍵在閒置3秒後將自動吸附至螢幕【右下方邊緣】，並進入高透明狀態。\n可展開控件選單，進入「修改佈局」修改該延遲。\n\n2. 展開設定選單: 從%@邊緣滑動%d%%螢幕寬度\n\n3. 展開工具箱選單: 從%@邊緣滑動%d%%螢幕寬度\n\n4. 從40%%上半邊緣滑動避免觸控事件影響PC端"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n1. 預設狀態下，控件選單按鍵在閒置3秒後將自動吸附至螢幕【右下方邊緣】，並進入高透明狀態。\n可展開控件選單，進入「修改佈局」修改該延遲。\n\n2. 展開設定選單: 從%@邊緣滑動%d%%螢幕寬度\n\n3. 展開工具箱選單: 從%@邊緣滑動%d%%螢幕寬度\n\n4. 從40%%上半邊緣滑動避免觸控事件影響PC端\n\n若畫面出現大片發綠、發紫等色彩異常：\n\n- 請在主機端關閉「可變顯示更新率(G-Sync, Free-Sync)」，並將顯示更新率設定為與串流幀率一致。\n\n- 若問題仍未解決，請在設定選單中選擇「傳統」影格步調，或使用實驗性功能中的「Metal」渲染。"
+            "value" : "\n1. 預設狀態下，控件選單按鍵在閒置3秒後將自動吸附至螢幕【右下方邊緣】，並進入高透明狀態。\n可展開控件選單，進入「修改佈局」修改該延遲。\n\n2. 展開設定選單: 從%@邊緣滑動%d%%螢幕寬度\n\n3. 展開工具箱選單: 從%@邊緣滑動%d%%螢幕寬度\n\n4. 從40%%上半邊緣滑動避免觸控事件影響PC端"
           }
         }
       }
@@ -7801,6 +9195,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "不支援懸浮鍵盤"
+          }
+        }
+      }
+    },
+    "focusNavigation" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Focus Navigation"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "焦点导航"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "焦點導航"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "焦點導航"
           }
         }
       }
@@ -7957,6 +9380,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "強制讓 Pencil 在主機端進入懸浮狀態"
+          }
+        }
+      }
+    },
+    "frameInterpolationResolutionTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- In general, higher interpolation resolutions require more processing power.\n\n- Most devices with A15 or newer chips can interpolate 60 FPS to 120 FPS at the default interpolation resolution (around 720p).\nRecommended configurations for your reference:\niPhone 13 Pro (A15) - 1344 × 624\niPad Pro 2024 (M4) - 1440 × 992\n\n- Upgrade to iOS 27 to unlock interpolation resolutions above 720p.\n\n- If you experience increased input latency, stuttering, or other issues, lower the interpolation resolution.\n\n- There is always a setting that balances image quality and performance for stable frame interpolation.\n\n- Older models may not be able to initiate the interpolator(such as A12 SoC devices)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 一般而言，插帧分辨率越大，性能开销越大。\n\n- 大多数搭载 A15 或更新芯片的设备，可以在默认插帧分辨率(720p左右)下实现 60→120 FPS 插帧。\n以下配置供您参考:\niPhone 13 Pro (A15) - 1344 × 624\niPad Pro 2024 (M4) - 1440 × 992\n\n- 如需解锁超过 720p 的插帧分辨率，请升级至 iOS 27。\n\n- 若出现操作延迟增大、卡顿等异常现象，请降低插帧分辨率。\n\n- 总有一个能够平衡画质与性能的档位，可以实现稳定插帧。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 一般而言，影格插補解析度越高，效能負載越大。\n\n- 多數搭載 A15 或更新晶片的裝置，可在預設影格插補解析度(720p左右)下實現 60→120 FPS 影格插補。\n以下配置供您参考:\niPhone 13 Pro (A15) - 1344 × 624\niPad Pro 2024 (M4) - 1440 × 992\n\n- 如需解鎖超過 720p 的影格插補解析度，請升級至 iOS 27。\n\n- 若出現操作延遲增加、卡頓等異常情況，請降低影格插補解析度。\n\n- 總能找到一個兼顧畫質與效能的設定，以穩定進行影格插補。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "- 一般而言，影格插補解析度越高，效能負載越大。\n\n- 多數搭載 A15 或更新晶片的裝置，可在預設影格插補解析度(720p左右)下實現 60→120 FPS 影格插補。\n以下配置供您参考:\niPhone 13 Pro (A15) - 1344 × 624\niPad Pro 2024 (M4) - 1440 × 992\n\n- 如需解鎖超過 720p 的影格插補解析度，請升級至 iOS 27。\n\n- 若出現操作延遲增加、卡頓等異常情況，請降低影格插補解析度。\n\n- 總能找到一個兼顧畫質與效能的設定，以穩定進行影格插補。"
           }
         }
       }
@@ -8129,6 +9581,29 @@
       }
     },
     "Game Profile" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "游戏配置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "遊戲配置"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "遊戲配置"
+          }
+        }
+      }
+    },
+    "Game Profiles" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
@@ -8416,25 +9891,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n- The on-screen widget layout (including the virtual gamepad, virtual buttons, etc.), as well as the options in the settings menu marked with a [gamepad icon] (such as motion control settings), are all saved in the game profile.\n\n- To switch game profile during streaming, swipe inward from the %@ edge of the screen by %@ of screen width, open [Switch Game Profile] in the toolbox menu"
+            "value" : "- Long press a game profile to reorder.\n\n- The on-screen widget layout (including the virtual gamepad, virtual buttons, etc.), as well as the options in the settings menu marked with a [gamepad icon] (such as motion control settings), are all saved in the game profile.\n\n- To switch game profile during streaming, swipe inward from the %@ edge of the screen by %@ of screen width, open [Switch Game Profile] in the toolbox menu"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n- 屏显控件布局(包含虚拟手柄、虚拟按键等)，以及设置菜单中标记 [手柄图标] 的选项(如体感控制参数)，皆保存在游戏配置中。\n\n- 串流过程中, 由屏幕 %@ 边缘向内滑动 %@ 屏宽，即可在工具箱菜单中打开 [切换游戏配置]"
+            "value" : "- 长按可以重新排序游戏配置。\n\n- 屏显控件布局(包含虚拟手柄、虚拟按键等)，以及设置菜单中标记 [手柄图标] 的选项(如体感控制参数)，皆保存在游戏配置中。\n\n- 串流过程中, 由屏幕 %@ 边缘向内滑动 %@ 屏宽，即可在工具箱菜单中打开 [切换游戏配置]。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n- 螢幕控制項佈局（包含虛擬手把、虛擬按鍵等），以及設定選單中標記 [手把圖示] 的選項（如體感控制參數），皆保存在遊戲配置中。\n\n- 串流過程中，由螢幕 %@ 邊緣向內滑動 %@ 螢幕寬度，即可在工具箱選單中開啟［切換遊戲配置］"
+            "value" : "- 長按可以重新排序遊戲設定檔。\n\n- 螢幕控制項佈局（包含虛擬手把、虛擬按鍵等），以及設定選單中標記 [手把圖示] 的選項（如體感控制參數），皆保存在遊戲配置中。\n\n- 串流過程中，由螢幕 %@ 邊緣向內滑動 %@ 螢幕寬度，即可在工具箱選單中開啟［切換遊戲配置］"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n- 螢幕控制項佈局（包含虛擬手把、虛擬按鍵等），以及設定選單中標記 [手把圖示] 的選項（如體感控制參數），皆保存在遊戲配置中。\n\n- 串流過程中，由螢幕 %@ 邊緣向內滑動 %@ 螢幕寬度，即可在工具箱選單中開啟［切換遊戲配置］"
+            "value" : "- 長按可以重新排序遊戲設定檔。\n\n- 螢幕控制項佈局（包含虛擬手把、虛擬按鍵等），以及設定選單中標記 [手把圖示] 的選項（如體感控制參數），皆保存在遊戲配置中。\n\n- 串流過程中，由螢幕 %@ 邊緣向內滑動 %@ 螢幕寬度，即可在工具箱選單中開啟［切換遊戲配置］"
           }
         }
       }
@@ -8445,25 +9920,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This setting is saved in [Game Profile]. To open game profile selector:\n- Tap the gamepad icon on navigation bar\n- While streaming, swipe inward from the %@ edge of the screen by %@ of screen width, open [Switch Game Profile] in the toolbox menu"
+            "value" : "This setting is saved in [Game Profile]. To open game profile selector:\n- Tap the gamepad icon on navigation bar\n- While streaming, swipe inward from the %@ edge of the screen by %@ of screen width, open [Switch Game Profile] in the toolbox menu\n- Also available by controller radial menu -> [more options]"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "该设置保存在 [游戏配置] 中. 游戏配置切换入口:\n- 点击导航栏的手柄图标\n- 串流时，由屏幕 %@ 边缘向内滑动 %@ 屏宽，在工具箱菜单中打开 [切换游戏配置]"
+            "state" : "needs_review",
+            "value" : "该设置保存在 [游戏配置] 中. 游戏配置切换入口:\n- 点击导航栏的手柄图标\n- 串流时，由屏幕 %@ 边缘向内滑动 %@ 屏宽，在工具箱菜单中打开 [切换游戏配置]\n- 手柄用户请在环形菜单 -> [更多] 中打开"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "此設定保存在［遊戲配置］中。遊戲配置切換入口：\n- 點擊導覽列的手把圖示\n- 串流時，由螢幕 %@ 邊緣向內滑動 %@ 螢幕寬度，在工具箱選單中開啟［切換遊戲配置］"
+            "state" : "needs_review",
+            "value" : "此設定保存在［遊戲配置］中。遊戲配置切換入口：\n- 點擊導覽列的手把圖示\n- 串流時，由螢幕 %@ 邊緣向內滑動 %@ 螢幕寬度，在工具箱選單中開啟［切換遊戲配置］\n- 手把使用者請在環形選單 -> [更多] 中開啟"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "此設定保存在［遊戲配置］中。遊戲配置切換入口：\n- 點擊導覽列的手把圖示\n- 串流時，由螢幕 %@ 邊緣向內滑動 %@ 螢幕寬度，在工具箱選單中開啟［切換遊戲配置］"
+            "state" : "needs_review",
+            "value" : "此設定保存在［遊戲配置］中。遊戲配置切換入口：\n- 點擊導覽列的手把圖示\n- 串流時，由螢幕 %@ 邊緣向內滑動 %@ 螢幕寬度，在工具箱選單中開啟［切換遊戲配置］\n- 手把使用者請在環形選單 -> [更多] 中開啟"
           }
         }
       }
@@ -8912,6 +10387,35 @@
         }
       }
     },
+    "highBitrateTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You have just set a high streaming bitrate.\nHigh-bitrate streaming requires the following essential conditions to achieve the best streaming experience:\n\n1. Separate the 2.4GHz and 5GHz Wi-Fi networks to ensure that your device connects to 5GHz Wi-Fi.\n\n2. Connect the PC host to a wired LAN connection.\n\n3. If connecting the PC to wired Ethernet is not possible, you can still achieve a good streaming experience in non-gaming scenarios such as drawing and office work. However, please lower the bitrate to avoid exceeding the wireless duplex throughput capacity of your Wi-Fi AP/router.\n\n4. If you are unfamiliar with how Apple Wireless Direct Link may cause streaming stuttering, click \"Learn More\"."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "您刚刚设置了较高的串流码率。高码率串流需要满足以下必要条件，以期获得最佳串流体验：\n\n1. 将 2.4GHz 与 5GHz 热点分开，以确保设备连接 5GHz Wi-Fi。 \n\n2. PC主机接入有线局域网。 \n\n3. 如果PC没有接入网线的条件， 您依然可以在绘画、办公等非游戏类场景下获得良好串流体验，但请降低码率避免超出 WiFi AP/路由器 的无线双工吞吐能力。 \n\n4. 如果您不了解 Apple Wireless Direct Link 可能造成的串流卡顿，请点击“了解更多”。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您剛剛設定了較高的串流位元速率。\n高位元速率串流需要滿足以下必要條件，以期獲得最佳串流體驗：\n\n1. 將 2.4GHz 與 5GHz Wi-Fi 網路分開，以確保裝置連接至 5GHz Wi-Fi。\n\n2. 將 PC 主機接入有線區域網路。\n\n3. 如果 PC 無法接入網線，您仍然可以在繪畫、辦公等非遊戲類場景下獲得良好的串流體驗，但請降低位元率，避免超出 Wi-Fi AP／路由器的無線雙工吞吐能力。\n\n4. 如果您不了解 Apple Wireless Direct Link 可能造成串流卡頓的原因，請點擊「了解更多」。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您剛剛設定了較高的串流位元速率。\n高位元速率串流需要滿足以下必要條件，以期獲得最佳串流體驗：\n\n1. 將 2.4GHz 與 5GHz Wi-Fi 網路分開，以確保裝置連接至 5GHz Wi-Fi。\n\n2. 將 PC 主機接入有線區域網路。\n\n3. 如果 PC 無法接入網線，您仍然可以在繪畫、辦公等非遊戲類場景下獲得良好的串流體驗，但請降低位元率，避免超出 Wi-Fi AP／路由器的無線雙工吞吐能力。\n\n4. 如果您不了解 Apple Wireless Direct Link 可能造成串流卡頓的原因，請點擊「了解更多」。"
+          }
+        }
+      }
+    },
     "Highlight alpha" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -9056,6 +10560,35 @@
         }
       }
     },
+    "holdToReorder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hold to Reorder"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按住排序"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按住排序"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按住排序"
+          }
+        }
+      }
+    },
     "Host information updated" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -9108,6 +10641,29 @@
         }
       }
     },
+    "Host View" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主机视图"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主機視圖"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主機視圖"
+          }
+        }
+      }
+    },
     "Hosts" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -9127,35 +10683,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "主機"
-          }
-        }
-      }
-    },
-    "hoverModeStackTip" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "When “both” is selected, you’ll get flickering cursor on host.\nThis function is available without purchasing [Drawing Toolkit]."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "当选择“同时悬停”时，PC端的光标将会闪烁。\n此功能是Pencil基础功能的一部分，不属于Drawing Toolkit。 "
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "當選擇「同時懸停」時，PC 端的游標將會閃爍。\n此功能為 Pencil 基礎功能的一部分，不屬於 Drawing Toolkit。"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "當選擇「同時懸停」時，PC 端的游標將會閃爍。\n此功能為 Pencil 基礎功能的一部分，不屬於 Drawing Toolkit。"
           }
         }
       }
@@ -9346,6 +10873,144 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "插入觸發間隔"
+          }
+        }
+      }
+    },
+    "Inspired by RC hobby transmitters" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "灵感来自航模遥控发射机"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "靈感來自航模遙控發射機"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "靈感來自航模遙控發射機"
+          }
+        }
+      }
+    },
+    "Interpolation failed for an unknown reason." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知原因导致的插帧失败"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知原因導致插幀失敗"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知原因導致插幀失敗"
+          }
+        }
+      }
+    },
+    "Interpolation overhead is too high. Falling back to normal mode." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插帧性能开销过大，回退普通模式"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插幀效能開銷過大，回退至一般模式"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插幀效能開銷過大，回退至一般模式"
+          }
+        }
+      }
+    },
+    "Interpolation Resolution" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插帧分辨率"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "影格插補解析度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "影格插補解析度"
+          }
+        }
+      }
+    },
+    "Interpolator error:" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插帧器错误："
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插幀器錯誤："
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插幀器錯誤："
+          }
+        }
+      }
+    },
+    "Interpolator started." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插帧器已启动。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插幀器已啟動。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插幀器已啟動。"
           }
         }
       }
@@ -9650,6 +11315,35 @@
         }
       }
     },
+    "launch" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Launch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启动"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟動"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟動"
+          }
+        }
+      }
+    },
     "Launch" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -9692,6 +11386,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "啟動應用程式"
+          }
+        }
+      }
+    },
+    "launchPairWake" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Launch / Pair / Wake"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启动/配对/唤醒"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟動/配對/喚醒"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟動/配對/喚醒"
           }
         }
       }
@@ -9909,29 +11632,6 @@
         }
       }
     },
-    "Left stick" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "左摇杆"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "左搖桿"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "左搖桿"
-          }
-        }
-      }
-    },
     "Left stick pad" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -10001,31 +11701,60 @@
         }
       }
     },
+    "leftButton" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Left Button"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "鼠标左键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑鼠左鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑鼠左鍵"
+          }
+        }
+      }
+    },
     "legacyFramePacingTip" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Legacy Frame Pacing and No Frame Pacing modes may reduce streaming performance or cause frequent jitter and stuttering, and do not support screen-off keep-alive or background streaming without Picture-in-Picture. These modes are intended only for the rare cases where the streamed image exhibits color corruption.\n\nTap [Confirm] to continue.\nTap [Cancel] to return to Queue Buffering mode."
+            "value" : "Legacy Frame Pacing and No Frame Pacing modes may reduce streaming performance or cause frequent jitter and stuttering, and do not support screen-off keep-alive or background streaming without Picture-in-Picture. \n\nTap [Confirm] to continue.\nTap [Cancel] to return to Queue Buffering mode."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "传统帧步进、无帧步进模式将导致串流性能衰减，或频繁的画面抖动和卡顿，且不支持熄屏保持以及无画中画的后台串流，仅适用于串流画面出现颜色异常的极少数情况。\n\n点【确定】以继续。\n点【取消】返回队列缓冲模式。"
+            "value" : "传统帧步进、无帧步进模式将导致串流性能衰减，或频繁的画面抖动和卡顿，且不支持熄屏保持以及无画中画的后台串流。\n\n点【确定】以继续。\n点【取消】返回队列缓冲模式。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "傳統影格步調、無影格步調模式可能導致串流效能下降，或頻繁發生畫面抖動與卡頓，且不支援熄屏保持及無子母畫面的背景串流，僅適用於極少數串流畫面出現色彩異常的情況。\n\n點選【確定】以繼續。\n點選【取消】返回佇列緩衝模式。"
+            "value" : "傳統影格步調、無影格步調模式可能導致串流效能下降，或頻繁發生畫面抖動與卡頓，且不支援熄屏保持及無子母畫面的背景串流。\n\n點選【確定】以繼續。\n點選【取消】返回佇列緩衝模式。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "傳統影格步調、無影格步調模式可能導致串流效能下降，或頻繁發生畫面抖動與卡頓，僅適用於極少數串流畫面出現色彩異常的情況。\n\n點選【確定】以繼續。\n點選【取消】返回佇列緩衝模式。"
+            "state" : "translated",
+            "value" : "傳統影格步調、無影格步調模式可能導致串流效能下降，或頻繁發生畫面抖動與卡頓，且不支援熄屏保持及無子母畫面的背景串流。\n\n點選【確定】以繼續。\n點選【取消】返回佇列緩衝模式。"
           }
         }
       }
@@ -10228,6 +11957,75 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "LS/L3 按鍵"
+          }
+        }
+      }
+    },
+    "LStick" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左摇杆"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左搖桿"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左搖桿"
+          }
+        }
+      }
+    },
+    "LStickX" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左摇杆X轴"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左搖桿X軸"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左搖桿X軸"
+          }
+        }
+      }
+    },
+    "LStickY" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左摇杆Y轴"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左搖桿Y軸"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "左搖桿Y軸"
           }
         }
       }
@@ -10463,29 +12261,6 @@
         }
       }
     },
-    "Map controller to mouse" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "手柄映射为鼠标"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "手柄映射為滑鼠"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "手柄映射為滑鼠"
-          }
-        }
-      }
-    },
     "mapGyroToStackTip" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -10515,31 +12290,60 @@
         }
       }
     },
+    "menuNavigation" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menu Navigation"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "菜单导航"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選單導航"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選單導航"
+          }
+        }
+      }
+    },
     "metalRenderTip" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\nHold up! \n\n- Standard render has better performance on most devices now.\n\n- Changing the rendering mode requires restarting the application to ensure a clean start.\n\n- Metal rendering is an experimental feature that may cause performance degradation on some devices.\n\n- Metal render currently is unable to handle HDR content correctly on most devices.\n\n- Metal rendering mode does not support PiP.\n\n- Tapping “Quit Now” means I acknowledge the above information."
+            "value" : "\nWait!\n\n- VoidLink's standard rendering mode already delivers extremely strong performance, on par with its own Metal rendering\n\n- Metal HDR rendering requires developer custom shaders, and regardless of any claims otherwise, no Metal renderer can reproduce the VoidLink standard renderer’s device-calibrated HDR accuracy.\n\n- Metal rendering mode does not support PiP.\n\n- Tapping “Apply” means I acknowledge the above information."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n等等！\n\n- 标准渲染模式目前在大多数设备上具有更好的性能。\n\n- 切换渲染模式需要重启应用程序，以确保一次干净的启动。\n\n- Metal 渲染是一项实验性功能，在某些设备上可能会导致性能下降。\n\n- Metal 渲染模式下不支持画中画。\n\n- 目前 Metal 渲染器在大多数设备上无法正确处理 HDR 内容。\n\n点击“立即退出”表示我已知晓并认可以上信息。"
+            "value" : "\n等等！\n\n- VoidLink 标准渲染模式的性能已相当出色，不仅与自身的 Metal 渲染器处于同等水准，更大幅超越一些以 vibe coding 打造的所谓 Metal 渲染器。\n\n- Metal 渲染需消耗更多GPU资源和电量，在某些设备上可能会导致性能下降。\n\n- Metal HDR 渲染需要开发者自行编写着色器。无论开发者如何宣称，任何 Metal 渲染器都无法还原 VoidLink 标准渲染器经过设备校准的 HDR 准确性。\n\n- Metal 渲染模式下不支持画中画。\n\n点击“应用”表示我已知晓并认可以上信息。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "\n等等！\n\n- 目前在大多数装置上，標準渲染模式具有较佳的效能。\n\n- 变更渲染模式需要重新启动应用程式，以确保干净的启动流程。\n\n- Metal 渲染为实验性功能，可能在某些装置上造成效能下降。\n\n- Metal 渲染模式下不支援画中画。\n\n- Metal 渲染器目前在大多数装置上无法正确处理 HDR 内容。\n\n点选「立即结束」表示我已了解并同意上述说明。"
+            "state" : "needs_review",
+            "value" : "\n等等！\n\n- VoidLink 標準算繪模式的效能相當出色，不僅與自身的 Metal 算繪器處於同等水準，更大幅超越一些以 vibe coding 打造的所謂 Metal 算繪器。\n\n- Metal 渲染需要消耗更多 GPU 資源與電量，在部分裝置上可能反而會導致效能下降。\n\n- Metal HDR 算繪需要開發者自行編寫著色器。無論開發者如何宣稱，任何 Metal 算繪器都無法還原 VoidLink 標準算繪器經過裝置校準的 HDR 準確性。\n\n- Metal 渲染模式下不支援画中画。\n\n点选「套用」表示我已了解并同意上述说明。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "\n等等！\n\n- 目前在大多数装置上，標準渲染模式具有较佳的效能。\n\n- 变更渲染模式需要重新启动应用程式，以确保干净的启动流程。\n\n- Metal 渲染为实验性功能，可能在某些装置上造成效能下降。\n\n- Metal 渲染模式下不支援画中画。\n\n- Metal 渲染器目前在大多数装置上无法正确处理 HDR 内容。\n\n点选「立即结束」表示我已了解并同意上述说明。"
+            "state" : "needs_review",
+            "value" : "\n等等！\n\n- VoidLink 標準算繪模式的效能相當出色，不僅與自身的 Metal 算繪器處於同等水準，更大幅超越一些以 vibe coding 打造的所謂 Metal 算繪器。\n\n- Metal 渲染需要消耗更多 GPU 資源與電量，在部分裝置上可能反而會導致效能下降。\n\n- Metal HDR 算繪需要開發者自行編寫著色器。無論開發者如何宣稱，任何 Metal 算繪器都無法還原 VoidLink 標準算繪器經過裝置校準的 HDR 準確性。\n\n- Metal 渲染模式下不支援画中画。\n\n点选「套用」表示我已了解并同意上述说明。"
           }
         }
       }
@@ -10717,6 +12521,29 @@
         }
       }
     },
+    "Most devices currently perform frame interpolation using 8-bit YUV 4:2:0 video-range buffers. If HDR or YUV 4:4:4 is enabled, both source and intermediate frames may be processed and rendered in this pixel format, while HDR color characteristics and metadata are preserved." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目前大多数设备使用 8-bit YUV 4:2:0 Video Range 格式进行插帧。如果启用了 HDR 或 YUV 4:4:4，视频可能将转换为此像素格式进行插帧，同时保留其 HDR 色彩特性和元数据。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目前大多數裝置使用 8-bit YUV 4:2:0 Video Range 格式進行影格插補。如果啟用了 HDR 或 YUV 4:4:4，視訊可能會轉換為此像素格式進行影格插補，同時保留其 HDR 色彩特性與中繼資料。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目前大多數裝置使用 8-bit YUV 4:2:0 Video Range 格式進行影格插補。如果啟用了 HDR 或 YUV 4:4:4，視訊可能會轉換為此像素格式進行影格插補，同時保留其 HDR 色彩特性與中繼資料。"
+          }
+        }
+      }
+    },
     "Motion Control" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -10809,35 +12636,6 @@
         }
       }
     },
-    "mouseModeSwitchButtonTip" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Press a button for switching to controller mouse mode (long press for 1 second during streaming)\n\nNote: if you want to designate home button, double tap to pass it through to VoidLink app on iOS 26+."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "按下用于切换手柄鼠标模式的按键(串流时长按1秒切换)\n\n注意：如果需要指定 home 键，在 iOS 26+ 系统上需要双击将该按键透传至 VoidLink。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "按下用於切換手柄滑鼠模式的按鍵(串流時長按 1 秒切換)\n\n注意：如果需要指定 Home 鍵，在 iOS 26+ 系統上需要雙擊將該按鍵透傳至 VoidLink。"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "按下用於切換手柄滑鼠模式的按鍵(串流時長按 1 秒切換)。\n\n注意：如果需要指定 Home 鍵，在 iOS 26+ 系統上需要雙擊將該按鍵透傳至 VoidLink。"
-          }
-        }
-      }
-    },
     "MousePad" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -10861,7 +12659,7 @@
         }
       }
     },
-    "Move the stick you wish to use for mouse control. Another stick will be used for vertical & horizontal scroll." : {
+    "Move the stick you want to use for mouse control. The other stick will be used for vertical and horizontal scrolling" : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
@@ -10880,6 +12678,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "移動用於控制滑鼠指標的搖桿。另一側的搖桿將用於控制垂直、水平滾動。"
+          }
+        }
+      }
+    },
+    "moveCursor" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Move Cursor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移动光标"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移動游標"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移動游標"
           }
         }
       }
@@ -10903,6 +12730,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "名稱"
+          }
+        }
+      }
+    },
+    "Navigation Settings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导航设置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "導航設定"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "導航設定"
           }
         }
       }
@@ -11053,6 +12903,64 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "新螢幕控制項"
+          }
+        }
+      }
+    },
+    "newToolboxTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter the Toolbox edit mode and long press a card to reorder it. Controller users can follow the on-screen instructions in the bottom-right corner."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "进入工具箱编辑模式后，长按即可重新排序卡片。手柄用户请直接按右下角提示操作。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "進入工具箱編輯模式後，長按即可重新排序卡片。手把使用者請直接依照右下角提示操作。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "進入工具箱編輯模式後，長按即可重新排序卡片。手把使用者請直接依照右下角提示操作。"
+          }
+        }
+      }
+    },
+    "nextItem" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next Item"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下一项"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下一項"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下一項"
           }
         }
       }
@@ -11381,6 +13289,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "離線\n%@"
+          }
+        }
+      }
+    },
+    "ok" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "确定"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "確定"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "確定"
           }
         }
       }
@@ -11777,6 +13714,35 @@
         }
       }
     },
+    "Originally designed & coded by True Zhuanjia with pride" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Originally designed & coded by True Zhuanjia with pride"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "由 True砖家@Bilibili 自豪地原创设计并编码"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "由 True砖家@Bilibili 自豪地原創設計並編碼"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "由 True砖家@Bilibili 自豪地原創設計並編碼"
+          }
+        }
+      }
+    },
     "Others" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -11938,6 +13904,35 @@
         }
       }
     },
+    "passthrough" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "passthrough"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "坐标透传"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "座標透傳"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "座標透傳"
+          }
+        }
+      }
+    },
     "Pen Pressure Curve" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -12030,6 +14025,64 @@
         }
       }
     },
+    "Pencil Tip Offset" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pencil Tip Offset"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "笔尖偏移"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆尖偏移"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆尖偏移"
+          }
+        }
+      }
+    },
+    "Pencil tip offset saved" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pencil tip offset saved"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "笔尖偏移已保存"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆尖偏移已儲存"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "筆尖偏移已儲存"
+          }
+        }
+      }
+    },
     "pencilKeyboardCmdURL" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -12055,6 +14108,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/nm6l9yixu0idsybg#32535f99"
+          }
+        }
+      }
+    },
+    "pencilModeStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This function is available without purchasing [Drawing Toolkit]."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此功能是Pencil基础功能的一部分，不属于Drawing Toolkit。 "
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此功能為 Pencil 基礎功能的一部分，不屬於 Drawing Toolkit。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此功能為 Pencil 基礎功能的一部分，不屬於 Drawing Toolkit。"
           }
         }
       }
@@ -12622,7 +14704,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "触点灵敏度,  用于调节右半屏触点的移速, 进而实现(原神/崩坏星穹铁道)游戏内视角转动的灵敏度调节.详见在线文档."
           }
         },
@@ -12784,19 +14866,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "按下用于操作鼠标右键的按键"
+            "value" : "按下用于操作鼠标 [右键] 的按键"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "按下用於操作滑鼠右鍵的按鍵"
+            "value" : "按下用於操作滑鼠 「右\u001d\u001d鍵」 的按鍵"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "按下用於操作滑鼠右鍵的按鍵"
+            "value" : "按下用於操作滑鼠 「右\u001d\u001d鍵」 的按鍵"
           }
         }
       }
@@ -12941,6 +15023,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "此測試將重置筆壓曲線。\n若繼續測試，請點選「確認」，並隨意繪製即可，讓筆壓自然變化。"
+          }
+        }
+      }
+    },
+    "previousItem" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Previous Item"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上一项"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上一項"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上一項"
           }
         }
       }
@@ -13273,6 +15384,35 @@
         }
       }
     },
+    "quitApp" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quit App"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "退出应用"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "結束應用"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "結束應用"
+          }
+        }
+      }
+    },
     "Quitting App Failed" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -13342,6 +15482,64 @@
         }
       }
     },
+    "radialMenu" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Radial Menu"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手柄菜单"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手把選單"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手把選單"
+          }
+        }
+      }
+    },
+    "radialMenuButtonTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please choose and press one of [Select, Start, bumpers, triggers, Xbox back paddles] as the radial menu button."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请在 [Select, Start, 肩键, 板机, Xbox背键] 之中，选择并按下作为手柄导航键。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請在 [Select、Start、LB/RB、LT/RT、Xbox 背鍵] 之中，選擇並按下作為手把導覽鍵。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請在 [Select、Start、LB/RB、LT/RT、Xbox 背鍵] 之中，選擇並按下作為手把導覽鍵。"
+          }
+        }
+      }
+    },
     "RB/R1" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -13384,6 +15582,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "閱讀控制項說明"
+          }
+        }
+      }
+    },
+    "readTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read Tip"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看提示"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看提示"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看提示"
           }
         }
       }
@@ -13445,35 +15672,6 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/fqd6l1kgt482on8a"
-          }
-        }
-      }
-    },
-    "relativeTouchSlideThresholdStackTip" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fixes mouse cursor jump on initial move of touchPad mode."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "用于修复触控板模式下鼠标指针刚开始移动时会突然跳一下的问题。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "用於修復觸控板模式下滑鼠指標剛開始移動時會突然跳一下的問題。"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "用於修復觸控板模式下滑鼠指標剛開始移動時會突然跳一下的問題。"
           }
         }
       }
@@ -13576,25 +15774,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- Standard render has better performance on most devices now.\n\n- Changing the rendering mode requires restarting the application to ensure a clean start.\n\n- Metal rendering is an experimental feature that may cause performance degradation on some devices.\n\n- Metal render currently is unable to handle HDR content correctly on most devices.\n\n- Metal rendering mode does not support PiP."
+            "value" : "- Standard render has better performance on most devices now.\n\n- Changing the rendering mode takes effect the next time you start a stream.\n\n- Metal rendering is an experimental feature that may cause performance degradation on some devices.\n\n- Metal render currently is unable to handle HDR content correctly on most devices.\n\n- Metal rendering mode does not support PiP."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 目前, 标准渲染模式在大多数设备上具有更好的性能。\n\n- 切换渲染模式需要重启应用程序，以确保一次干净的启动。\n\n- Metal 渲染是一项实验性功能，在某些设备上可能会导致性能下降。\n\n- Metal 渲染模式下不支持画中画。\n\n- 目前 Metal 渲染器在大多数设备上无法正确处理 HDR 内容。\n"
+            "value" : "- 目前, 标准渲染模式在大多数设备上具有更好的性能。\n\n- 渲染模式的更改将在下次开始串流时生效。\n\n- Metal 渲染是一项实验性功能，在某些设备上可能会导致性能下降。\n\n- Metal 渲染模式下不支持画中画。\n\n- 目前 Metal 渲染器在大多数设备上无法正确处理 HDR 内容。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 目前，在大多数装置上，標準渲染模式具有较佳的效能。\n\n- 变更渲染模式需要重新启动应用程式，以确保干净的启动流程。\n\n- Metal 渲染为实验性功能，可能在某些装置上造成效能下降。\n\n- Metal 渲染模式下不支援画中画。\n\n- Metal 渲染器目前在大多数装置上无法正确处理 HDR 内容。"
+            "value" : "- 目前，在大多数装置上，標準渲染模式具有较佳的效能。\n\n- 变更渲染模式将在下次开始串流时生效。\n\n- Metal 渲染为实验性功能，可能在某些装置上造成效能下降。\n\n- Metal 渲染模式下不支援画中画。\n\n- Metal 渲染器目前在大多数装置上无法正确处理 HDR 内容。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "- 目前，在大多数装置上，標準渲染模式具有较佳的效能。\n\n- 变更渲染模式需要重新启动应用程式，以确保干净的启动流程。\n\n- Metal 渲染为实验性功能，可能在某些装置上造成效能下降。\n\n- Metal 渲染模式下不支援画中画。\n\n- Metal 渲染器目前在大多数装置上无法正确处理 HDR 内容。"
+            "value" : "- 目前，在大多数装置上，標準渲染模式具有较佳的效能。\n\n- 变更渲染模式将在下次开始串流时生效。\n\n- Metal 渲染为实验性功能，可能在某些装置上造成效能下降。\n\n- Metal 渲染模式下不支援画中画。\n\n- Metal 渲染器目前在大多数装置上无法正确处理 HDR 内容。"
           }
         }
       }
@@ -13645,6 +15843,10 @@
         }
       }
     },
+    "Reset EQ" : {
+      "comment" : "A button label that resets the haptic feedback equalizer to its default settings.",
+      "isCommentAutoGenerated" : true
+    },
     "Reset the pen pressure curve by starting from the pen pressure test?" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -13687,6 +15889,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "需要重新啟動App"
+          }
+        }
+      }
+    },
+    "Restore" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "恢复"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "還原"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "還原"
           }
         }
       }
@@ -13904,29 +16129,6 @@
         }
       }
     },
-    "Right stick" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "右摇杆"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "右搖桿"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "右搖桿"
-          }
-        }
-      }
-    },
     "Right stick wheel" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -13969,6 +16171,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "右扳機觸控板"
+          }
+        }
+      }
+    },
+    "rightButton" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Right Button"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "鼠标右键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑鼠右鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "滑鼠右鍵"
           }
         }
       }
@@ -14038,6 +16269,75 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "RS/R3 按鍵"
+          }
+        }
+      }
+    },
+    "RStick" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右摇杆"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右搖桿"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右搖桿"
+          }
+        }
+      }
+    },
+    "RStickX" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右摇杆X轴"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右搖桿X軸"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右搖桿X軸"
+          }
+        }
+      }
+    },
+    "RStickY" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右摇杆Y轴"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右搖桿Y軸"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "右搖桿Y軸"
           }
         }
       }
@@ -14140,6 +16440,64 @@
         }
       }
     },
+    "Save Changes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save Changes"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存修改"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "儲存修改"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "儲存修改"
+          }
+        }
+      }
+    },
+    "Save changes before closing?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save changes before closing?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭前是否保存修改？"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉前是否儲存修改？"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "關閉前是否儲存修改？"
+          }
+        }
+      }
+    },
     "Saving over the 'Default' profile is not allowed" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -14159,6 +16517,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "不允許儲存覆寫「預設」版面配置"
+          }
+        }
+      }
+    },
+    "Scaled Stream Resolution" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "串流分辨率缩放"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "串流解析度縮放"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "串流解析度縮放"
           }
         }
       }
@@ -14670,6 +17051,35 @@
         }
       }
     },
+    "Setting added to favorite" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setting added to favorite"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已添加到收藏"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已加入收藏"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已加入收藏"
+          }
+        }
+      }
+    },
     "Settings" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -14689,6 +17099,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "設定"
+          }
+        }
+      }
+    },
+    "Settings Menu" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设置菜单"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定選單"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定選單"
           }
         }
       }
@@ -14839,6 +17272,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "FPS: %6.2f    掉幀: %4.1f%%    位元速率: %5.1f Mbps   延遲: %@"
+          }
+        }
+      }
+    },
+    "simplifiedOsdTextWithInterpolation" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FPS: %6.2f+%.2f    Dropped frames: %4.1f%%    Bitrate: %5.1f Mbps    Latency: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "帧率: %6.2f+%.2f    丢帧: %4.1f%%    码率: %5.1f Mbps   延迟: %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FPS: %6.2f+%.2f    掉幀: %4.1f%%    位元速率: %5.1f Mbps   延遲: %@"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FPS: %6.2f+%.2f    掉幀: %4.1f%%    位元速率: %5.1f Mbps   延遲: %@"
           }
         }
       }
@@ -15357,25 +17819,25 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n- Standard render has better performance on most devices now.\n\n- Changing the rendering mode requires restarting the application to ensure a clean start."
+            "value" : "- VoidLink's standard rendering mode already delivers extremely strong performance, on par with its own Metal rendering\n\n- Metal HDR rendering requires developer custom shaders, and regardless of any claims otherwise, no Metal renderer can reproduce the VoidLink standard renderer’s device-calibrated HDR accuracy.\n\n- Metal rendering mode does not support PiP.\n\n- Tapping “Apply” means I acknowledge the above information."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n- 标准渲染模式目前在大多数设备上具有更好的性能。\n\n- 更改渲染模式需要重启应用以确保干净启动。您是否要立即退出应用？"
+            "value" : "- VoidLink 标准渲染模式的性能已相当出色，不仅与自身的 Metal 渲染器处于同等水准，更大幅超越一些以 vibe coding 打造的所谓 Metal 渲染器。\n\n- Metal 渲染需消耗更多GPU资源和电量，在某些设备上可能会导致性能下降。\n\n- Metal HDR 渲染需要开发者自行编写着色器。无论开发者如何宣称，任何 Metal 渲染器都无法还原 VoidLink 标准渲染器经过设备校准的 HDR 准确性。\n\n- Metal 渲染模式下不支持画中画。\n\n点击“应用”表示我已知晓并认可以上信息。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n- 目前在大多数装置上，標準渲染模式具有较佳的效能。\n\n- 更改渲染模式需要重新啟動應用程式以確保乾淨啟動。您是否要立即退出應用程式？"
+            "value" : "- VoidLink 標準算繪模式的效能相當出色，不僅與自身的 Metal 算繪器處於同等水準，更大幅超越一些以 vibe coding 打造的所謂 Metal 算繪器。\n\n- Metal 渲染需要消耗更多 GPU 資源與電量，在部分裝置上可能反而會導致效能下降。\n\n- Metal HDR 算繪需要開發者自行編寫著色器。無論開發者如何宣稱，任何 Metal 算繪器都無法還原 VoidLink 標準算繪器經過裝置校準的 HDR 準確性。\n\n- Metal 渲染模式下不支援画中画。\n\n点选「套用」表示我已了解并同意上述说明。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\n- 目前在大多数装置上，標準渲染模式具有较佳的效能。\n\n- 更改渲染模式需要重新啟動應用程式以確保乾淨啟動。您是否要立即退出應用程式？"
+            "value" : "- VoidLink 標準算繪模式的效能相當出色，不僅與自身的 Metal 算繪器處於同等水準，更大幅超越一些以 vibe coding 打造的所謂 Metal 算繪器。\n\n- Metal 渲染需要消耗更多 GPU 資源與電量，在部分裝置上可能反而會導致效能下降。\n\n- Metal HDR 算繪需要開發者自行編寫著色器。無論開發者如何宣稱，任何 Metal 算繪器都無法還原 VoidLink 標準算繪器經過裝置校準的 HDR 準確性。\n\n- Metal 渲染模式下不支援画中画。\n\n点选「套用」表示我已了解并同意上述说明。"
           }
         }
       }
@@ -15422,6 +17884,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "立體聲 (iOS18+ 提供環繞音效)"
+          }
+        }
+      }
+    },
+    "Stick Offset" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "摇杆偏移量"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搖桿偏移量"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搖桿偏移量"
           }
         }
       }
@@ -15480,6 +17965,64 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "這是一個左搖桿方向輪。建議在使用前先查看教學。"
+          }
+        }
+      }
+    },
+    "streamDimensionScaleStackTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can use this setting to reduce the difference between the streaming resolution and the intermediate-frame resolution, minimizing interpolation-induced flickering for a more natural viewing experience."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您可以通过该设置减小串流分辨率与中间帧分辨率的差距，从而减少插帧造成的闪烁效应，从而获得更自然的观感。\n"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您可以透過此設定縮小串流解析度與中間影格解析度之間的差距，減少影格插補造成的閃爍，使畫面看起來更加自然。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您可以透過此設定縮小串流解析度與中間影格解析度之間的差距，減少影格插補造成的閃爍，使畫面看起來更加自然。"
+          }
+        }
+      }
+    },
+    "streamingRadialMenuButtonTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Press the same or a different button for controller navigation during streaming. [Home] button is also available.\n\nNote: if you want to designate the Home button, double tap to pass it through to VoidLink app on iOS 26+.\nAlso, on iOS 27+, go to Settings -> General -> Game Controller -> Home Button Overrides, then add VoidLink to enable direct Home button passthrough."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请按下相同或不同的按键，作为串流时的手柄导航键。\n您也可以指定 [Home] 鍵。\n\n注意：iOS 26+ 系统中，需要双击Home键才能将该按键透传至 VoidLink。\n另外，您可以在 iOS 27+ 系统中前往 设置 -> 通用 -> 游戏控制器 -> 主屏幕按钮覆盖，添加 VoidLink 以实现 Home 键直通。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請按下相同或不同的按鍵，作為串流時的手把導覽鍵。 \n您也可以指定 [Home] 鍵。\n\n注意：在 iOS 26 以上系統中，需要雙擊 Home 鍵才能將該按鍵透傳至 VoidLink。\n另外，在 iOS 27 或以上系統中，前往「設定」->「一般」->「遊戲控制器」->「主畫面按鈕覆寫」，然後新增 VoidLink，即可啟用 Home 鍵直通。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請按下相同或不同的按鍵，作為串流時的手把導覽鍵。 \n您也可以指定 [Home] 鍵。\n\n注意：在 iOS 26 以上系統中，需要雙擊 Home 鍵才能將該按鍵透傳至 VoidLink。\n另外，在 iOS 27 或以上系統中，前往「設定」->「一般」->「遊戲控制器」->「主畫面按鈕覆寫」，然後新增 VoidLink，即可啟用 Home 鍵直通。"
           }
         }
       }
@@ -15795,6 +18338,29 @@
         }
       }
     },
+    "Tap to learn more" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点击了解更多"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "點擊了解更多"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "點擊了解更多"
+          }
+        }
+      }
+    },
     "Tap to toggle" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -15910,6 +18476,29 @@
         }
       }
     },
+    "Theme" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主题"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主题"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主题"
+          }
+        }
+      }
+    },
     "There are no changes to undo" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -15929,6 +18518,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "沒有可復原的變更"
+          }
+        }
+      }
+    },
+    "This device does not support frame interpolation." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当前设备不支持插帧。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目前裝置不支援影格插補。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目前裝置不支援影格插補。"
           }
         }
       }
@@ -15998,6 +18610,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "這是一項實驗性功能，可能導致畫面卡頓。"
+          }
+        }
+      }
+    },
+    "This system version does not support frame interpolation." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当前系统版本不支持插帧。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目前系統版本不支援影格插補。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目前系統版本不支援影格插補。"
           }
         }
       }
@@ -16280,6 +18915,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "觸控指標速度：在右側螢幕的%d%%上縮放"
+          }
+        }
+      }
+    },
+    "TouchBtn" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "触控板按键"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "觸控板按鍵"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "觸控板按鍵"
           }
         }
       }
@@ -16572,29 +19230,6 @@
         }
       }
     },
-    "Up" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "上"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "上"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "上"
-          }
-        }
-      }
-    },
     "Up Arrow" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -16753,6 +19388,35 @@
     },
     "Version %@" : {
 
+    },
+    "verticalHorizontalScroll" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scroll"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "横纵滚动"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "橫縱捲動"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "橫縱捲動"
+          }
+        }
+      }
     },
     "Video" : {
       "extractionState" : "manual",
@@ -17082,6 +19746,29 @@
         }
       }
     },
+    "Which side of the controller is this button on?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此按键位于手柄的哪一侧？"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此按鍵位於手把的哪一側？"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此按鍵位於手掣的哪一側？"
+          }
+        }
+      }
+    },
     "Widget config generated" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -17170,6 +19857,64 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "控制項池已滿"
+          }
+        }
+      }
+    },
+    "widgetOperationBackward" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widget Operation"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控件操作"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制項操作"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制項操作"
+          }
+        }
+      }
+    },
+    "widgetOperationForward" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Widget Operation"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控件操作"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制項操作"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "控制項操作"
           }
         }
       }
@@ -17278,6 +20023,35 @@
         }
       }
     },
+    "X Offset" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "X Offset"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "X 偏移"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "X 偏移"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "X 偏移"
+          }
+        }
+      }
+    },
     "X1" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -17320,6 +20094,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "X2"
+          }
+        }
+      }
+    },
+    "Y Offset" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Y Offset"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Y 偏移"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Y 偏移"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Y 偏移"
           }
         }
       }
@@ -17418,6 +20221,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "https://voidlink.yuque.com/org-wiki-voidlink-znirha/fa3tgr/iy4zgh86odhfgf6h"
+          }
+        }
+      }
+    },
+    "emulatedGyroModeDisablesBuiltinMotionControlTip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turning this option on will disable VoidLink's built-in motion control. If you need the app to convert gyroscope input directly into mouse or controller-stick signals, remember to turn this option off."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开该选项，将导致 VoidLink 内置的体感控制功能失效。如果您需要在 App 内部直接将陀螺仪转换为鼠标或手柄摇杆信号，请记得关闭该选项。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開啟該選項，將導致 VoidLink 內建的體感控制功能失效。如果您需要在 App 內部直接將陀螺儀轉換為滑鼠或手把搖桿訊號，請記得關閉該選項。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開啟該選項，將導致 VoidLink 內置的體感控制功能失效。如果您需要在 App 內部直接將陀螺儀轉換為滑鼠或手掣搖桿訊號，請記得關閉該選項。"
           }
         }
       }

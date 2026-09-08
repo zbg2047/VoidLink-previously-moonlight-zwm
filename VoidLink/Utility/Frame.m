@@ -1,10 +1,34 @@
 #import <CoreVideo/CVImageBuffer.h>
+#import <objc/runtime.h>
 #import "Frame.h"
 #import "Logger.h"
 #include <Limelight.h>
 
 @implementation Frame {
     CFDictionaryRef _formatDescExt;
+}
+
+static char FrameInterpolatedKey;
+
+- (BOOL)isInterpolated {
+    return [objc_getAssociatedObject(self, &FrameInterpolatedKey) boolValue];
+}
+
+- (void)setIsInterpolated:(BOOL)isInterpolated {
+    objc_setAssociatedObject(self,
+                             &FrameInterpolatedKey,
+                             isInterpolated ? @YES : nil,
+                             OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (CVPixelBufferRef)imageBuffer {
+    if (_pixelBuffer) {
+        return _pixelBuffer;
+    }
+    if (_sampleBuffer) {
+        return CMSampleBufferGetImageBuffer(_sampleBuffer);
+    }
+    return nil;
 }
 
 - (instancetype)initWithPixelBufffer:(CVPixelBufferRef)pixelBuffer
@@ -84,7 +108,11 @@
 
 - (CFDictionaryRef)getFormatDescExtensions {
     if (!_formatDescExt && _formatDesc) {
-        _formatDescExt = CFRetain(CMFormatDescriptionGetExtensions(_formatDesc));
+        // Can legitimately be NULL, and CFRetain(NULL) crashes
+        CFDictionaryRef ext = CMFormatDescriptionGetExtensions(_formatDesc);
+        if (ext) {
+            _formatDescExt = CFRetain(ext);
+        }
     }
     return _formatDescExt;
 }

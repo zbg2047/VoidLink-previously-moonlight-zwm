@@ -624,6 +624,16 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
+            localizationKey: "=labeledFolder",
+            cmd: "LABELEDFOLDER",
+            tip: LocalizationHelper.localizedString(forKey: "A folder whose collected buttons show command labels."),
+            allowsKeyboardCombination: true,
+            allowsGamepadCombination: true,
+            allowsSkillCombo: true,
+            allowsShortcutCombo: true,
+            forcedComboMode: nil
+        ),
+        FunctionalButtonOption(
             localizationKey: "=toolbox",
             cmd: "TOOLBOX",
             tip: LocalizationHelper.localizedString(forKey: "Activate toolbox menu during streaming"),
@@ -695,6 +705,36 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
+            localizationKey: "=absoluteTouchDrag",
+            cmd: "ABSTCHDRAG",
+            tip: LocalizationHelper.localizedString(forKey: "Replace mouse button action in single point touch mode with another button temporarily"),
+            allowsKeyboardCombination: true,
+            allowsGamepadCombination: true,
+            allowsSkillCombo: true,
+            allowsShortcutCombo: false,
+            forcedComboMode: .skill
+        ),
+        FunctionalButtonOption(
+            localizationKey: "=magnifier",
+            cmd: "MAGNIFIER",
+            tip: LocalizationHelper.localizedString(forKey: "magnifierTip"),
+            allowsKeyboardCombination: false,
+            allowsGamepadCombination: false,
+            allowsSkillCombo: false,
+            allowsShortcutCombo: false,
+            forcedComboMode: .skill
+        ),
+        FunctionalButtonOption(
+            localizationKey: "=dummyPad",
+            cmd: "DUMMYPAD",
+            tip: LocalizationHelper.localizedString(forKey: "dummyPadTip"),
+            allowsKeyboardCombination: false,
+            allowsGamepadCombination: false,
+            allowsSkillCombo: false,
+            allowsShortcutCombo: false,
+            forcedComboMode: .skill
+        ),
+        FunctionalButtonOption(
             localizationKey: "=pressureCurve",
             cmd: "PRESSURECURVE",
             tip: LocalizationHelper.localizedString(forKey: "Opens pencil pressure curve tool"),
@@ -745,34 +785,14 @@ struct WidgetPickerView: View {
             forcedComboMode: nil
         ),
         FunctionalButtonOption(
-            localizationKey: "=absoluteTouchDrag",
-            cmd: "ABSTCHDRAG",
-            tip: LocalizationHelper.localizedString(forKey: "Replace mouse button action in single point touch mode with another button temporarily"),
-            allowsKeyboardCombination: true,
-            allowsGamepadCombination: true,
-            allowsSkillCombo: true,
-            allowsShortcutCombo: false,
-            forcedComboMode: .skill
-        ),
-        FunctionalButtonOption(
-            localizationKey: "=magnifier",
-            cmd: "MAGNIFIER",
-            tip: LocalizationHelper.localizedString(forKey: "magnifierTip"),
+            localizationKey: "=disableTilt",
+            cmd: "DISABLETILT",
+            tip: "Disable tilt for apple pencil".localized,
             allowsKeyboardCombination: false,
             allowsGamepadCombination: false,
             allowsSkillCombo: false,
             allowsShortcutCombo: false,
-            forcedComboMode: .skill
-        ),
-        FunctionalButtonOption(
-            localizationKey: "=dummyPad",
-            cmd: "DUMMYPAD",
-            tip: LocalizationHelper.localizedString(forKey: "dummyPadTip"),
-            allowsKeyboardCombination: false,
-            allowsGamepadCombination: false,
-            allowsSkillCombo: false,
-            allowsShortcutCombo: false,
-            forcedComboMode: .skill
+            forcedComboMode: nil
         ),
     ]
 
@@ -3739,6 +3759,8 @@ struct FunctionalCollectionButton: View {
         UIDevice.current.userInterfaceIdiom == .phone ? 8 : 12
     }
 
+    private let cornerRadius: CGFloat = PublicUtils.isIPhone ? 16 : 24
+
     var body: some View {
         Button(action: action) {
             Text(LocalizationHelper.localizedString(forKey: item.localizationKey))
@@ -3757,7 +3779,7 @@ struct FunctionalCollectionButton: View {
     }
 
     private var backgroundFill: some View {
-        RoundedRectangle(cornerRadius: 16, style: .continuous)
+        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
             .fill(
                 LinearGradient(
                     gradient: Gradient(colors: isSelected
@@ -3777,7 +3799,7 @@ struct FunctionalCollectionButton: View {
     }
 
     private var borderOverlay: some View {
-        RoundedRectangle(cornerRadius: 16, style: .continuous)
+        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
             .stroke(
                 isSelected ? Color.orange.opacity(0.75) : Color.white.opacity(0.76),
                 lineWidth: 1.4

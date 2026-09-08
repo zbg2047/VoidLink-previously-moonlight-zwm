@@ -19,12 +19,14 @@ import UIKit
     
     // MARK: - Properties
     
+    @objc public private(set) var identifier: String
     @objc var cmdString: String
     @objc var alias: String
     
     // MARK: - Initialization
 
     init(cmdString: String, alias: String) {
+        self.identifier = UUID().uuidString
         self.cmdString = cmdString
         self.alias = alias
     }
@@ -36,11 +38,13 @@ import UIKit
               let alias = coder.decodeObject(of: NSString.self, forKey: "alias") as String? else {
             return nil
         }
+        self.identifier = coder.decodeObject(of: NSString.self, forKey: "identifier") as String? ?? UUID().uuidString
         self.cmdString = cmdString
         self.alias = alias
     }
 
     public func encode(with coder: NSCoder) {
+        coder.encode(identifier, forKey: "identifier")
         coder.encode(cmdString, forKey: "keyboardCmdString")
         coder.encode(alias, forKey: "alias")
     }
@@ -50,6 +54,29 @@ import UIKit
 // Define the CommandManager class
 @objc public class CommandManager: NSObject {
     @objc public static let shared = CommandManager()
+
+    private static let defaultCommandAliasMigrationMap: [String: String] = [
+        "任务管理器(Task Manager)": "=taskManager",
+        "Task Manager": "=taskManager",
+        "N卡截图(Nvidia Screenshot)": "=nvidiaShot",
+        "Nvidia Screenshot": "=nvidiaShot",
+        "N卡录屏(Nvidia Screen Recording)": "=nvidiaRec",
+        "Nvidia Screen Recording": "=nvidiaRec",
+        "关闭窗口(ALT+F4)": "=closeWindow",
+        "Close Window": "=closeWindow",
+        "全选(Select All)": "=selectAll",
+        "Select All": "=selectAll",
+        "复制(Copy)": "=copy",
+        "Copy": "=copy",
+        "粘贴(Paste)": "=paste",
+        "Paste": "=paste",
+        "切换桌面(Switch to Desktop)": "=switchDesktop",
+        "Switch to Desktop": "=switchDesktop",
+        "多显模式(Project)": "=projectDisplay",
+        "Project": "=projectDisplay",
+        "Xbox Game Bar": "=xboxGameBar",
+        "Steam Overlay": "=steamOverlay",
+    ]
     
     @objc public static let mouseButtonMappings: [String: Int32] = [
         "M_LEFT" : BUTTON_LEFT,
@@ -127,8 +154,8 @@ import UIKit
     @objc public static let stickWheels: [String] = ["LSWHEEL", "RSWHEEL"]
     @objc public static let velocityBasedTouchPads: [String] = ["LSVPAD", "RSVPAD", "MOUSEPAD", "TRACKBALL", "LTPAD", "RTPAD", "MOUSEWHEEL", "WHEEL"]
     @objc public static let inertialTouchPads: [String] = ["LSVPAD", "RSVPAD", "TRACKBALL", "LSPAD", "RSPAD"]
-    @objc public static let verticalTouchPads: [String] = ["LTPAD", "RTPAD", "MOUSEWHEEL", "WHEEL", "DISCRETEWHEEL", "DSWHEEL"]
-    @objc public static let bidirectionalVerticalTouchPads: [String] = ["LTPAD", "RTPAD", "MOUSEWHEEL", "WHEEL", "DISCRETEWHEEL", "DSWHEEL"]
+    @objc public static let verticalTouchPads: [String] = ["LTPAD", "RTPAD", "DISCRETEWHEEL", "DSWHEEL"]
+    @objc public static let singleDimensionActiveTouchpads: [String] = ["LTPAD", "RTPAD", "MOUSEWHEEL", "WHEEL", "DISCRETEWHEEL", "DSWHEEL"]
     @objc public static let functionalButtonCmds: [String] = [
         "SETTINGS",
         "TOOLBOX",
@@ -144,11 +171,13 @@ import UIKit
         "SOFTKEYBOARD",
         "ABSTCHDRAG",
         "FOLDER",
+        "LABELEDFOLDER",
         "PRESSURECURVE",
         "PENCILHOVER",
         "BRUSH",
         "ERASER",
         "NOSINGLETOUCH",
+        "DISABLETILT",
         "DISABLETOUCH",
         "GAMEPADOVERLAY",
     ]
@@ -161,7 +190,8 @@ import UIKit
         "PENCILHOVER",
         "BRUSH",
         "ERASER",
-        "NOSINGLETOUCH"
+        "NOSINGLETOUCH",
+        "DISABLETILT"
     ]
     @objc public static let motionControlButtonCmds: [String] = ["GYRO","GYROPAUSE","ACCEL","MOTION"]
 
@@ -171,6 +201,7 @@ import UIKit
         "BRUSH": 0xFF,
         "ERASER": 0xFF,
         "FOLDER": 0xFF,
+        "LABELEDFOLDER": 0xFF,
     ]
     
     @objc public static let keyboardButtonMappings: [String: Int16] = [
@@ -461,17 +492,17 @@ import UIKit
                 RemoteCommand(cmdString: "WIN", alias: "WIN"),
                 RemoteCommand(cmdString: "F11", alias: "F11"),
                 RemoteCommand(cmdString: "ESC", alias: "ESC"),
-                RemoteCommand(cmdString: "CTRL+SHIFT+ESC", alias: "任务管理器(Task Manager)"),
-                RemoteCommand(cmdString: "ALT+F1", alias: "N卡截图(Nvidia Screenshot)"),
-                RemoteCommand(cmdString: "ALT+F9", alias: "N卡录屏(Nvidia Screen Recording)"),
-                RemoteCommand(cmdString: "ALT+F4", alias: "关闭窗口(ALT+F4)"),
-                RemoteCommand(cmdString: "CTRL+A", alias: "全选(Select All)"),
-                RemoteCommand(cmdString: "CTRL+C", alias: "复制(Copy)"),
-                RemoteCommand(cmdString: "CTRL+V", alias: "粘贴(Paste)"),
-                RemoteCommand(cmdString: "WIN+D", alias: "切换桌面(Switch to Desktop)"),
-                RemoteCommand(cmdString: "WIN+P", alias: "多显模式(Project)"),
-                RemoteCommand(cmdString: "WIN+G", alias: "Xbox Game Bar"),
-                RemoteCommand(cmdString: "SHIFT+TAB", alias: "Steam Overlay"),
+                RemoteCommand(cmdString: "CTRL+SHIFT+ESC", alias: "=taskManager"),
+                RemoteCommand(cmdString: "ALT+F1", alias: "=nvidiaShot"),
+                RemoteCommand(cmdString: "ALT+F9", alias: "=nvidiaRec"),
+                RemoteCommand(cmdString: "ALT+F4", alias: "=closeWindow"),
+                RemoteCommand(cmdString: "CTRL+A", alias: "=selectAll"),
+                RemoteCommand(cmdString: "CTRL+C", alias: "=copy"),
+                RemoteCommand(cmdString: "CTRL+V", alias: "=paste"),
+                RemoteCommand(cmdString: "WIN+D", alias: "=switchDesktop"),
+                RemoteCommand(cmdString: "WIN+P", alias: "=projectDisplay"),
+                RemoteCommand(cmdString: "WIN+G", alias: "=xboxGameBar"),
+                RemoteCommand(cmdString: "SHIFT+TAB", alias: "=steamOverlay"),
             ]
             
             let data = try? NSKeyedArchiver.archivedData(withRootObject: defaultCommands, requiringSecureCoding: false)
@@ -542,7 +573,7 @@ import UIKit
     @objc public func extractCmdStrings(from input: String) -> [String]? {
         var validCmdStrings: [String] = []
 
-        if GenericUtils.isGUIWidgetPickerAvailable {
+        if PublicUtils.isGUIWidgetPickerAvailable {
             let cmdStrings = input
                 .split(separator: "-")
                 .map { String($0) }
@@ -631,6 +662,29 @@ import UIKit
     @objc public func getAllCommands() -> [RemoteCommand] {
         return commands
     }
+
+    public func reorderCommands(withIdentifiers identifiers: [String]) {
+        guard !identifiers.isEmpty else { return }
+
+        var remainingCommandsByID = Dictionary(grouping: commands, by: { $0.identifier })
+        var reorderedCommands: [RemoteCommand] = []
+
+        for identifier in identifiers {
+            guard var commandGroup = remainingCommandsByID[identifier],
+                  !commandGroup.isEmpty else {
+                continue
+            }
+            reorderedCommands.append(commandGroup.removeFirst())
+            remainingCommandsByID[identifier] = commandGroup
+        }
+
+        for command in commands where !reorderedCommands.contains(where: { $0 === command }) {
+            reorderedCommands.append(command)
+        }
+
+        commands = reorderedCommands
+        saveCommands()
+    }
     
     private func loadCommands() {
         if let savedCommandsData = UserDefaults.standard.data(forKey: "savedCommands") {
@@ -640,6 +694,7 @@ import UIKit
                     // Assign the unarchived commands to your property
                     print(" Assign the unarchived commands to your property ")
                     commands = savedCommands
+                    migrateDefaultCommandAliasesIfNeeded()
                 } else {
                     // Handle the case where the data could not be unarchived into the expected type
                     print("Data could not be unarchived into [RemoteCommand]")
@@ -654,6 +709,21 @@ import UIKit
     private func saveCommands() {
         if let data = try? NSKeyedArchiver.archivedData(withRootObject: commands, requiringSecureCoding: false) {
             UserDefaults.standard.set(data, forKey: "savedCommands")
+        }
+    }
+
+    private func migrateDefaultCommandAliasesIfNeeded() {
+        var didMigrate = false
+        for command in commands {
+            guard let migratedAlias = Self.defaultCommandAliasMigrationMap[command.alias] else {
+                continue
+            }
+            command.alias = migratedAlias
+            didMigrate = true
+        }
+
+        if didMigrate {
+            saveCommands()
         }
     }
     

@@ -41,6 +41,7 @@
 @interface AVDisplayCriteria()
 @property(readonly) int videoDynamicRange;
 @property(readonly, nonatomic) float refreshRate;
+
 - (id)initWithRefreshRate:(float)arg1 videoDynamicRange:(int)arg2;
 @end
 
@@ -76,6 +77,11 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
 }
 
 
+@interface StreamFrameViewController () <ToolboxSpecialEntryDelegate, OnScreenFunctionalWidgetDelegate, AbstractGamepadOverlayCloseButtonDelegate>
+@end
+
+static __weak StreamFrameViewController *VLSharedStreamFrameViewController = nil;
+
 @implementation StreamFrameViewController {
     ControllerSupport *_controllerSupport;
     TemporarySettings *_settings;
@@ -83,6 +89,7 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
     NSTimer *_inactivityTimer;
     NSTimer *_statsUpdateTimer;
     PaddedLabel *_overlayView;
+    PaddedLabel *_transientHUDView;
     UITapGestureRecognizer *_menuTapGestureRecognizer;
     UITapGestureRecognizer *_menuDoubleTapGestureRecognizer;
     UITapGestureRecognizer *_playPauseTapGestureRecognizer;
@@ -122,12 +129,17 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
     MicHandler* micHandler;
     MotionHandler *_motionHandler;
 
+    
 #else
     UITapGestureRecognizer *_menuTapGestureRecognizer;
     UITapGestureRecognizer *_menuDoubleTapGestureRecognizer;
     UITapGestureRecognizer *_playPauseTapGestureRecognizer;
 #endif
 
+}
+
++ (StreamFrameViewController *)sharedInstance {
+    return VLSharedStreamFrameViewController;
 }
 
 - (void)pictureInPictureControllerWillStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
@@ -298,15 +310,27 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
 }
 
 - (void)bringUpToolboxMenu{
+    [self bringUpToolboxMenuWithoutWidgetLayoutTool:NO];
+}
+
+- (void)bringUpToolboxMenuWithoutWidgetLayoutTool{
+    [self bringUpToolboxMenuWithoutWidgetLayoutTool:YES];
+}
+
+- (void)bringUpToolboxMenuWithoutWidgetLayoutTool:(BOOL)hideWidgetLayoutToolEntry{
     [self prepareGameProfileSelector];
     ToolboxViewController* oldToolboxVC = toolBoxViewController;
     toolBoxViewController = [[ToolboxViewController alloc] init];
     toolBoxViewController.specialEntryDelegate = self;
-    toolBoxViewController.specialEntries = oldToolboxVC.specialEntries;
+    toolBoxViewController.specialEntries = [oldToolboxVC.specialEntries mutableCopy];
+    if(hideWidgetLayoutToolEntry) [toolBoxViewController.specialEntries removeObject:@"widgetLayoutTool"];
     toolBoxViewController.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-    [self presentViewController:toolBoxViewController animated:YES completion:^{
-        //[self->toolBoxViewController setupConstraints];
-    }];
+    if([GenericUtils isFirstOpeningNewToolbox]){
+        [GenericUtils handleFirstOpeningNewToolboxIn:self handler:^{
+            [self presentViewController:self->toolBoxViewController animated:YES completion:^{}];
+        }];
+    }
+    else [self presentViewController:toolBoxViewController animated:YES completion:^{}];
 }
 
 - (void)configGestures{
@@ -660,6 +684,12 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
     [self setMagnifierViewportInteractionEnabled:_oscProfile.touchMode == AbsoluteTouch && !_settings.passthroughGestures];
     
     GenericUtils.globeAsEscape = _settings.globeAsEscape;
+    
+    if (@available(iOS 13.0, *)) {
+        ControllerNavigator.localRadialMenuButton = (ControllerElement)_settings.localRadialMenuButton.intValue;
+        ControllerNavigator.streamingRadialMenuButton = (ControllerElement)_settings.streamingRadialMenuButton.intValue;
+        ControllerNavigator.streamingRadialMenuDelay = (NSTimeInterval)_settings.streamingRadialMenuDelay.floatValue;
+    }
 
     NSLog(@"frameview gestures: %d", (uint32_t)[self.view.gestureRecognizers count]);
     NSLog(@"streamview gestures: %d", (uint32_t)[_streamView.gestureRecognizers count]);
@@ -802,7 +832,7 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
     NSString* cmdToolEdgeSide = _settings.slideToSettingsScreenEdge.intValue == UIRectEdgeLeft ? [LocalizationHelper localizedStringForKey:@"right"] : [LocalizationHelper localizedStringForKey:@"left"];
     uint8_t slideDist = (uint8_t)(_settings.slideToSettingsDistance.floatValue * 100);
     // 创建弹窗
-    NSString* tipText = (GenericUtils.isRunningOnMacAsiPadApp
+    NSString* tipText = (PublicUtils.isRunningOnMacAsiPadApp
     ? [LocalizationHelper localizedStringForKey:@"keyboard&MouseStreamingTip"]
     : [LocalizationHelper localizedStringForKey:@"firstLaunchTip", settingsEdgeSide, slideDist, cmdToolEdgeSide, slideDist]);
     
@@ -814,7 +844,7 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
                                 countdown:16
                                    action:^{}
                                completion:^{
-        if(!GenericUtils.isRunningOnMacAsiPadApp && GenericUtils.isHardwareKeyboardConnected) [self popKeyboardAndMouseStreamingTip];
+        if(!PublicUtils.isRunningOnMacAsiPadApp && GenericUtils.isHardwareKeyboardConnected) [self popKeyboardAndMouseStreamingTip];
     }];
     
     return;
@@ -828,16 +858,20 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
 
 - (void)viewDidLoad
 {
+    VLSharedStreamFrameViewController = self;
     _viewJustLoaded = true;
     viewIsBeingResized = false;
     _magnifierViewportInteractionActive = false;
     
+    _touchDisabled = false;
+    _singleTouchDisabled = false;
+    
     [super viewDidLoad];
-
+    
     [self.navigationController setNavigationBarHidden:YES animated:YES];
     
     [UIApplication sharedApplication].idleTimerDisabled = YES;
-        
+    
     _settings = [[[DataManager alloc] init] getSettings];  //StreamFrameViewController retrieve the settings here.
     
     _stageLabel = [[UILabel alloc] init];
@@ -873,9 +907,9 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
     
     toolBoxViewController = [[ToolboxViewController alloc] init];
     toolBoxViewController.specialEntryDelegate = self;
-
+    
     _isRestoringFromPiP = NO;
-
+    
     /*
      _settings.externalDisplayMode.intValue:
      0 - stage manager
@@ -890,12 +924,12 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
     [self reConfigStreamViewRealtime]; // call this method again to make sure all gestures are configured & added to the superview(self.view), including the gestures added from inside the streamview.
     
     if([self isFirstStreaming] || GenericUtils.isFirstStreamingOnMac) [self popFirstStreamingTip];
-
+    
 #if TARGET_OS_TV
     if (!_menuTapGestureRecognizer || !_menuDoubleTapGestureRecognizer || !_playPauseTapGestureRecognizer) {
         _menuTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(controllerPauseButtonPressed:)];
         _menuTapGestureRecognizer.allowedPressTypes = @[@(UIPressTypeMenu)];
-
+        
         _playPauseTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(controllerPlayPauseButtonPressed:)];
         _playPauseTapGestureRecognizer.allowedPressTypes = @[@(UIPressTypePlayPause)];
         
@@ -908,7 +942,7 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
     [self.view addGestureRecognizer:_menuTapGestureRecognizer];
     [self.view addGestureRecognizer:_menuDoubleTapGestureRecognizer];
     [self.view addGestureRecognizer:_playPauseTapGestureRecognizer];
-
+    
 #else
     //[self configSwipeGestures]; // swipe & exit gesture configured here
     //[self configOscLayoutTool]; //_oscLayoutTapRecoginizer will be added or removed to the view here
@@ -953,7 +987,7 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
                                              selector:@selector(gameProfileSelectorClosed)
                                                  name:@"GameProfileSelectorCloseNotification"
                                                object:nil];
-
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleStreamAspectRatioChanged:)
                                                  name:@"StreamAspectRatioChanged"
@@ -983,13 +1017,13 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
     [self.view addSubview:_stageLabel];
     [self.view addSubview:_spinner];
     [self.view addSubview:_tipLabel];
-
+    
     if ([_settings.renderingBackend intValue] == RENDER_METAL) {
         // Metal view for video
         Log(LOG_I, @"StreamFrameViewController creating MetalViewController");
         self.metalViewController = [[MetalViewController alloc] initWithFrame:self.view.bounds
                                                                     framerate:[self->_settings.framerate floatValue]
-                                                                    settings:self->_settings
+                                                                     settings:self->_settings
                                                                metricsHandler:self.imguiView.metricsHandler];
         self.metalViewController.view.userInteractionEnabled = NO;
         [self addChildViewController:self.metalViewController];
@@ -997,14 +1031,10 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
         [self.view insertSubview:self.metalViewController.view atIndex:0];
         [self.metalViewController didMoveToParentViewController:self];
     }
-        
-    OnScreenWidgetView.gamepadArrivalReported = false;
     
-    OnScreenWidgetView.enableFolderAnimation = false;
-    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC));
-    dispatch_after(delay, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        OnScreenWidgetView.enableFolderAnimation = true;
-    });
+    ControllerUtil.gamepadArrivalReported = false;
+    
+    [OnScreenWidgetView disableFolderAnimationFor:2];
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification{
@@ -1048,9 +1078,10 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
     _layoutOnScreenControlsVC.quickSwitchEnabled = true;
     _layoutOnScreenControlsVC.toolbarStackView.hidden = true;
     _layoutOnScreenControlsVC.toolbarRootView.hidden = true;
-    OSCProfilesTableViewLoadingMode loadingMode = pickProfile ? OSCProfilesTableViewLoadingModePickProfile : OSCProfilesTableViewLoadingModeSelectProfileFromStreamView;
+    ProfileSelectorLoadingMode loadingMode = pickProfile ? ProfileSelectorLoadingModePickProfile : ProfileSelectorLoadingModeSelectProfileFromStreamView;
+    _layoutOnScreenControlsVC.profileSelectorLoadingMode = loadingMode;
     [self presentViewController:_layoutOnScreenControlsVC animated:NO completion:^{
-        [self->_layoutOnScreenControlsVC presentProfilesTableViewWithLoadingMode:loadingMode];
+        [self->_layoutOnScreenControlsVC presentProfileSelectorWith:loadingMode animated:false];
     }];
 }
 
@@ -1116,10 +1147,12 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
     if(!profile){
         profile = [OSCProfilesManager sharedManager:CGRectZero].getSelectedProfile;
     }
-    [self setMagnifierViewportInteractionEnabled:true];
-    CGPoint streamViewOffset = CGPointMake(profile.normalizedStreamViewOffset.x*self.view.bounds.size.width, profile.normalizedStreamViewOffset.y*self.view.bounds.size.height);
-    [self restoreMagnifierStreamViewWithOffset:streamViewOffset scale:profile.streamViewScale animated:YES];
-    [self setMagnifierViewportInteractionEnabled:profile.touchMode == AbsoluteTouch && !_settings.passthroughGestures];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self setMagnifierViewportInteractionEnabled:true];
+        CGPoint streamViewOffset = CGPointMake(profile.normalizedStreamViewOffset.x*self.view.bounds.size.width, profile.normalizedStreamViewOffset.y*self.view.bounds.size.height);
+        [self restoreMagnifierStreamViewWithOffset:streamViewOffset scale:profile.streamViewScale animated:YES];
+        [self setMagnifierViewportInteractionEnabled:profile.touchMode == AbsoluteTouch && !self->_settings.passthroughGestures];
+    });
 }
 
 - (void)restoreMagnifierStreamViewWithOffset:(CGPoint)offset scale:(CGFloat)scale {
@@ -1171,6 +1204,7 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
     // [self->_streamView reloadLegacyWidgets];
     [self reConfigStreamViewRealtimeAndReloadSettings:NO reloadOnscreenWidgets:_settings.onscreenControls.intValue == OnScreenControlsLevelCustom];
     // [self->_streamView reloadGameProfile:nil reloadWidgets:true]; //update keyboard buttons here
+    [OnScreenWidgetView disableFolderAnimationFor:2];
 }
 
 - (void)handleStreamAspectRatioChanged:(NSNotification *)notification {
@@ -1210,8 +1244,8 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
 - (void)willMoveToParentViewController:(UIViewController *)parent {
     // Only cleanup when we're being destroyed
     if (parent == nil) {
-        _streamView = nil;
         [_streamView cleanUp];
+        _streamView = nil;
         [_controllerSupport cleanup];
 
         [UIApplication sharedApplication].idleTimerDisabled = NO;
@@ -1221,6 +1255,10 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
             _inactivityTimer = nil;
         }
         if (self.metalViewController) {
+            // Explicit shutdown: viewDidDisappear is not guaranteed to fire here
+            // (e.g. teardown while backgrounded), and it's what stops the render
+            // thread, display link and renderer.
+            [self.metalViewController shutdown];
             [self.metalViewController.view removeFromSuperview];
             [self.metalViewController removeFromParentViewController];
             self.metalViewController = nil;
@@ -1287,10 +1325,10 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
 - (void)setupOverlayView{
     if (_overlayView == nil) {
         _overlayView = [[PaddedLabel alloc] initWithFrame:CGRectZero];
-        [_overlayView setTextInsets:UIEdgeInsetsMake([_mainFrameViewcontroller isIPhone]?4:6, 12, [_mainFrameViewcontroller isIPhone]?4:6, 12)];
+        [_overlayView setTextInsets:UIEdgeInsetsMake(PublicUtils.isIPhone?4:6, 12, PublicUtils.isIPhone?4:6, 12)];
         [_overlayView setUserInteractionEnabled:NO];
         [_overlayView setNumberOfLines:100];
-        [_overlayView.layer setCornerRadius:[_mainFrameViewcontroller isIPhone]?7:10];
+        [_overlayView.layer setCornerRadius:PublicUtils.isIPhone?7:10];
         [_overlayView.layer setMasksToBounds:YES];
         
         // HACK: If not using stats overlay, center the text
@@ -1303,13 +1341,13 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
 #if TARGET_OS_TV
         [_overlayView setFont:[UIFont systemFontOfSize:24 weight:UIFontWeightMedium]];
 #else
-        [_overlayView setFont:[UIFont systemFontOfSize: [_mainFrameViewcontroller isIPhone]?10:12 weight:UIFontWeightMedium]];
+        [_overlayView setFont:[UIFont systemFontOfSize: PublicUtils.isIPhone?10:12 weight:UIFontWeightMedium]];
 #endif
         [_overlayView setAlpha:(float)[_settings.graphOpacity intValue]/ 100.0];
         [self.view addSubview:_overlayView];
     }
     if (@available(iOS 13.0, *)) {
-       if(overlayLevel == 1) _overlayView.font = [UIFont monospacedSystemFontOfSize:[_mainFrameViewcontroller isIPhone]?10:12 weight:UIFontWeightMedium];
+       if(overlayLevel == 1) _overlayView.font = [UIFont monospacedSystemFontOfSize:PublicUtils.isIPhone?10:12 weight:UIFontWeightMedium];
     }
     
     [_overlayView setHidden:YES];
@@ -1320,6 +1358,11 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
         // We set our bounds to the maximum width in order to work around a bug where
         // sizeToFit interacts badly with the UITextView's line breaks, causing the
         // width to get smaller and smaller each time as more line breaks are inserted.
+        //sdfdsf;
+        if (_overlayView.superview == nil) {
+            [self.view addSubview:_overlayView];
+        }
+
         [_overlayView setBounds:CGRectMake(self.view.frame.origin.x,
                                            _overlayView.frame.origin.y,
                                            self.view.frame.size.width,
@@ -1334,7 +1377,67 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
     }
 }
 
-- (void) returnToMainFrame {
+- (void)updateTransientHUDText:(NSString*)text {
+    if (![NSThread isMainThread]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self updateTransientHUDText:text];
+        });
+        return;
+    }
+
+    if (text == nil) {
+        _transientHUDView.hidden = YES;
+        return;
+    }
+
+    if (_transientHUDView == nil) {
+        _transientHUDView = [[PaddedLabel alloc] initWithFrame:CGRectZero];
+        _transientHUDView.translatesAutoresizingMaskIntoConstraints = NO;
+        _transientHUDView.textInsets = UIEdgeInsetsMake(10, 14, 10, 14);
+        _transientHUDView.numberOfLines = 0;
+        _transientHUDView.textAlignment = NSTextAlignmentLeft;
+        _transientHUDView.textColor = [UIColor.whiteColor colorWithAlphaComponent:0.7];
+        _transientHUDView.backgroundColor = [UIColor.blackColor colorWithAlphaComponent:0.5];
+        _transientHUDView.font = [UIFont systemFontOfSize:PublicUtils.isIPhone ? 18 : 22
+                                                  weight:UIFontWeightSemibold];
+        _transientHUDView.layer.cornerRadius = 8;
+        _transientHUDView.layer.masksToBounds = YES;
+        _transientHUDView.userInteractionEnabled = NO;
+
+        [self.view addSubview:_transientHUDView];
+        UILayoutGuide *safeArea = self.view.safeAreaLayoutGuide;
+        [NSLayoutConstraint activateConstraints:@[
+            [_transientHUDView.leadingAnchor constraintEqualToAnchor:safeArea.leadingAnchor constant:35],
+            [_transientHUDView.topAnchor constraintEqualToAnchor:safeArea.topAnchor constant:12],
+            [_transientHUDView.widthAnchor constraintLessThanOrEqualToAnchor:safeArea.widthAnchor multiplier:0.8]
+        ]];
+    }
+
+    _transientHUDView.text = text;
+    _transientHUDView.hidden = NO;
+    [self.view bringSubviewToFront:_transientHUDView];
+}
+
+- (void)returnToMainFrame {
+    if (@available(iOS 13.0, *)) {
+        // [ControllerNavigator setUINavigationDelegate:[_mainFrameViewcontroller isInAppView] ? _mainFrameViewcontroller : _mainFrameViewcontroller.hostCollectionVC];
+        [ControllerNavigator restorePreviousUINavigationDelegateWithIfCurrentDelegateIs:self];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.15 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            if(ControllerNavigator.radialMenuView) [ControllerNavigator updateRadialMenu];
+        });
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [ControllerNavigator restoreUINavigationHighlight];
+            // ControllerNavigator.radialMenuButtonPressed = false;
+            if(ControllerNavigator.streamingRadialMenuButton == ControllerElementSpecial)  [GamepadNavigationIllustrationHud updateHudWithForceDisplay:true];
+        });
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [ControllerNavigator restoreUINavigationHighlight];
+        });
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [ControllerNavigator restoreUINavigationHighlight];
+        });
+    }
+    
     [_streamView saveStreamingGameProfileChanges];
     [_streamView clearOnScreenWidgets];
     if(micHandler) [micHandler clean];
@@ -1345,11 +1448,11 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
     if (@available(iOS 13.0, *)) {
         [SceneDelegate clearExternalDisplayRenderView];
     }
-
+    
     if (_settings.enablePIP) {
         [self cleanupPiPController];
     }
-
+    
     [_statsUpdateTimer invalidate];
     _statsUpdateTimer = nil;
     
@@ -1358,8 +1461,10 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
     _extWindow = nil;
     
     if(_streamConfig.redirectMic) [micHandler stopTappingWithStopEngine:true];
-
+    
     self.mainFrameViewcontroller.settingsExpandedInStreamView = false; // reset this flag to false
+        
+    [ControllerUtil disableSysGestures: ControllerUtil.primaryGCController];
 }
 
 // External Screen connected
@@ -1476,7 +1581,7 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification {
-    if(!GenericUtils.isIPhone){
+    if(!PublicUtils.isIPhone){
         for(OnScreenWidgetView* widget in OnScreenWidgetView.mapping.allValues){
             if(widget.parentSequence != -1 && !widget.autoDockEnabled) continue;
             if(widget.autoDockEnabled){
@@ -1567,7 +1672,6 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
 }
 
 - (void)expandSettingsView{
-    self.mainFrameViewcontroller.settingsExpandedInStreamView = true; //notify mainFrameViewContorller that this is a setting expansion in stream view, some settings shall be disabled.
     [_streamView saveStreamingGameProfileChanges];
     [self.mainFrameViewcontroller expandSettingsView];
 }
@@ -1591,7 +1695,7 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         sleep(1.5);
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.mainFrameViewcontroller quitRunningApp];
+            [self.mainFrameViewcontroller quitLaunchedApp];
         });
     });
 }
@@ -1745,7 +1849,7 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
         _micStreamInitialized = false;
     }
     
-    // 8bit 444 degration workaround
+    /*
     if(strcmp(stageName, "video stream establishment")==0){
         NSLog(@"sendAutoReleaseComboCommandWithCmdStrings %f", CACurrentMediaTime());
         if(!_settings.enableHdr
@@ -1765,6 +1869,7 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
             });
         }
     }
+    */
 }
 
 - (void) stageFailed:(const char*)stageName withError:(int)errorCode portTestFlags:(int)portTestFlags {
@@ -1839,6 +1944,17 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
     Log(LOG_I, @"Set controller LED on gamepad %d: l%02x%02x%02x", controllerNumber, r, g, b);
     
     [_controllerSupport setControllerLed:controllerNumber r:r g:g b:b];
+}
+
+- (void) setAdaptiveTriggers:(uint16_t)controllerNumber eventFlags:(uint8_t)eventFlags
+                     typeLeft:(uint8_t)typeLeft typeRight:(uint8_t)typeRight
+                         left:(const uint8_t*)left right:(const uint8_t*)right {
+    [_controllerSupport setAdaptiveTriggers:controllerNumber
+                                 eventFlags:eventFlags
+                                   typeLeft:typeLeft
+                                  typeRight:typeRight
+                                       left:left
+                                      right:right];
 }
 
 - (void)connectionStatusUpdate:(int)status {
@@ -1928,6 +2044,7 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
 }
 
 - (void)gamepadPresenceChanged {
+    if(PublicUtils.iOS26Available) return;
 #if !TARGET_OS_TV
     if (@available(iOS 11.0, *)) {
         [self setNeedsUpdateOfHomeIndicatorAutoHidden];
@@ -1963,6 +2080,7 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
     // also discard our edges deferring system gestures unless
     // we willingly give up home bar hiding preference.
     _userIsInteracting = YES;
+    if(PublicUtils.iOS26Available) return;
 #if !TARGET_OS_TV
     if (@available(iOS 11.0, *)) {
         [self setNeedsUpdateOfHomeIndicatorAutoHidden];
@@ -1973,6 +2091,7 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
 - (void)userInteractionEnded {
     // Enable home bar hiding again if conditions allow
     _userIsInteracting = NO;
+    if(PublicUtils.iOS26Available) return;
 #if !TARGET_OS_TV
     if (@available(iOS 11.0, *)) {
         [self setNeedsUpdateOfHomeIndicatorAutoHidden];
@@ -2072,8 +2191,8 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
     [_streamView disablePencilHover];
 }
 
-- (void)setAllowSingleTouchEnabled:(BOOL)enabled{
-    [_streamView setAllowSingleTouchEnabled:enabled];
+- (void)handleDisableSingleTouchButtonUp {
+    [_streamView setAllowSingleTouchEnabled:!_singleTouchDisabled];
 }
 
 - (void)replaceBrushWithShortcut:(NSString *)shortcut{
@@ -2088,8 +2207,8 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
     }
 }
 
-- (void)toggleTouchWithDisabled:(BOOL)disabled{
-    [_streamView toggleTouchDisabled:disabled];
+- (void)handleTouchDisableButtonUp {
+    [_streamView toggleTouchDisabled:self.touchDisabled];
 }
 
 - (void)presentPressureCurveVC{
@@ -2237,7 +2356,7 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
         // CGFloat maxWidth = MIN(CGRectGetWidth(self.view.bounds) * 0.72, 620);
         // CGFloat standardWidth = MAX(420, maxWidth);
         
-        CGFloat standardWidth = GenericUtils.isIPhone ? 165 : 200;
+        CGFloat standardWidth = PublicUtils.isIPhone ? 165 : 200;
         
         CGFloat standardhHeight = standardWidth / 1.82;
         CGRect overlayFrame = CGRectMake(0, 0, standardWidth, standardhHeight);
@@ -2254,8 +2373,14 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
     });
 }
 
+- (void)startStreamViewInteractionTimer {
+    [_streamView startInteractionTimer];
+}
 
 - (void)dealloc {
+    if (VLSharedStreamFrameViewController == self) {
+        VLSharedStreamFrameViewController = nil;
+    }
     NSLog(@"dealloc StreamFrameViewController %f", CACurrentMediaTime());
 }
 
@@ -2268,5 +2393,6 @@ static NSString* VLTerminationHintForErrorCode(int errorCode) {
         });
     }];
 }
+
 
 @end

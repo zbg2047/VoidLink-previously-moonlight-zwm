@@ -22,6 +22,8 @@
 @property BOOL enableYUV444;
 @property BOOL enablePIP;
 @property BOOL fullColorRange;
+@property BOOL enableHdr;
+@property BOOL sdrPerformanceWorkaround;
 @property int width;
 @property int height;
 @property int frameRate;
@@ -38,6 +40,7 @@
 @property BOOL asyncNativeTouchPriority;
 @property int gyroMode;
 @property int emulatedControllerType;
+@property int hapticEngine;
 @property int audioConfiguration;
 @property int supportedVideoFormats;
 @property BOOL multiController;

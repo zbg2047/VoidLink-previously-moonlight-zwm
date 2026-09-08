@@ -1621,6 +1621,36 @@
         }
       }
     },
+    "bPX-Kf-kdP.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Streaming Radial Menu Delay\"; ObjectID = \"bPX-Kf-kdP\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Streaming Radial Menu Delay"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "串流手柄菜单延迟"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "串流手把選單延遲"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "串流手把選單延遲"
+          }
+        }
+      }
+    },
     "BQ1-w6-Opg.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Touch Point Tracking\"; ObjectID = \"BQ1-w6-Opg\";",
       "extractionState" : "extracted_with_value",
@@ -1683,7 +1713,7 @@
     },
     "bue-hp-CWD.title" : {
       "comment" : "Class = \"UIBarButtonItem\"; title = \"Duplicate\"; ObjectID = \"bue-hp-CWD\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1861,6 +1891,36 @@
         }
       }
     },
+    "CC6-pu-Uoh.segmentTitles[3]" : {
+      "comment" : "Class = \"UISegmentedControl\"; CC6-pu-Uoh.segmentTitles[3] = \"×2 Interpolation\"; ObjectID = \"CC6-pu-Uoh\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "×2 Interpolation"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "×2 插帧"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "x2 影格插補"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "x2 影格插補"
+          }
+        }
+      }
+    },
     "CEd-Wx-Gml.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Duck Other Apps\"; ObjectID = \"CEd-Wx-Gml\";",
       "extractionState" : "extracted_with_value",
@@ -2030,7 +2090,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "帧步进控制"
+            "value" : "帧步调"
           }
         },
         "zh-Hant" : {
@@ -2049,7 +2109,7 @@
     },
     "D9X-7p-9oc.title" : {
       "comment" : "Class = \"UIBarButtonItem\"; title = \"ExportAll\"; ObjectID = \"D9X-7p-9oc\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2402,31 +2462,31 @@
       }
     },
     "F0O-Ht-fW5.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Controller → Mouse\"; ObjectID = \"F0O-Ht-fW5\";",
+      "comment" : "Class = \"UILabel\"; text = \"Controller Navigation\"; ObjectID = \"F0O-Ht-fW5\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Controller → Mouse"
+            "value" : "Controller Navigation"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "手柄映射为鼠标"
+            "value" : "手柄导航"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "手把映射為滑鼠"
+            "value" : "手把導覽"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "手把映射為滑鼠"
+            "value" : "手把導覽"
           }
         }
       }
@@ -2493,6 +2553,30 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Stick indicator"
+          }
+        }
+      }
+    },
+    "FIi-Lv-Lbl.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Interpolation Resolution\"; ObjectID = \"FIi-Lv-Lbl\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Interpolation Resolution"
+          }
+        }
+      }
+    },
+    "FIi-Sc-Lbl.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"Scaled Stream Resolution\"; ObjectID = \"FIi-Sc-Lbl\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Scaled Stream Resolution"
           }
         }
       }
@@ -2619,7 +2703,7 @@
     },
     "ghM-zc-sr6.title" : {
       "comment" : "Class = \"UIBarButtonItem\"; title = \"Delete\"; ObjectID = \"ghM-zc-sr6\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2738,31 +2822,31 @@
       }
     },
     "H3s-ud-yqh.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Pointer Velocity\"; ObjectID = \"H3s-ud-yqh\";",
+      "comment" : "Class = \"UILabel\"; text = \"Controller Mouse Velocity\"; ObjectID = \"H3s-ud-yqh\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Pointer Velocity"
+            "value" : "Controller Mouse Velocity"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "指针速度"
+            "value" : "手柄鼠标速度"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "指針速度"
+            "value" : "手把滑鼠速度"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "指針速度"
+            "value" : "手把滑鼠速度"
           }
         }
       }
@@ -4705,18 +4789,6 @@
         }
       }
     },
-    "P4N-i6-1zD.text" : {
-      "comment" : "Class = \"UILabel\"; text = \"Enable Timebase\"; ObjectID = \"P4N-i6-1zD\";",
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Enable Timebase"
-          }
-        }
-      }
-    },
     "P9b-Th-Ybc.text" : {
       "comment" : "Class = \"UILabel\"; text = \"      Batch move     \"; ObjectID = \"P9b-Th-Ybc\";",
       "extractionState" : "extracted_with_value",
@@ -5132,43 +5204,55 @@
       }
     },
     "q6v-Jb-ysy.segmentTitles[1]" : {
-      "comment" : "Class = \"UISegmentedControl\"; q6v-Jb-ysy.segmentTitles[1] = \"DS4\"; ObjectID = \"q6v-Jb-ysy\";",
+      "comment" : "Class = \"UISegmentedControl\"; q6v-Jb-ysy.segmentTitles[1] = \"PS\"; ObjectID = \"q6v-Jb-ysy\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "DS4"
+            "value" : "PS"
           }
         }
       }
     },
     "q6v-Jb-ysy.segmentTitles[2]" : {
-      "comment" : "Class = \"UISegmentedControl\"; q6v-Jb-ysy.segmentTitles[2] = \"Both\"; ObjectID = \"q6v-Jb-ysy\";",
+      "comment" : "Class = \"UISegmentedControl\"; q6v-Jb-ysy.segmentTitles[2] = \"PS (Enhanced Haptics)\"; ObjectID = \"q6v-Jb-ysy\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Both"
+            "value" : "PS (Enhanced Haptics)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "同时映射"
+            "value" : "PS (触觉增强)"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "同時映射"
+            "value" : "PS（觸覺增強）"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "同時映射"
+            "value" : "PS（觸覺增強）"
+          }
+        }
+      }
+    },
+    "q6v-Jb-ysy.segmentTitles[3]" : {
+      "comment" : "Class = \"UISegmentedControl\"; q6v-Jb-ysy.segmentTitles[3] = \"Xbox + PS\"; ObjectID = \"q6v-Jb-ysy\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Xbox + PS"
           }
         }
       }
@@ -5571,7 +5655,7 @@
     },
     "sUC-Ur-7eI.title" : {
       "comment" : "Class = \"UIBarButtonItem\"; title = \"Restore\"; ObjectID = \"sUC-Ur-7eI\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -6241,6 +6325,36 @@
         }
       }
     },
+    "vak-fg-iAQ.text" : {
+      "comment" : "Class = \"UILabel\"; text = \"DualSense Haptic Intensity\"; ObjectID = \"vak-fg-iAQ\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "DualSense Haptic Intensity"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DualSense振动强度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DualSense振動強度"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DualSense振動強度"
+          }
+        }
+      }
+    },
     "VEc-6n-QcS.text" : {
       "comment" : "Class = \"UILabel\"; text = \"Lift Stream View for Local Keyboard                                          \"; ObjectID = \"VEc-6n-QcS\";",
       "extractionState" : "extracted_with_value",
@@ -6633,7 +6747,7 @@
     },
     "Z9M-yq-an2.title" : {
       "comment" : "Class = \"UIBarButtonItem\"; title = \"Import\"; ObjectID = \"Z9M-yq-an2\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

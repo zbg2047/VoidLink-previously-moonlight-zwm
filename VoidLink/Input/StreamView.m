@@ -28,7 +28,11 @@
 #import "StreamFrameViewController.h"
 
 
-@interface StreamView()
+#if TARGET_OS_TV
+@interface StreamView() <X1KitMouseDelegate, UITextFieldDelegate>
+#else
+@interface StreamView() <X1KitMouseDelegate, UITextFieldDelegate, UIPointerInteractionDelegate, InputAccessoryBarDelegate>
+#endif
 @property (weak, nonatomic) StreamFrameViewController* streamFrameVC;
 @end
 
@@ -69,7 +73,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
     NSTimer* interactionTimer;
     BOOL hasUserInteracted;
-    
+
     NSDictionary<NSString *, NSNumber *> *dictCodes;
     CustomTapGestureRecognizer *keyboardToggleRecognizer;
     UIPanGestureRecognizer *discreteMouseWheelRecognizer;
@@ -93,7 +97,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
             streamConfig:(StreamConfiguration*)streamConfig
              gameProfile:(OSCProfile* )profile
  streamFrameTopLayerView:(UIView* )topLayerView{
-    if(!self.streamFrameVC) self.streamFrameVC = (StreamFrameViewController* )[GenericUtils parentViewControllerForView:self];
+    if(!self.streamFrameVC) self.streamFrameVC = (StreamFrameViewController* )[PublicUtils parentViewControllerForView:self];
     
     self->comboKeyModifierFlags = (UIKeyModifierControl|UIKeyModifierAlternate|UIKeyModifierShift);
 
@@ -129,7 +133,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     keyboardToggleTip.layer.cornerRadius = 10;
     keyboardToggleTip.clipsToBounds = true;
     
-    designatedSoftKeyboardHeight = settings.softKeyboardHeight * GenericUtils.screenHeight;
+    designatedSoftKeyboardHeight = settings.softKeyboardHeight * PublicUtils.screenHeight;
     keyboardHeightDesignatedForLandscape = designatedSoftKeyboardHeight != 0;
     
     // if(touchMode == NativeTouchOnly) [self addGestureRecognizer:keyboardToggleRecognizer]; //keep legacy approach in pure native mode
@@ -232,6 +236,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         case NativeTouch:
             keyboardToggleRecognizer.immediateTriggering = false;
             self->touchHandler = [[NativeTouchHandler alloc] initWithView:self settings:settings profile:profile];
+            [(NativeTouchHandler* )touchHandler setAllowSingleTouchEnabled:!_streamFrameVC.singleTouchDisabled];
             break;
         case NativeTouchOnly:
             keyboardToggleRecognizer.immediateTriggering = false;
@@ -250,11 +255,11 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
             self->touchHandler = nil;
             keyboardToggleRecognizer.immediateTriggering = false;
             break;
-
         default:
             break;
     }
     sessionTouchHandler = touchHandler;
+    if(_streamFrameVC.touchDisabled) touchHandler = nil;
 }
 
 - (void)refreshKeyboardToggleRecognizer:(uint8_t)numberOfTouches{
@@ -279,7 +284,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         NSDictionary *userInfo = notification.userInfo;
         // Get the keyboard size from the notification
         CGRect keyboardFrame = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-        CGFloat screenHeight = GenericUtils.screenHeight;
+        CGFloat screenHeight = PublicUtils.screenHeight;
         CGFloat totalKeyboardHeight = keyboardFrame.size.height;
         CGFloat toolbarHeight = settings.showKeyboardToolbar ? GenericUtils.inputAccessoryBarHeight : 0;
         
@@ -299,7 +304,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         
         bool useDesignatedKeyboardHeight = false;
         if (@available(iOS 13.0, *)) {
-            useDesignatedKeyboardHeight = GenericUtils.isLandscape && keyboardHeightDesignatedForLandscape;
+            useDesignatedKeyboardHeight = PublicUtils.isLandscape && keyboardHeightDesignatedForLandscape;
             totalKeyboardHeight = useDesignatedKeyboardHeight ? designatedSoftKeyboardHeight+toolbarHeight : totalKeyboardHeight;
         }
         else {
@@ -307,7 +312,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
             totalKeyboardHeight = useDesignatedKeyboardHeight ? designatedSoftKeyboardHeight+toolbarHeight : totalKeyboardHeight;
         }
         
-        HeightViewLiftedTo = totalKeyboardHeight - keyboardToggleRecognizer.lowestTouchPointHeight + GenericUtils.screenHeight * (useDesignatedKeyboardHeight ? 0.1 : 0.15); // lift the StreamView to the height of lowest touch point of multi-finger tap gesture, while reserving the view of 1/10 screen height for remote typing.
+        HeightViewLiftedTo = totalKeyboardHeight - keyboardToggleRecognizer.lowestTouchPointHeight + PublicUtils.screenHeight * (useDesignatedKeyboardHeight ? 0.1 : 0.15); // lift the StreamView to the height of lowest touch point of multi-finger tap gesture, while reserving the view of 1/10 screen height for remote typing.
         if(HeightViewLiftedTo < 0) HeightViewLiftedTo = 0;  // set HeightViewLiftedTo to 0 if it is high enough and not going to be covered by keyboard.
         CGRect liftedStreamFrame = self.frame;
         liftedStreamFrame.origin.y -= HeightViewLiftedTo;
@@ -479,7 +484,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
             UIBarButtonItem *deleteBarButton = [self createButtonWithImageNamed:@"DeleteIcon.png" backgroundColor:[UIColor blackColor] target:self action:@selector(toolbarButtonClicked:) keyCode:0x2E isToggleable:NO isDoneButton:false];
             UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
             [customToolbarView setItems:[NSArray arrayWithObjects:doneBarButton, windowsBarButton, escapeBarButton, tabBarButton, shiftBarButton, controlBarButton, altBarButton, deleteBarButton, flexibleSpace, nil]];
-            if (GenericUtils.liquidGlassEnabled) {
+            if (PublicUtils.liquidGlassEnabled) {
                 if (@available(iOS 26.0, *)) {
                     for(UIBarButtonItem *button in customToolbarView.items){
                         button.hidesSharedBackground = true;
@@ -615,7 +620,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 }
 
 - (CGPoint)denormalizeWidgetPosition:(CGPoint)position {
-    if(position.x < 1.0 && position.y < 1.0){
+    if(position.x < 2.01 && position.y < 2.01){
         position.x = position.x * _streamFrameTopLayerView.bounds.size.width;
         position.y = position.y * _streamFrameTopLayerView.bounds.size.height;
     }
@@ -687,15 +692,16 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     self->oscProfileMan = [OSCProfilesManager sharedManager:self->_streamFrameTopLayerView.bounds];
 
     if(!profile){
-        NSLog(@"reloadOnScreenWidgets in streamview %d", reloadWidgets);
         profile = [self->oscProfileMan getSelectedProfile]; //returns the currently selected OSCProfile
     }
+    
+    NSLog(@"reloadOnScreenWidgets in streamview %d", reloadWidgets);
     
     dispatch_async(dispatch_get_main_queue(), ^{
         MotionHandler* motionHandler = [MotionHandler sharedWithProfile:profile];
         
         // get streamFrameVC
-        if(!self.streamFrameVC) self.streamFrameVC = (StreamFrameViewController* )[GenericUtils parentViewControllerForView:self];
+        if(!self.streamFrameVC) self.streamFrameVC = (StreamFrameViewController* )[PublicUtils parentViewControllerForView:self];
         
         /*
         if (@available(iOS 13.0, *)) {
@@ -708,12 +714,18 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         
         OnScreenWidgetView.buttonVisualFeedbackEnabled = self->settings.buttonVisualFeedback;
         OnScreenWidgetView.gamepadOverlayFLag = profile.gamepadOverlayEnabled;
+        ControllerUtil.dualSenseHapticTransient = profile.dualSenseTransient;
 
         bool hasLegacyWidget = false;
         if(reloadWidgets && !OnScreenWidgetView.editMode){
             // remove all keyboard widget views first
             [self clearOnScreenWidgets];
             
+            self->_streamFrameVC.touchDisabled = false;
+            self->_streamFrameVC.singleTouchDisabled = false;
+            PencilHandler* pencilHandler = [PencilHandler shared];
+            if(pencilHandler) pencilHandler.disableTilt = false;
+
             bool sequenceGenerated = false;
             bool hasMovableWidget = false;
                         
@@ -763,6 +775,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                     widgetView.minStickOffset = buttonState.minStickOffset;
                     widgetView.dWheelWalkModeThreshold = buttonState.walkModeThreshold;
                     widgetView.buttonMode = buttonState.buttonMode;
+                    if([widgetView.cmdString isEqualToString:@"NOSINGLETOUCH"]) widgetView.buttonMode = movable;
                     widgetView.sprintKeyActionType = buttonState.sprintKeyActionType;
                     widgetView.sprintKeyThreshold = buttonState.sprintKeyThreshold;
                     widgetView.walkKeyActionType = buttonState.walkKeyActionType;
@@ -789,8 +802,6 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                     widgetView.componentSizeFactor = buttonState.componentSizeFactor;
                     widgetView.touchPointAnchored = buttonState.touchPointAnchored;
                     widgetView.stickIndicatorOffset = buttonState.stickIndicatorOffset;
-
-                    [widgetView setupAtrributedText];
                     
                     if(widgetView.isFolder && widgetView.parentSequence<0 && widgetView.autoDockIdleDuration>0) {
                         [widgetView setAutoDockWithEnabled:true];
@@ -807,6 +818,8 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
                     }
                     
                     [widgetView accessWidgetAttributes];
+                    
+                    [widgetView setupAtrributedText]; // rely on "labeledFolder cmd"
                 }
                 else if(buttonState.widgetType == LegacyOnScreenControls) hasLegacyWidget = true;
             }
@@ -995,7 +1008,12 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         });
     }
 
-    CGPoint location = [self adjustCoordinatesForVideoArea:[gesture locationInView:self]];
+    CGPoint originalLocation = [gesture locationInView:self];
+    CGPoint location = [self adjustCoordinatesForVideoArea:originalLocation];
+    NSLog(@" location %f, %f", location.x, location.y);
+    PencilHandler* handler = PencilHandler.shared;
+    location = CGPointApplyAffineTransform(location, CGAffineTransformMakeTranslation(handler.pencilTipOffset.x, handler.pencilTipOffset.y));
+    
     CGSize videoSize = [self getVideoAreaSize];
     
     float distance = 0.0f;
@@ -1016,19 +1034,20 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     
     
     dispatch_after(0, dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE,0), ^{// Code to execute after the delay
-        if(PencilHandler.isDrawing) return;
-        switch (PencilHandler.hoverMode) {
-            case HoverPencil:
+        if(PencilHandler.isDrawing && PencilHandler.pencilAndHoverMode == pencilOnly && PencilHandler.pencilAndHoverMode == hoverDisabled) return;
+        switch (PencilHandler.pencilAndHoverMode) {
+            case pencilOnly:
                 LiSendPenEvent(type, LI_TOOL_TYPE_PEN, 0, location.x / videoSize.width, location.y / videoSize.height, distance, 0.0f, 0.0f, rotationAngle, tiltAngle);
                 break;
-            case HoverMouse:
-                [self updateCursorLocation:location isMouse:YES];
+            case pencilToMouse:
+                if(gesture.state != UIGestureRecognizerStateEnded) [self updateCursorLocation:originalLocation isMouse:NO];
                 break;
-            case HoverDisabled:
+            case hoverDisabled:
                 break;
-            case HoverBoth:
+            case pencilToTouch:
+                /*
                 LiSendPenEvent(type, LI_TOOL_TYPE_PEN, 0, location.x / videoSize.width, location.y / videoSize.height, distance, 0.0f, 0.0f, rotationAngle, tiltAngle);
-                [self updateCursorLocation:location isMouse:YES];
+                [self updateCursorLocation:location isMouse:YES]; */
                 break;
             default:
                 break;
@@ -1092,11 +1111,11 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     // [button setTitle:@"666" forState:UIControlStateNormal];
     [button setImage:image forState:UIControlStateNormal];
 
-    button.frame = GenericUtils.liquidGlassEnabled ? CGRectMake(0, 0, 30, 30) : CGRectMake(0, 0, 30, 30);
+    button.frame = PublicUtils.liquidGlassEnabled ? CGRectMake(0, 0, 30, 30) : CGRectMake(0, 0, 30, 30);
     button.imageView.contentMode = UIViewContentModeScaleAspectFit;
     button.imageView.backgroundColor = backgroundColor;
     button.imageView.layer.cornerRadius = 10.0;
-    button.imageEdgeInsets = (GenericUtils.liquidGlassEnabled
+    button.imageEdgeInsets = (PublicUtils.liquidGlassEnabled
                               ? (isDoneButton ? UIEdgeInsetsMake(16, 16, 16, 16) : UIEdgeInsetsMake(27.5, 27.5, 27.5, 27.5))
                               : UIEdgeInsetsMake(6, 6, 6, 6));
     [button addTarget:target action:action forControlEvents:UIControlEventTouchUpInside];
@@ -1114,7 +1133,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
         isOn = !isOn;
         // Update the button's appearance based on its new state
         if (isOn) {
-            sender.imageView.backgroundColor = GenericUtils.liquidGlassEnabled ? [UIColor.systemGrayColor colorWithAlphaComponent:0.5] : [UIColor lightGrayColor];
+            sender.imageView.backgroundColor = PublicUtils.liquidGlassEnabled ? [UIColor.systemGrayColor colorWithAlphaComponent:0.5] : [UIColor lightGrayColor];
         } else {
             sender.imageView.backgroundColor = [UIColor blackColor];
         }

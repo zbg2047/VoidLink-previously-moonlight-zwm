@@ -99,6 +99,9 @@
 @property (nonatomic) BOOL ctrlDownForPinch;
 @property (nonatomic) BOOL passthroughGestures;
 @property (nonatomic, retain) NSNumber * framePacingMode;
+@property (nonatomic, retain) NSNumber * interpolationMaximumDimension;
+@property (nonatomic, retain) NSNumber * interpolationMaximumPixelCount;
+@property (nonatomic, retain) NSNumber * streamDimensionScale;
 @property (nonatomic, retain) NSNumber * scrollSensitivity;
 @property (nonatomic, retain) NSNumber * pinchSensitivity;
 @property (nonatomic, retain) NSNumber * relativeTouchSlideThreshold;
@@ -107,15 +110,19 @@
 @property (nonatomic, retain) NSNumber * controllerMouseLeftButton;
 @property (nonatomic, retain) NSNumber * controllerMouseRightButton;
 @property (nonatomic, retain) NSNumber * controllerMouseStick;
-@property (nonatomic, retain) NSNumber * controllerMouseSwitch;
-@property (nonatomic) BOOL mapControllerToMouse;
+@property (nonatomic, retain) NSNumber * localRadialMenuButton;
+@property (nonatomic, retain) NSNumber * streamingRadialMenuButton;
+@property (nonatomic) BOOL enableControllerNavigation;
 @property (nonatomic, retain) NSNumber * controllerMousePointerVelocity;
 @property (nonatomic, retain) NSNumber * controllerMouseExpo;
+@property (nonatomic, retain) NSNumber * streamingRadialMenuDelay;
 @property (nonatomic) BOOL globeAsEscape;
 
 // Pencil settings:
 @property (nonatomic, retain) NSNumber * pencilTickMode;
 @property (nonatomic, retain) NSNumber * pencilTickIntervalUs;
+@property (nonatomic, retain) NSNumber * pencilTipOffsetX;
+@property (nonatomic, retain) NSNumber * pencilTipOffsetY;
 
 
 - (id) initFromSettings:(Settings*)settings;

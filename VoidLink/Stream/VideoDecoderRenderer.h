@@ -26,12 +26,14 @@
 
 - (id)initWithView:(UIView*)view callbacks:(id<ConnectionCallbacks>)callbacks streamAspectRatio:(float)aspectRatio;
 
-- (void)setupWithVideoFormat:(int)videoFormat width:(int)videoWidth height:(int)videoHeight frameRate:(int)frameRate fullRange:(BOOL)fullRange;
+- (void)setupWithVideoFormat:(int)videoFormat width:(int)videoWidth height:(int)videoHeight frameRate:(int)frameRate fullRange:(BOOL)fullRange request10BitCodec:(BOOL)enableHdr;
+
 - (void)renderFrame:(Frame *)frame atTime:(CMTime)targetTime;
 - (void)cleanup;
 - (void)setHdrMode:(BOOL)enabled;
 - (void)safeCopyMetricsTo:(PlotMetrics *)dst from:(PlotMetrics *)src;
 - (void)getAllStats:(video_stats_t *)stats;
+- (uint64_t)renderedInterpolatedFrameCount;
 - (void)optimizeRefreshRate;
 - (void)resetFramePacing;
 
@@ -47,5 +49,8 @@
                         decodeStartTime:(CFTimeInterval)decodeStartTime;
 
 - (void)invalidateDecompressionSession;
++ (void)setFrameInterpolationEnabled:(bool)enabled;
++ (void)startOrRestartFrameInterpolation;
++ (void)stopFrameInterpolation;
 
 @end

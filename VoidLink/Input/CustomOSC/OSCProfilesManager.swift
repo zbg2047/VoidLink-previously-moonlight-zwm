@@ -15,7 +15,7 @@ import UIKit
 class OSCProfilesManager: NSObject {
     private static let profilesDefaultsKey = "OSCProfiles"
     // private static let widgetProfileUpdatedKey = "widgetProfileUpdated-20260606"
-    private static let widgetProfileUpdatedKey = "widgetProfileUpdated-20260622-6"
+    private static let widgetProfileUpdatedKey = "widgetProfileUpdated-20260801"
 
     private static var sharedInstance: OSCProfilesManager?
     private static var onScreenWidgetViews: NSMutableSet?
@@ -84,6 +84,10 @@ class OSCProfilesManager: NSObject {
     private func persistProfiles(_ profiles: NSMutableArray) {
         let profilesEncoded = encodedProfiles(from: profiles)
         persistEncodedProfiles(profilesEncoded)
+    }
+
+    func persistProfileOrder(_ orderedProfiles: NSMutableArray) {
+        persistProfiles(orderedProfiles)
     }
 
     private func persistEncodedProfiles(_ profilesEncoded: NSMutableArray) {
@@ -172,13 +176,19 @@ class OSCProfilesManager: NSObject {
 
     func importEncodedProfiles(_ profilesEncoded: NSMutableArray) {
         let localProfiles = currentProfiles.mutableCopy() as? NSMutableArray ?? NSMutableArray()
+        let profilesDecoded = decodeProfiles(from: profilesEncoded)
+        let importedIncludesDefault = (profilesDecoded.firstObject as? OSCProfile)?.name == "Default"
+        let isSingleProfile = profilesEncoded.count == 1
 
-        if localProfiles.count > 0 {
+        if importedIncludesDefault && localProfiles.count > 0 {
+            localProfiles.removeObject(at: 0)
+        } else if !importedIncludesDefault,
+                  let localDefaultProfile = localProfiles.firstObject as? OSCProfile,
+                  localDefaultProfile.name == "Default" {
+            profilesDecoded.insert(localDefaultProfile, at: 0)
             localProfiles.removeObject(at: 0)
         }
-        
-        let profilesDecoded = decodeProfiles(from: profilesEncoded)
-        
+
         let localProfileNames = Set(
             localProfiles.compactMap { ($0 as? OSCProfile)?.name }
         )
@@ -202,13 +212,24 @@ class OSCProfilesManager: NSObject {
         for case let profile as Any in localProfilesToRemove {
             localProfiles.remove(profile)
         }
-        
-        var indexOffset = 0
+
+        var indexOffset = importedIncludesDefault ? 0: 0
         for profile in localProfiles {
             profilesDecoded.insert(profile, at: 1+indexOffset)
             indexOffset += 1
         }
-
+        
+        if isSingleProfile, !importedIncludesDefault {
+            for profile in profilesDecoded {
+                if let profile = profile as? OSCProfile {
+                    profile.isSelected = false
+                }
+            }
+            if let profile = profilesDecoded[profilesDecoded.count-1] as? OSCProfile {
+                profile.isSelected = true
+            }
+        }
+        
         persistEncodedProfiles(encodedProfiles(from: profilesDecoded))
     }
 
@@ -223,7 +244,8 @@ class OSCProfilesManager: NSObject {
 
         do {
             let fileData = try Data(contentsOf: URL(fileURLWithPath: filePath), options: .mappedIfSafe)
-            if let profilesEncoded = try NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSMutableData.self, NSMutableArray.self], from: fileData) as? NSMutableArray {
+            let profilePayloadData = try ProfileFileContainer.unpackedData(from: fileData)
+            if let profilesEncoded = try NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSMutableData.self, NSMutableArray.self], from: profilePayloadData) as? NSMutableArray {
                 importEncodedProfiles(profilesEncoded)
                 if let selectedIndex = selectedIndex {
                     setProfileToSelected(selectedIndex)
@@ -329,7 +351,7 @@ class OSCProfilesManager: NSObject {
         
         return profiles[Int(selectedIndex)] as! OSCProfile
 
-        return (profiles.firstObject as? OSCProfile) ?? OSCProfile(name: "", buttonStates: NSMutableArray(), isSelected: false)
+        // return (profiles.firstObject as? OSCProfile) ?? OSCProfile(name: "", buttonStates: NSMutableArray(), isSelected: false)
     }
 
     func getIndexOfSelectedProfile() -> Int {
@@ -396,19 +418,19 @@ class OSCProfilesManager: NSObject {
 
     func normalizeWidgetPosition(_ position: CGPoint) -> CGPoint {
         var normalizedPosition = position
-        let originalPosition = position
-        if position.x > 1.0, position.y > 1.0 {
+        // let originalPosition = position
+        if abs(position.x) > 1.0, abs(position.y) > 1.0 {
             normalizedPosition.x = position.x / Self.layoutViewBounds.size.width
             normalizedPosition.y = position.y / Self.layoutViewBounds.size.height
         }
-        NSLog("layoutToolView bounds: %f, %f", Self.layoutViewBounds.size.width, Self.layoutViewBounds.size.height)
-        NSLog("position: %f, %f, denormalized position: %f, %f", normalizedPosition.x, normalizedPosition.y, originalPosition.x, originalPosition.y)
+        // NSLog("layoutToolView bounds: %f, %f", Self.layoutViewBounds.size.width, Self.layoutViewBounds.size.height)
+        // NSLog("position: %f, %f, denormalized position: %f, %f", normalizedPosition.x, normalizedPosition.y, originalPosition.x, originalPosition.y)
         return normalizedPosition
     }
 
     private func denormalizeWidgetPosition(_ position: CGPoint) -> CGPoint {
         var denormalizedPosition = position
-        if position.x < 1.0, position.y < 1.0 {
+        if abs(position.x) < 2.01, abs(position.y) < 2.01 {
             denormalizedPosition.x = position.x * Self.layoutViewBounds.size.width
             denormalizedPosition.y = position.y * Self.layoutViewBounds.size.height
         }

@@ -10,21 +10,22 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "AppDelegate.h"
-#import "MainFrameViewController.h"
-#import "CustomEdgeSlideGestureRecognizer.h"
-#import "MenuSectionView.h"
+#import "SWRevealViewController.h"
 
 @class LayoutOnScreenControlsViewController;
+@class MainFrameViewController;
+@class MenuSectionView;
 @class MicHandler;
 @class WidgetPickerViewController;
-@protocol WidgetPickerViewControllerDelegate;
 
-@interface SettingsViewController : UIViewController <RearNavigationBarMenuDelegate, MenuSectionDelegate, UITextFieldDelegate, WidgetPickerViewControllerDelegate>
+@interface SettingsViewController : UIViewController <RearNavigationBarMenuDelegate, UITextFieldDelegate>
 
 @property (strong, nonatomic) IBOutlet UINavigationBar *navigationBar;
 @property (strong, nonatomic) UIStackView *parentStack;
 @property (strong, nonatomic) IBOutlet UIStackView *resolutionStack;
+@property (strong, nonatomic) IBOutlet UIStackView *resolutionSelectorStack;
+@property (weak, nonatomic) IBOutlet UIStackView *customResolutionStack;
+
 @property (strong, nonatomic) IBOutlet UIStackView *fpsStack;
 @property (strong, nonatomic) IBOutlet UIStackView *bitrateStack;
 @property (strong, nonatomic) IBOutlet UIStackView *touchModeStack;
@@ -102,8 +103,10 @@
 @property (strong, nonatomic) IBOutlet UISlider *mousePointerVelocityFactorSlider;
 @property (strong, nonatomic) IBOutlet UILabel *mousePointerVelocityFactorUILabel;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *unlockDisplayOrientationSelector;
-@property (strong, nonatomic) LayoutOnScreenControlsViewController *layoutOnScreenControlsVC;
-@property (nonatomic, strong) MainFrameViewController *mainFrameViewController;
+@property (weak, nonatomic) LayoutOnScreenControlsViewController *layoutOnScreenControlsVC;
+@property (nonatomic, weak) MainFrameViewController *mainFrameViewController;
+@property (strong, nonatomic) UIView *controllerNavigationHighlightOverlayView;
+@property (nonatomic, strong, readonly) MenuSectionView *touchControlSection;
 
 @property (strong, nonatomic) IBOutlet UISegmentedControl *externalDisplayModeSelector;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *localMousePointerModeSelector;
@@ -125,6 +128,10 @@
 @property (strong, nonatomic) IBOutlet UIStackView *graphOpacityStack;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *renderingBackendSelector;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *framePacingModeSelector;
+@property (strong, nonatomic) IBOutlet UIStackView *interpolationLevelStack;
+@property (strong, nonatomic) IBOutlet UISlider *interpolationLevelSlider;
+@property (strong, nonatomic) IBOutlet UIStackView *streamDimensionScaleStack;
+@property (strong, nonatomic) IBOutlet UISlider *streamDimensionScaleSlider;
 
 @property (strong, nonatomic) IBOutlet UIStackView *backgroundSessionTimerStack;
 @property (strong, nonatomic) IBOutlet UISlider *backgroundSessionTimerSlider;
@@ -231,8 +238,11 @@
 @property (weak, nonatomic) IBOutlet UIStackView *softKeyboardHeightStack;
 @property (weak, nonatomic) IBOutlet UISwitch *softKeyboardHeightSwitch;
 
-@property (strong, nonatomic) IBOutlet UIStackView *controllerToMouseStack;
-@property (strong, nonatomic) IBOutlet UISwitch *controllerToMouseSwitch;
+@property (strong, nonatomic) IBOutlet UIStackView *controllerNavigationStack;
+@property (strong, nonatomic) IBOutlet UISwitch *controllerNavigationSwitch;
+
+@property (weak, nonatomic) IBOutlet UIStackView *streamingRadialMenuDelayStack;
+@property (weak, nonatomic) IBOutlet UISlider *streamingRadialMenuDelaySlider;
 
 @property (strong, nonatomic) IBOutlet UIStackView *controllerMouseVelocityStack;
 @property (strong, nonatomic) IBOutlet UISlider *controllerMouseVelocitySlider;
@@ -258,9 +268,6 @@
 @property (strong, nonatomic) IBOutlet UIStackView *pressureCurveStack;
 @property (strong, nonatomic) IBOutlet UISwitch *pressureCurveSwitch;
 
-@property (weak, nonatomic) IBOutlet UIStackView *frameTimebaseStack;
-@property (weak, nonatomic) IBOutlet UISwitch *frameTimebaseSwitch;
-
 @property (weak, nonatomic) IBOutlet UIStackView *asyncFrameDequeueStack;
 @property (weak, nonatomic) IBOutlet UISwitch *asyncFrameDequeueSwitch;
 
@@ -272,6 +279,9 @@
 
 @property (weak, nonatomic) IBOutlet UIStackView *globeAsEscapeStack;
 @property (weak, nonatomic) IBOutlet UISwitch *globeAsEscapeSwitch;
+
+@property (weak, nonatomic) IBOutlet UIStackView *dualSenseTransientStack;
+@property (weak, nonatomic) IBOutlet UISlider *dualSenseTransientSlider;
 
 @property (strong, nonatomic) IBOutlet UIStackView *testStack;
 
@@ -285,6 +295,9 @@
 @property (strong, nonatomic) IBOutlet UIStackView *pencilTickIntervalStack;
 @property (strong, nonatomic) IBOutlet UISlider *pencilTickIntervalSlider;
 
+@property (weak, nonatomic) IBOutlet UIStackView *pencilTipOffsetStack;
+@property (weak, nonatomic) IBOutlet UISwitch *pencilTipOffsetSwitch;
+
 @property (weak, nonatomic) IBOutlet UIStackView *doubleTapShortcutStack;
 @property (weak, nonatomic) IBOutlet UISwitch *doubleTapShortcutSwitch;
 
@@ -297,8 +310,8 @@
 @property (weak, nonatomic) IBOutlet UIStackView *disablePencilSlideGestureStack;
 @property (weak, nonatomic) IBOutlet UISwitch *disablePencilSlideGestureSwitch;
 
-@property (weak, nonatomic) IBOutlet UIStackView *hoverModeStack;
-@property (weak, nonatomic) IBOutlet UISegmentedControl *hoverModeSelector;
+@property (weak, nonatomic) IBOutlet UIStackView *pencilModeStack;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *pencilModeSelector;
 
 
 
@@ -307,11 +320,13 @@
 
 // This is okay because it's just an enum and access uses @available checks
 @property(nonatomic) UIUserInterfaceStyle overrideUserInterfaceStyle;
+@property(nonatomic, readonly) SettingsMenuMode currentSettingsMenuMode;
 
 #pragma clang diagnostic pop
 
 - (bool)hdrSupported;
 - (void)saveSettings;
+- (void)saveFavoriteSettingStackIdentifiers;
 + (bool)isLandscapeNow;
 - (void)updateResolutionTable;
 - (void)widget:(UIView*)widget setEnabled:(bool)enabled;
@@ -319,6 +334,8 @@
 - (void)hideDynamicLabelsWhenOverlapped:(UIView* )view;
 - (void)setHidden:(BOOL)hidden forStack:(UIStackView* )stack;
 - (void)updateCodecDependentSwitches;
-- (void)mainFrameGameProfileButtonTapped;
+- (void)mainFrameGameProfileButtonTapped:(bool)animated;
+- (void)addSettingToFavorite:(UIStackView* )settingStack;
+- (void)expandGamepadSection;
 
 @end

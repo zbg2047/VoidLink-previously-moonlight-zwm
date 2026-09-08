@@ -59,14 +59,13 @@ import ObjectiveC.runtime
         func openWidgetProfileTable(pickProfile: Bool)
         func bringUpSoftKeyboard()
         func alterAbsTouchDragWith(mouseButton:Int32)
-        func switchPencilHover()
         func enablePencilHover()
         func disablePencilHover()
-        func setAllowSingleTouchEnabled(_ enabled:Bool)
+        func handleDisableSingleTouchButtonUp()
         func replaceBrush(shortcut:String)
         func replaceEraser(shortcut:String)
         func presentPressureCurveVC()
-        func toggleTouch(disabled:Bool)
+        func handleTouchDisableButtonUp()
         func toggleGamepadOverlay(overlayEnabled:Bool)
         @objc(magnifierMoveStreamViewWithTranslation:)
         func magnifierMoveStreamView(translation: CGVector)
@@ -76,6 +75,7 @@ import ObjectiveC.runtime
         func resetMagnifierStreamView(animated:Bool)
         @objc(restoreMagnifierStreamViewWithOffset:scale:)
         func restoreMagnifierStreamView(offset: CGPoint, scale: CGFloat)
+        func startStreamViewInteractionTimer()
     }
     
     @objc enum WidgetTypeEnum: UInt8 {
@@ -93,9 +93,17 @@ import ObjectiveC.runtime
     
     @objc static public var editMode: Bool = false
     @objc static public var buttonVisualFeedbackEnabled: Bool = true
+    
     @objc public var widgetLabel: String
     private var nonEditableWidgetLabel: String = ""
     @objc public var cmdString: String
+    @objc public var showCmdStringLabel: Bool {
+        if let parent = OnScreenWidgetView.mapping[self.parentSequence] {
+            return parent.cmdString.contains("LABELEDFOLDER")
+        }
+        return false
+    }
+    
     @objc public var sequence: Int16 = -1
     private var buttonString: String = ""
     @objc var functionalButtonString: String = ""
@@ -269,7 +277,7 @@ import ObjectiveC.runtime
 
     @objc public var isMagnifier: Bool = false
     @objc public var animatesTransition: Bool = true
-
+    
     // for all stick pads
     @objc public var minStickOffset: CGFloat = 0
     public let stickMaxOffset: CGFloat = 0x7FFE
@@ -390,7 +398,9 @@ import ObjectiveC.runtime
     
     // key / button label
     private let label: UILabel
-    
+    private let cmdLabel: UILabel
+    private let labelStackView: UIStackView
+
     // first touch location within the button or pad view (self)
     @objc public var touchBeganLocation: CGPoint = .zero
     
@@ -447,7 +457,11 @@ import ObjectiveC.runtime
     @objc public var revealMode: RevealMode = .coexist
     @objc public var bulkMoveEnabled: Bool = false
     @objc public var sequenceSet: Set<Int16> = Set()
-    @objc public var parentSequence: Int16 = -1
+    @objc public var parentSequence: Int16 = -1 {
+        didSet {
+            setupAtrributedText()
+        }
+    }
     @objc public var standardFoldingInterval: TimeInterval = 0.05
     static weak var capturer: OnScreenWidgetView?
     @objc static weak var deepestButton: OnScreenWidgetView?
@@ -491,13 +505,15 @@ import ObjectiveC.runtime
 
         // print("widgetType: \(self.widgetType)")
         // print("touchPadString: \(self.touchPadString)")
-        for comboButtonString in comboButtonStrings {
+        // for comboButtonString in comboButtonStrings {
             // print("comboButtonString: \(comboButtonString)")
-        }
+        // }
         
         self.widgetLabel = buttonLabel
         self.shape = shape
         self.label = UILabel()
+        self.cmdLabel = UILabel()
+        self.labelStackView = UIStackView()
         // self.originalBackgroundColor = UIColor(white: 0.2, alpha: 0.7)
         // self.widthFactor = 1.0
         // self.heightFactor = 1.0
@@ -550,7 +566,7 @@ import ObjectiveC.runtime
             if self.cmdString.contains("ERASER"){
                 self.functionalButtonString = "ERASER"
             }
-            if self.cmdString.contains("FOLDER") {
+            if self.cmdString.contains("FOLDER") || self.cmdString.contains("LABELEDFOLDER") {
                 self.functionalButtonString = "FOLDER"
             }
             if self.isFunctionalButton {
@@ -591,8 +607,8 @@ import ObjectiveC.runtime
         }
         if self.widgetType == .button {
             if self.isFolder || self.isFunctionalButton {
-                self.widthFactor = GenericUtils.isIPhone() ? 0.88 : 1.17
-                self.heightFactor = GenericUtils.isIPhone() ? 0.56 : 0.77
+                self.widthFactor = PublicUtils.isIPhone ? 0.88 : 1.17
+                self.heightFactor = PublicUtils.isIPhone ? 0.56 : 0.77
             }
         }
                 
@@ -620,9 +636,11 @@ import ObjectiveC.runtime
         self.hasSensitivityY = CommandManager.touchPadCmds.contains(self.touchPadString) && !CommandManager.stickWheels.contains(self.touchPadString)
         self.hasSlideThreshold = CommandManager.mousePads.contains(self.touchPadString)
         
-        if CommandManager.bidirectionalVerticalTouchPads.contains(self.touchPadString){
+        if CommandManager.singleDimensionActiveTouchpads.contains(self.touchPadString){
             self.sensitivityYMin = -4.0
             self.sensitivityYMax = 4.0
+            self.sensitivityXMin = -4.0
+            self.sensitivityXMax = 4.0
         }
         
         if CommandManager.mousePads.contains(self.touchPadString){
@@ -670,14 +688,16 @@ import ObjectiveC.runtime
          && (buttonMode == .slideAndHold || buttonMode == .slideToToggle)))*/
         self.hasTrackPoint = true
         self.hasNonEditableLabel = (self.cmdString == "DISABLETOUCH"
-                                    || self.cmdString == "GAMEPADOVERLAY")
+                                    || self.cmdString == "GAMEPADOVERLAY"
+                                    || self.cmdString == "DISABLETILT"
+                                    || self.cmdString == "NOSINGLETOUCH")
         self.hasTemporaryLabel = CommandManager.velocityBasedTouchPads.contains(self.touchPadString) && (self.isMotionControlButton || self.buttonString == "NULL")
         || self.cmdString == "RSVPAD"
         || self.cmdString == "LSVPAD"
 
         self.mouseButtonActionDelay = self.cmdString.contains("ABSMOUSEPAD") ? 0.005 : 0
         
-        self.standardFoldingInterval = widgetType == .touchPad ? 0.05 : 0.15;
+        self.standardFoldingInterval = widgetType == .touchPad ? 0.05 : 0.065;
         
         self.isMagnifier = self.cmdString.contains("MAGNIFIER")
         
@@ -686,6 +706,7 @@ import ObjectiveC.runtime
         self.isMultipleTouchEnabled = self.widgetType == WidgetTypeEnum.button
             || CommandManager.mousePadWithButtonActions.contains(self.touchPadString)
             || self.touchPadString == "MAGNIFIER"
+            || self.touchPadString == "DS4TOUCH"
     }
     
     // ======================================================================================================
@@ -982,17 +1003,17 @@ import ObjectiveC.runtime
         }
         
         NSLayoutConstraint.activate(self.shape == "round" ? [
-            label.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 13), // set up label size contrain within UIView
-            label.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -13),
-            label.centerXAnchor.constraint(equalTo: centerXAnchor),
-            label.centerYAnchor.constraint(equalTo: centerYAnchor),]
+            labelStackView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 13), // set up label size contrain within UIView
+            labelStackView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -13),
+            labelStackView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            labelStackView.centerYAnchor.constraint(equalTo: centerYAnchor),]
             : [
-            label.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10), // set up label size contrain within UIView
-            label.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
-            label.topAnchor.constraint(equalTo: self.topAnchor, constant: 8), // set up label size contrain within UIView
-            label.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -8),
-            label.centerXAnchor.constraint(equalTo: centerXAnchor),
-            label.centerYAnchor.constraint(equalTo: centerYAnchor),])
+            labelStackView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10), // set up label size contrain within UIView
+            labelStackView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
+            labelStackView.topAnchor.constraint(greaterThanOrEqualTo: self.topAnchor, constant: 8), // set up label size contrain within UIView
+            labelStackView.bottomAnchor.constraint(lessThanOrEqualTo: self.bottomAnchor, constant: -8),
+            labelStackView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            labelStackView.centerYAnchor.constraint(equalTo: centerYAnchor),])
         
         if self.shape != "round"{
             self.setSquareWidgetCornerRadius()
@@ -1033,6 +1054,38 @@ import ObjectiveC.runtime
         }
         return false
     }
+
+    private func cleanedCmdStringLabelText() -> String {
+        let trimmedCmdString = cmdString.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedCmdString.isEmpty else { return "" }
+
+        guard trimmedCmdString.contains("-") else {
+            let cmdText = trimmedCmdString
+            return cmdText.hasSuffix("+") ? String(cmdText.dropLast()) : cmdText
+        }
+
+        let parts = trimmedCmdString
+            .split(separator: "-")
+            .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
+            .compactMap { part -> String? in
+                guard !part.isEmpty else { return nil }
+
+                let uppercasedPart = part.uppercased()
+                if part.contains("+") || uppercasedPart.hasSuffix("MS") {
+                    return nil
+                }
+
+                let cleanedPart = part.replacingOccurrences(
+                    of: #"\.\d+"#,
+                    with: "",
+                    options: .regularExpression
+                )
+                return cleanedPart.isEmpty ? nil : cleanedPart
+            }
+
+        let cmdText = parts.joined(separator: "-")
+        return cmdText.hasSuffix("+") ? String(cmdText.dropLast()) : cmdText
+    }
     
     @objc func reverseColorPhase(reversed: Bool){
         backgroundAlpha = reversed ? (originalBackgroundAlpha.sign == .minus ? 0.5 : -0.5) : originalBackgroundAlpha
@@ -1042,6 +1095,8 @@ import ObjectiveC.runtime
     }
     
     @objc func setupAtrributedText(){
+        setupLabelFonts()
+        
         var text = self.widgetLabel.contains("#") ? "\(self.widgetLabel.split(separator: "#").first ?? "")" : LocalizationHelper.localizedString(forKey: self.widgetLabel)
         
         if !OnScreenWidgetView.editMode, self.widgetType == .touchPad, !self.hasTemporaryLabel {
@@ -1051,10 +1106,23 @@ import ObjectiveC.runtime
         if self.hasNonEditableLabel {
             
             switch cmdString {
-            case "DISABLETOUCH":
-                self.nonEditableWidgetLabel = LocalizationHelper.localizedString(forKey: touchDisabledFLag ? "=EnableTouch" : "=DisableTouch" )
             case "GAMEPADOVERLAY":
-                self.nonEditableWidgetLabel = LocalizationHelper.localizedString(forKey: OnScreenWidgetView.gamepadOverlayFLag ? "=GamepadOverlayOn" : "=GamepadOverlayOff" )
+                self.nonEditableWidgetLabel =  OnScreenWidgetView.gamepadOverlayFLag ? "=GamepadOverlayOn".localized : "=GamepadOverlayOff".localized
+            case "DISABLETOUCH":
+                if let vc = StreamFrameViewController.sharedInstance() {
+                    self.nonEditableWidgetLabel = vc.touchDisabled ? "=EnableTouch".localized : "=DisableTouch".localized
+                }
+                else {self.nonEditableWidgetLabel = "=DisableTouch".localized}
+            case "NOSINGLETOUCH":
+                if let vc = StreamFrameViewController.sharedInstance() {
+                    self.nonEditableWidgetLabel = vc.singleTouchDisabled ? "=EnableSingleTouch".localized : "=DisableSingleTouch".localized
+                }
+                else {self.nonEditableWidgetLabel = "=DisableSingleTouch".localized}
+            case "DISABLETILT":
+                if let pencilHandler = PencilHandler.shared {
+                    self.nonEditableWidgetLabel = pencilHandler.disableTilt ? "=enableTilt".localized : "=disableTilt".localized
+                }
+                else {self.nonEditableWidgetLabel = "=disableTilt".localized}
             default:
                 nonEditableWidgetLabel = ""
             }
@@ -1077,14 +1145,54 @@ import ObjectiveC.runtime
         label.attributedText = attr
         label.textAlignment = .center
         label.baselineAdjustment = .alignCenters
+        setupCmdLabel()
     }
     
-    private func setupView() {
-        // label.text = self.widgetLabel
-        // label.font = UIFont.boldSystemFont(ofSize: 19)
-        // label.font = UIFont.systemFont(ofSize: 19, weight: .medium, design: .rounded)
+    @objc func setupCmdLabel() {
+        setupLabelFonts()
+        guard canShowCmdLabel else {
+            cmdLabel.isHidden = true
+            return
+        }
+        guard showCmdStringLabel else {
+            cmdLabel.isHidden = true
+            return
+        }
+        let cmdText = cleanedCmdStringLabelText()
+        let labelText = label.text ?? label.attributedText?.string ?? ""
+        let duplicatesLabelText = cmdText.uppercased() == labelText.uppercased()
         
-        let baseFont = UIFont.boldSystemFont(ofSize: self.shape == "round" ? 22 : 19)
+        let cmdAttr = NSAttributedString(
+            string: cmdText,
+            attributes: [
+                .foregroundColor: UIColor(white:labelAlpha>0 ? 1.0 : 0, alpha: abs(labelAlpha)),
+                .strokeColor: (labelAlpha>0 ? UIColor.black : UIColor.white).withAlphaComponent(abs(labelAlpha)*0.43),
+                .strokeWidth: widgetType == .touchPad ? 7 : (containsNonLatin(cmdText) ? -1 : -4)
+            ]
+        )
+        cmdLabel.attributedText = cmdAttr
+        cmdLabel.textAlignment = .center
+        cmdLabel.baselineAdjustment = .alignCenters
+        cmdLabel.isHidden = cmdText.isEmpty || duplicatesLabelText
+    }
+
+    private var canShowCmdLabel: Bool {
+        !self.hasNonEditableLabel
+        && self.widgetType == .button
+        && self.functionalButtonString.isEmpty
+        && !self.isFolder
+    }
+
+    private func setupLabelFonts() {
+        let baseFontSize: CGFloat
+        let usesCompactCmdLabelLayout = PublicUtils.isIPhone && showCmdStringLabel && canShowCmdLabel
+        if usesCompactCmdLabelLayout {
+            baseFontSize = self.shape == "round" ? 17 : 15
+        } else {
+            baseFontSize = self.shape == "round" ? 22 : 19
+        }
+
+        let baseFont = UIFont.boldSystemFont(ofSize: baseFontSize)
         if #available(iOS 13.0, *) {
             if let desc = baseFont.fontDescriptor.withDesign(.rounded) {
                 label.font = UIFont(descriptor: desc, size: 0)
@@ -1094,11 +1202,43 @@ import ObjectiveC.runtime
         } else {
             label.font = baseFont
         }
+
+        let cmdLabelFontSize: CGFloat = PublicUtils.isIPhone ? 8 : 12
+        if #available(iOS 13.0, tvOS 13.0, *) {
+            cmdLabel.font = UIFont.monospacedSystemFont(ofSize: cmdLabelFontSize, weight: .medium)
+        } else {
+            cmdLabel.font = UIFont.systemFont(ofSize: cmdLabelFontSize, weight: .medium)
+        }
+
+        label.minimumScaleFactor = usesCompactCmdLabelLayout ? 0.1 : 0.1
+        cmdLabel.minimumScaleFactor = PublicUtils.isIPhone ? 0.6 : 0.6
+    }
+    
+    private func setupView() {
+        // label.text = self.widgetLabel
+        // label.font = UIFont.boldSystemFont(ofSize: 19)
+        // label.font = UIFont.systemFont(ofSize: 19, weight: .medium, design: .rounded)
+        
+        setupLabelFonts()
         
         label.translatesAutoresizingMaskIntoConstraints = false
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.1  // Adjust the scale factor as needed
         label.textAlignment = .center
+
+        cmdLabel.translatesAutoresizingMaskIntoConstraints = false
+        cmdLabel.adjustsFontSizeToFitWidth = true
+        cmdLabel.textAlignment = .center
+        cmdLabel.numberOfLines = 1
+
+        labelStackView.translatesAutoresizingMaskIntoConstraints = false
+        labelStackView.axis = .vertical
+        labelStackView.alignment = .fill
+        labelStackView.distribution = .fill
+        labelStackView.spacing = 1
+        labelStackView.isUserInteractionEnabled = false
+        labelStackView.addArrangedSubview(label)
+        labelStackView.addArrangedSubview(cmdLabel)
 
         // label.textColor = UIColor(white: 1.0, alpha: labelAlpha)
         // label.shadowColor = .black
@@ -1156,7 +1296,7 @@ import ObjectiveC.runtime
         // self.layer.shadowRadius = 8
         // self.layer.shadowOpacity = 0.5
         
-        addSubview(label)
+        addSubview(labelStackView)
         _ = installCustomContentIfNeeded()
         
         if(OnScreenWidgetView.editMode) {self.changeAndActivateContraints()}
@@ -1543,7 +1683,7 @@ import ObjectiveC.runtime
     private func sendLongMouseLeftButtonClickEvent() {
         DispatchQueue.global(qos: .userInteractive).async {
             // Logging the press event
-            NSLog("Sending left mouse button press")
+            // NSLog("Sending left mouse button press")
             LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), BUTTON_LEFT)
             
             // Wait 200 ms to simulate a real button press
@@ -1553,7 +1693,9 @@ import ObjectiveC.runtime
                     LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), BUTTON_LEFT)
                     // NSLog("double click: first long click release")
                 }
-                else{NSLog("Left mouse button release cancelled, keep pressing down, turning into dragging...")}
+                else{
+                    // NSLog("Left mouse button release cancelled, keep pressing down, turning into dragging...")
+                }
                 // Don't release the button if we're still dragging, this will prevent the dragging from being interrupted.
             }
         }
@@ -1681,14 +1823,14 @@ import ObjectiveC.runtime
         
         // legacy keyboard button combo connected by "+"
         if !OnScreenWidgetView.editMode && self.cmdString.contains("+") && !self.cmdString.contains("-"){
-            if buttonMode == .movable, moveableButtonLongPressed() {return}
+            if buttonMode == .movable, firstTouchMoved {return}
             if leaveNonSkillButtonAlone {return}
             self.buttonDownVisualEffect()
             if var autoReleaseComboButtons = CommandManager.shared.extractAutoReleaseButtonStrings(from: self.cmdString) {
                 autoReleaseComboButtons.removeAll{
                     Set(CommandManager.pencilProButtonCmds).contains($0)
                 }
-                CommandManager.shared.sendAutoReleaseComboCommand(cmdStrings: autoReleaseComboButtons) // send multi-key command
+                CommandManager.shared.sendAutoReleaseComboCommand(cmdStrings: autoReleaseComboButtons, delay: 0.1) // send multi-key command
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 self.buttonUpVisualEffect()
@@ -1859,13 +2001,14 @@ import ObjectiveC.runtime
         
         let mixRightStickInputToGyro = (oscProfile.mapGyroTo == .mapGyroToControllerStick
                                        && oscProfile.yawPitchToRightStick)
+        
+        stickOffsetVector = ControllerUtil.compensated(offsetVector: CGVector(dx: targetX, dy: targetY), minOffset: minStickOffset, circulate: circulate)
+        
         if !mixRightStickInputToGyro || (self.motionHandler?.gyroMixInputStarted() != true) {
-            
-            stickOffsetVector = ControllerUtil.compensated(offsetVector: CGVector(dx: targetX, dy: targetY), minOffset: minStickOffset, circulate: circulate)
             self.onScreenControls?.sendRightStickTouchPadEvent(stickOffsetVector.dx, stickOffsetVector.dy)
         }
-        self.motionHandler?.mixOnScreenRightStickAndGyroInput(x: targetX, y: targetY)
-        if !OnScreenWidgetView.gamepadArrivalReported {OnScreenWidgetView.gamepadArrivalReported = true}
+        self.motionHandler?.mixOnScreenRightStickAndGyroInput(x: stickOffsetVector.dx, y: stickOffsetVector.dy)
+        if !ControllerUtil.gamepadArrivalReported {ControllerUtil.gamepadArrivalReported = true}
     }
     
     private func sendLeftStickTouchPadEvent(weightedTouchX:CGFloat, weightedTouchY:CGFloat, circulate:Bool=false){
@@ -1874,13 +2017,14 @@ import ObjectiveC.runtime
         
         let mixLeftStickInputToGyro = (oscProfile.mapGyroTo == .mapGyroToControllerStick
                                        && oscProfile.rollToLeftStick)
+        
+        stickOffsetVector = ControllerUtil.compensated(offsetVector: CGVector(dx: targetX, dy: targetY), minOffset: minStickOffset, circulate: circulate)
+
         if !mixLeftStickInputToGyro || (self.motionHandler?.gyroMixInputStarted() != true) {
-            
-            stickOffsetVector = ControllerUtil.compensated(offsetVector: CGVector(dx: targetX, dy: targetY), minOffset: minStickOffset, circulate: circulate)
             self.onScreenControls?.sendLeftStickTouchPadEvent(stickOffsetVector.dx, stickOffsetVector.dy)
         }
-        self.motionHandler?.mixOnScreenLeftStickAndGyroInput(x: targetX, y: targetY)
-        if !OnScreenWidgetView.gamepadArrivalReported {OnScreenWidgetView.gamepadArrivalReported = true}
+        self.motionHandler?.mixOnScreenLeftStickAndGyroInput(x: stickOffsetVector.dx, y: stickOffsetVector.dy)
+        if !ControllerUtil.gamepadArrivalReported {ControllerUtil.gamepadArrivalReported = true}
     }
      
     private func sendLeftTriggerTouchPadEvent(inputY: CGFloat){
@@ -1954,7 +2098,7 @@ import ObjectiveC.runtime
         DispatchQueue.global(qos: .userInteractive).async {
             if CommandManager.oscButtonMappings.keys.contains(realButtonString) {
                 self.sendOscButtonDownEvent(oscString: realButtonString)
-                if !OnScreenWidgetView.gamepadArrivalReported {OnScreenWidgetView.gamepadArrivalReported = true}
+                if !ControllerUtil.gamepadArrivalReported {ControllerUtil.gamepadArrivalReported = true}
             }
             if CommandManager.keyboardButtonMappings.keys.contains(realButtonString) {
                 LiSendKeyboardEvent(CommandManager.keyboardButtonMappings[realButtonString]!,Int8(KEY_ACTION_DOWN), 0)
@@ -2130,7 +2274,10 @@ import ObjectiveC.runtime
                 case "DS4TOUCH":
                     if quickDoubleTapDetected {
                         self.showl3r3Indicator()
-                        self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)}
+                        if activeTouchesCount < 2 {
+                            self.sendComboButtonsDownEvent(comboStrings: self.comboButtonStrings)
+                        }
+                    }
                 case "DPAD", "WASDPAD", "ARROWPAD":
                     if activeTouchesCount == 1 {
                         // showLrudBall(at: touchBeganLocation)
@@ -2240,8 +2387,10 @@ import ObjectiveC.runtime
             
             if self.widgetType == WidgetTypeEnum.button && (self.buttonMode == .movable || self.temporarilyMovable) {
                 movableButtonReleased = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    OnScreenWidgetView.updateStreamViewGuidelines(for: self)
+                if false {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        OnScreenWidgetView.updateStreamViewGuidelines(for: self)
+                    }
                 }
             }
         }
@@ -2332,8 +2481,10 @@ import ObjectiveC.runtime
             layoutUpdateDelegate?.updateGuidelinesForOnScreenWidget(self)
         }
         else {
-            if self.widgetType == .button {superview?.bringSubviewToFront(self)}
-            OnScreenWidgetView.updateStreamViewGuidelines(for: self)
+            // if self.widgetType == .button {superview?.bringSubviewToFront(self)}
+            if false {
+                OnScreenWidgetView.updateStreamViewGuidelines(for: self)
+            }
         }
     }
     
@@ -2477,7 +2628,10 @@ import ObjectiveC.runtime
 
             if (self.buttonMode == .movable || self.temporarilyMovable) && self.moveableButtonLongPressed() {
                 if let touch = touches.first {
+                    CATransaction.begin()
+                    CATransaction.setDisableActions(true)
                     self.moveByTouch(touch: touch)
+                    CATransaction.commit()
                 }
             }
         }
@@ -2654,7 +2808,15 @@ import ObjectiveC.runtime
                 self.updateTouchLocation(touch: touch)
             case "MOUSEWHEEL","WHEEL":
                 self.weightedDeltaY = Int(self.deltaY*7.5*self.sensitivityFactorY)
-                if firstTouchMoved {LiSendHighResScrollEvent(Int16(self.weightedDeltaY))}
+                self.weightedDeltaX = Int(self.deltaX*7.5*self.sensitivityFactorX)
+                if firstTouchMoved {
+                    if abs(weightedDeltaY)>abs(weightedDeltaX) {
+                        LiSendHighResScrollEvent(Int16(self.weightedDeltaY))
+                    }
+                    else {
+                        LiSendHighResHScrollEvent(-Int16(self.weightedDeltaX))
+                    }
+                }
                 self.updateTouchLocation(touch: touch)
             case "DISCRETEWHEEL", "DSWHEEL":
                 let currentLocation = touch.location(in: self)
@@ -2808,10 +2970,10 @@ import ObjectiveC.runtime
         switch self.motionControlButtonString {
         case "GYRO":
             self.motionHandler?.startMotionControlByOnScreenButton(self, yawFactor: yawFactor, pitchFactor: pitchFactor, rollFactor: rollFactor)
-            if !OnScreenWidgetView.gamepadArrivalReported {OnScreenWidgetView.gamepadArrivalReported = oscProfile.mapGyroTo == .mapGyroToControllerStick}
+            if !ControllerUtil.gamepadArrivalReported {ControllerUtil.gamepadArrivalReported = oscProfile.mapGyroTo == .mapGyroToControllerStick}
         case "GYROPAUSE":
             self.motionHandler?.stopMotionUpdate(interruptNoneGyroInput:false)
-            if !OnScreenWidgetView.gamepadArrivalReported {OnScreenWidgetView.gamepadArrivalReported = oscProfile.mapGyroTo == .mapGyroToControllerStick}
+            if !ControllerUtil.gamepadArrivalReported {ControllerUtil.gamepadArrivalReported = oscProfile.mapGyroTo == .mapGyroToControllerStick}
             break
         case "ACCEL":
             break
@@ -2871,9 +3033,6 @@ import ObjectiveC.runtime
         case "PENCILHOVER":
             if !self.isPencilProEnabled() {break}
             self.functionalWidgetDelegate?.enablePencilHover()
-        case "NOSINGLETOUCH":
-            if !self.isPencilProEnabled() {break}
-            self.functionalWidgetDelegate?.setAllowSingleTouchEnabled(false)
         default:
             break
         }
@@ -2881,29 +3040,24 @@ import ObjectiveC.runtime
     
     private var movableButtonReleased:Bool = true
     private func moveableButtonLongPressed() -> Bool{
-        return !movableButtonReleased && CACurrentMediaTime() - self.touchTapTimeStamp > 0.3
+        return !movableButtonReleased && CACurrentMediaTime() - self.touchTapTimeStamp > 0.05
     }
-    
-    private var singleTouchEnabled:Bool = true
-    
+        
     private func handleFunctionalButtonUp(event: UIEvent? = nil){
         // print("handleFunctionalButtonUp \(self.widgetLabel), event Empty: \(String(describing: event)), \(CACurrentMediaTime())")
         if autoDockIsDocked {return}
+        if firstTouchMoved {return}
+        /*
         if buttonMode == .movable {
             if moveableButtonLongPressed() && !UITouchUtil.touches(in: self, from: event).isEmpty {return}
             switch self.functionalButtonString {
             // case "FOLDER":
             //    self.folded = !self.folded
             //    OnScreenWidgetView.set(folded: self.folded, for: self)
-            case "NOSINGLETOUCH":
-                if !self.isPencilProEnabled() {break}
-                singleTouchEnabled = !singleTouchEnabled
-                self.functionalWidgetDelegate?.setAllowSingleTouchEnabled(singleTouchEnabled)
-                return
             default:
                 break
             }
-        }
+        } */
 
         switch self.functionalButtonString {
         case "FOLDER":
@@ -2945,12 +3099,28 @@ import ObjectiveC.runtime
             self.functionalWidgetDelegate?.bringUpSoftKeyboard()
         case "ABSTCHDRAG":
             self.functionalWidgetDelegate?.alterAbsTouchDragWith(mouseButton:BUTTON_LEFT)
+        case "GAMEPADOVERLAY":
+            self.gamepadOverlayButtonUp()
         case "PENCILHOVER":
             if !self.isPencilProEnabled() {break}
             self.functionalWidgetDelegate?.disablePencilHover()
+
+        case "DISABLETOUCH":
+            if let streamFrameVC = StreamFrameViewController.sharedInstance() {
+                streamFrameVC.touchDisabled = !streamFrameVC.touchDisabled
+                self.functionalWidgetDelegate?.handleTouchDisableButtonUp()
+            }
         case "NOSINGLETOUCH":
             if !self.isPencilProEnabled() {break}
-            self.functionalWidgetDelegate?.setAllowSingleTouchEnabled(true)
+            if let streamFrameVC = StreamFrameViewController.sharedInstance() {
+                streamFrameVC.singleTouchDisabled = !streamFrameVC.singleTouchDisabled
+                self.functionalWidgetDelegate?.handleDisableSingleTouchButtonUp()
+            }
+        case "DISABLETILT":
+            if !self.isPencilProEnabled() {break}
+            if let pencilHandler = PencilHandler.shared {
+                pencilHandler.disableTilt = !pencilHandler.disableTilt
+            }
         case "BRUSH":
             if !self.isPencilProEnabled() {break}
             var brushShortcut = self.cmdString.replacingOccurrences(of: "BRUSH+", with: "")
@@ -2965,25 +3135,18 @@ import ObjectiveC.runtime
             if ["com.voidlink.iOS"
                 , "com.voidlinkextreme.iOS"
                 , "com.voidlink.tf.debug10.iOS"
-            ].contains(Bundle.main.bundleIdentifier) && GenericUtils.isIPad() {
+            ].contains(Bundle.main.bundleIdentifier) && PublicUtils.isIPad {
                 self.functionalWidgetDelegate?.presentPressureCurveVC()
             }
-        case "DISABLETOUCH":
-            self.handleTouchDisableButtonUp()
-        case "GAMEPADOVERLAY":
-            self.gamepadOverlayButtonUp()
         default:
             break
         }
+        
+        if self.hasNonEditableLabel {
+            self.setupAtrributedText()
+        }
     }
-    
-    private var touchDisabledFLag:Bool = false
-    private func handleTouchDisableButtonUp(){
-        touchDisabledFLag = !touchDisabledFLag
-        self.setupAtrributedText()
-        self.functionalWidgetDelegate?.toggleTouch(disabled: touchDisabledFLag)
-    }
-    
+        
     @objc static var gamepadOverlayFLag:Bool = false
     private func gamepadOverlayButtonUp(){
         self.relocatedDuringStreaming = true
@@ -3423,7 +3586,7 @@ import ObjectiveC.runtime
     }
         
     // MARK: - Auto Dock
-    private static let autoDockExposedEdgeLength: CGFloat = GenericUtils.isIPhone() ? 70 : 90
+    private static let autoDockExposedEdgeLength: CGFloat = PublicUtils.isIPhone ? 70 : 90
     private static let autoDockExposedThickness: CGFloat = 17
     private static let autoDockVerticalInset: CGFloat = 12
     @objc var autoDockIdleDuration: TimeInterval = 0
@@ -3468,6 +3631,7 @@ import ObjectiveC.runtime
     }
     
     @objc private func vl_autoDock_touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.functionalWidgetDelegate?.startStreamViewInteractionTimer()
         guard autoDockEnabled else {
             OnScreenWidgetView.autoDockOriginalTouchesBeganIMP?(self, #selector(OnScreenWidgetView.touchesBegan(_:with:)), touches, event)
             return
@@ -3622,6 +3786,8 @@ import ObjectiveC.runtime
         
         autoDockIdleDuration = storedAutoDockIdleDuration
         
+        self.functionalWidgetDelegate?.startStreamViewInteractionTimer()
+        
         if !folded {
             restartAutoDockCountdown()
             return
@@ -3665,7 +3831,7 @@ import ObjectiveC.runtime
             self.frame = targetFrame
             self.transform = CGAffineTransform(scaleX: 0.985, y: 0.985)
             
-            if ControllerUtil.activeGCControllers.count > 0, !GenericUtils.iOS26Available {
+            if ControllerUtil.activeStreamingGCControllers.count > 0, !PublicUtils.iOS26Available {
                 self.parentViewController?.setNeedsUpdateOfHomeIndicatorAutoHidden()
             }
             
@@ -3783,10 +3949,20 @@ import ObjectiveC.runtime
     @objc static var enableFolderAnimation:Bool = true
     private static func setCollection(folded:Bool, for folder:OnScreenWidgetView, exception:OnScreenWidgetView? = nil, recursive:Bool = false, isExclusiveFolderAction:Bool = false) {
         guard folder.isFolder else {return}
+        
+        if !OnScreenWidgetView.enableFolderAnimation, folder.parentSequence == -1 {
+            folder.buttonDownVisualEffect()
+            folder.buttonDownVisualEffectLayer.isHidden = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                folder.buttonDownVisualEffectLayer.isHidden = true
+            }
+        }
+        
         // guard folder.folded != hidden else { return }
         folder.folded = folded
         folder.setupAtrributedText()
         folder.reverseColorPhase(reversed: !folder.folded)
+        
         if folded {
             for sequence in folder.sequenceSet {
                 guard let widget = OnScreenWidgetView.mapping[sequence], widget != exception else {continue}
@@ -3826,6 +4002,7 @@ import ObjectiveC.runtime
                     widget.capturedTouches.removeAllObjects()
                     widget.center = folder.storedCenter
                     widget.isHidden = false
+                    widget.setupCmdLabel()
                     if (widget.widgetType == .touchPad
                         || abs(widget.backgroundAlpha) < 0.1
                         || widget.hasTemporaryLabel){
@@ -3874,8 +4051,16 @@ import ObjectiveC.runtime
         }
     }
     
+    @objc static func disableFolderAnimation(for duration: TimeInterval){
+        enableFolderAnimation = false
+        DispatchQueue.global().asyncAfter(deadline: .now() + duration) {
+            enableFolderAnimation = true
+        }
+    }
+    
     @objc static func set(folded:Bool, for folder:OnScreenWidgetView) { // folder综合逻辑
         guard folder.isFolder else {return}
+        
         if !folded {
             OnScreenWidgetView.deepestButton = OnScreenWidgetView.getDeepestButton()
         }
@@ -4106,7 +4291,6 @@ import ObjectiveC.runtime
         return OnScreenWidgetView.mapping.keys.max() ?? -1
     }
 
-    @objc static var gamepadArrivalReported: Bool = false
     override func didMoveToSuperview() {
         super.didMoveToSuperview()
         OnScreenWidgetView.installAutoDockIfNeeded()
@@ -4118,14 +4302,14 @@ import ObjectiveC.runtime
             label.alpha = 1
             autoDockRestoreOriginalAlpha()
             if self.motionControlButtonString == "GYRO" {
-                if OnScreenWidgetView.gamepadArrivalReported {self.motionHandler?.stopMotionUpdate(interruptNoneGyroInput: true)}
+                if ControllerUtil.gamepadArrivalReported {self.motionHandler?.stopMotionUpdate(interruptNoneGyroInput: true)}
                 self.motionHandler?.motionStarter = nil
             }
             if self.motionControlButtonString == "ACCEL" {}
             if self.motionControlButtonString == "MOTION" {}
             
             if self.widgetType == WidgetTypeEnum.button && !OnScreenWidgetView.editMode {
-                if OnScreenWidgetView.gamepadArrivalReported {self.sendComboButtonsUpEvent(comboStrings: self.comboButtonStrings)}
+                if ControllerUtil.gamepadArrivalReported {self.sendComboButtonsUpEvent(comboStrings: self.comboButtonStrings)}
                 self.functionalWidgetDelegate?.alterAbsTouchDragWith(mouseButton:BUTTON_LEFT)
             }
             buttonDownVisualEffectLayer.removeFromSuperlayer()
@@ -4144,7 +4328,7 @@ import ObjectiveC.runtime
             stickWheelLayer.removeFromSuperlayer()
             stickWheelLayerSmall.removeFromSuperlayer()
             self.inertialScroller.timer?.clean()
-            if OnScreenWidgetView.gamepadArrivalReported {
+            if ControllerUtil.gamepadArrivalReported {
                 self.clearLeftStickTouchPadFlag()
                 self.clearRightStickTouchPadFlag()
             }
@@ -4232,7 +4416,7 @@ import ObjectiveC.runtime
     }
     
 deinit {
-        print("onScreenWidgetView deinit \(self.widgetLabel))")
+        // print("onScreenWidgetView deinit \(self.widgetLabel))")
     }
 }
 

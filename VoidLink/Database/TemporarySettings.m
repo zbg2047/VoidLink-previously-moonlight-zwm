@@ -55,6 +55,9 @@
     self.graphOpacity = [NSNumber numberWithInteger:[[NSUserDefaults standardUserDefaults] integerForKey:@"graphOpacity"]];
     self.renderingBackend = [NSNumber numberWithInteger:[[NSUserDefaults standardUserDefaults] integerForKey:@"renderingBackend"]];
     self.framePacingMode = [NSNumber numberWithInteger:[[NSUserDefaults standardUserDefaults] integerForKey:@"framePacingMode"]];
+    self.interpolationMaximumDimension = [NSNumber numberWithInteger:[[NSUserDefaults standardUserDefaults] integerForKey:@"interpolationMaximumDimension"]];
+    self.interpolationMaximumPixelCount = [NSNumber numberWithInteger:[[NSUserDefaults standardUserDefaults] integerForKey:@"interpolationMaximumPixelCount"]];
+    self.streamDimensionScale = [NSNumber numberWithDouble:[[NSUserDefaults standardUserDefaults] doubleForKey:@"streamDimensionScale"]];
 
     NSInteger _screenSize = [[NSUserDefaults standardUserDefaults] integerForKey:@"streamResolution"];
     switch (_screenSize) {
@@ -135,6 +138,9 @@
     self.graphOpacity = settings.graphOpacity;
     self.renderingBackend = settings.renderingBackend;
     self.framePacingMode = settings.framePacingMode;
+    self.interpolationMaximumDimension = settings.interpolationMaximumDimension ?: @(0);
+    self.interpolationMaximumPixelCount = settings.interpolationMaximumPixelCount ?: @(0);
+    self.streamDimensionScale = settings.streamDimensionScale ?: @(1);
     self.sendDummyEvent = settings.sendDummyEvent;
     self.rememberFoldState = settings.rememberFoldState;
     self.gyroBiasX = settings.gyroBiasX;
@@ -161,18 +167,22 @@
     self.ctrlDownForPinch = settings.ctrlDownForPinch;
     self.settingsMenuOffset = settings.settingsMenuOffset;
     self.passthroughGestures = settings.passthroughGestures;
-    self.mapControllerToMouse = settings.mapControllerToMouse;
+    self.enableControllerNavigation = settings.enableControllerNavigation;
     self.controllerMouseLeftButton = settings.controllerMouseLeftButton;
     self.controllerMouseRightButton = settings.controllerMouseRightButton;
-    self.controllerMouseSwitch = settings.controllerMouseSwitch;
+    self.localRadialMenuButton = settings.localRadialMenuButton;
+    self.streamingRadialMenuButton = settings.streamingRadialMenuButton;
     self.controllerMouseStick = settings.controllerMouseStick;
     self.controllerMousePointerVelocity = settings.controllerMousePointerVelocity;
     self.controllerMouseExpo = settings.controllerMouseExpo;
+    self.streamingRadialMenuDelay = settings.streamingRadialMenuDelay;
     self.globeAsEscape = settings.globeAsEscape;
     
     // Pencil settings:
     self.pencilTickMode = settings.pencilTickMode;
     self.pencilTickIntervalUs = settings.pencilTickIntervalUs;
+    self.pencilTipOffsetX = settings.pencilTipOffsetX;
+    self.pencilTipOffsetY = settings.pencilTipOffsetY;
 
 #endif
     

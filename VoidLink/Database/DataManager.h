@@ -59,7 +59,8 @@ typedef NS_ENUM(NSInteger, ControllerMouseStick) {
 typedef NS_ENUM(NSInteger, FramePacingMode) {
     FramePacingModeOff,
     FramePacingModeLegacy,
-    FramePacingModeQueue
+    FramePacingModeQueue,
+    FramePacingModeInterpolation
 };
 
 typedef NS_ENUM(NSInteger, SettingsMenuMode) {
@@ -129,6 +130,9 @@ typedef NS_ENUM(NSInteger, PencilTickMode) {
                     graphOpacity:(NSInteger)graphOpacity
                 renderingBackend:(NSInteger)renderingBackend
                  framePacingMode:(NSInteger)framePacingMode
+   interpolationMaximumDimension:(NSInteger)interpolationMaximumDimension
+  interpolationMaximumPixelCount:(NSInteger)interpolationMaximumPixelCount
+            streamDimensionScale:(CGFloat)streamDimensionScale
                   sendDummyEvent:(BOOL)sendDummyEvent
                rememberFoldState:(BOOL)rememberFoldState
               singleTapSensitivy:(CGFloat)singleTapSensitivy
@@ -146,7 +150,7 @@ typedef NS_ENUM(NSInteger, PencilTickMode) {
                 leftClickDelayMs:(CGFloat)leftClickDelayMs
               settingsMenuOffset:(CGFloat)settingsMenuOffset
              passthroughGestures:(BOOL)passthroughGestures
-            mapControllerToMouse:(BOOL)mapControllerToMouse
+      enableControllerNavigation:(BOOL)mapControllerToMouse
   controllerMousePointerVelocity:(CGFloat)controllerMousePointerVelocity
              controllerMouseExpo:(CGFloat)controllerMouseExpo
         controllerGyroSwitchMode:(NSInteger)controllerGyroSwitchMode
@@ -155,6 +159,7 @@ typedef NS_ENUM(NSInteger, PencilTickMode) {
         sdrPerformanceWorkaround:(BOOL)sdrPerformanceWorkaround
               softKeyboardHeight:(CGFloat)softKeyboardHeight
                    globeAsEscape:(BOOL)globeAsEscape
+        streamingRadialMenuDelay:(CGFloat)streamingRadialMenuDelay
           backgroundSessionTimer:(NSInteger)backgroundSessionTimer;
 
 - (NSArray*) getHosts;

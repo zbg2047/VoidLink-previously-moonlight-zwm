@@ -151,7 +151,6 @@ import CoreMotion
         self.widgetYawFactor = yawFactor
         self.widgetPitchFactor = pitchFactor
         self.widgetRollFactor = rollFactor
-        print("self.widgetRollFactor \(self.widgetRollFactor)")
         if self.motionStarter == nil {
             self.motionStarter = sender
             if sender.motionControlButtonString != "GYROPAUSE" {self.startMotionUpdate()}
@@ -180,6 +179,9 @@ import CoreMotion
             
             if useBuiltinGyro {
                 if motionManager.isGyroAvailable {
+                    if rollToLeftStick {
+                        leftStickMotion = leftStickTouchInputX
+                    }
                     motionManager.startDeviceMotionUpdates(to: .main) { [weak self] motionData, _ in
                         guard let self = self, let data = motionData else { return }
                         self.handleMotionData(deviceMotion: data)
@@ -189,7 +191,7 @@ import CoreMotion
             else {
                 if #available(iOS 14.0, *) {
                     if activeGCController == nil {
-                        if let controllers = ControllerUtil.activeGCControllers as? Set<GCController> {
+                        if let controllers = ControllerUtil.activeStreamingGCControllers as? Set<GCController> {
                             for controller in controllers {
                                 if controller.playerIndex == .index1 {
                                     activeGCController = controller
@@ -201,6 +203,9 @@ import CoreMotion
                 if let motion = activeGCController?.motion {
                     if motion.sensorsRequireManualActivation {
                         motion.sensorsActive = true
+                    }
+                    if rollToLeftStick {
+                        leftStickMotion = 0
                     }
                     if motion.sensorsActive {
                         motion.valueChangedHandler = { [weak self] motion in
@@ -227,7 +232,7 @@ import CoreMotion
     }
     
     /// 停止更新
-    private var interruptNoneGyroInput:Bool = false
+    // private var interruptNoneGyroInput:Bool = false
 
     @objc public func stopMotionUpdate(interruptNoneGyroInput:Bool=false) {
         motionControlStarted = false
@@ -360,7 +365,7 @@ import CoreMotion
         }
         
         if !motionControlStarted {
-            self.clearGyroInput(interruptNonGyroInput: interruptNoneGyroInput)
+            self.clearGyroInput(interruptNonGyroInput: false)
             // print("Gyro: stopped")
             return
         }
@@ -392,12 +397,12 @@ import CoreMotion
             if rollToLeftStick {
                 roll = gyroInputToStickInput(input:rollSource*sensitvityRoll*widgetRollFactor*0.2)
                                 
-                leftStickMotion = useBuiltinGyro ? -stickMaxOffset*(gravityYOffset/Double.pi)*3*sensitvityRoll*widgetRollFactor :                 leftStickMotion + roll
+                leftStickMotion = self.clampStickInput(input: useBuiltinGyro ? -stickMaxOffset*(gravityYOffset/Double.pi)*3*sensitvityRoll*widgetRollFactor :                 leftStickMotion + roll)
 
                 let mixedLeftStickOffsetX = self.clampStickInput(input: leftStickMotion+leftStickTouchInputX+leftStickPhysicalInputX)
                 let mixedLeftStickOffsetY = self.clampStickInput(input: leftStickTouchInputY+leftStickPhysicalInputY)
 
-                let offsetVector = ControllerUtil.compensated(offsetVector: CGVector(dx: mixedLeftStickOffsetX, dy: mixedLeftStickOffsetY), minOffset: gyroToStickMinOffset)
+                let offsetVector = ControllerUtil.compensated(offsetVector: CGVector(dx: mixedLeftStickOffsetX, dy: mixedLeftStickOffsetY), minOffset: gyroToStickMinOffset, circulate: true)
                 
                 onScreenControls?.sendLeftStickTouchPadEvent(offsetVector.dx, offsetVector.dy)
             }
@@ -405,14 +410,22 @@ import CoreMotion
 }
     
     private func clearGyroInput(interruptNonGyroInput:Bool){
-        // guard let onScreenControls = onScreenControls else { return }
-
+        guard ControllerUtil.gamepadArrivalReported else { return }
+        
         if yawPitchToRightStick{
-            onScreenControls?.sendRightStickTouchPadEvent(rightStickPhysicalInputX+rightStickTouchInputX-yawBias, rightStickPhysicalInputY+rightStickTouchInputY-pitchBias)
+            let clearX = rightStickPhysicalInputX+rightStickTouchInputX-yawBias
+            let clearY = rightStickPhysicalInputY+rightStickTouchInputY-pitchBias
+            let clearVector = ControllerUtil.circulated(offsetVector: CGVector(dx: clearX, dy: clearY))
+            
+            onScreenControls?.sendRightStickTouchPadEvent(clearVector.dx, clearVector.dy)
         }
         if rollToLeftStick{
-            leftStickMotion = 0
-            onScreenControls?.sendLeftStickTouchPadEvent(leftStickPhysicalInputX+leftStickTouchInputX-rollBias,leftStickPhysicalInputY+leftStickTouchInputY)
+            leftStickMotion = leftStickTouchInputX
+            let clearX = leftStickPhysicalInputX+leftStickTouchInputX-rollBias
+            let clearY = leftStickPhysicalInputY+leftStickTouchInputY
+            let clearVector = ControllerUtil.circulated(offsetVector: CGVector(dx: clearX, dy: clearY))
+
+            onScreenControls?.sendLeftStickTouchPadEvent(clearVector.dx,clearVector.dy)
         }
         if(interruptNonGyroInput){
             onScreenControls?.clearLeftStickTouchPadFlag()

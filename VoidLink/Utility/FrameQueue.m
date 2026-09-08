@@ -1,3 +1,16 @@
+//
+//  FrameQueue.m
+//  Moonlight
+//
+//  Created by Andy Grundman.
+//  Ported to VoidLink by Acaki.
+//  Copyright (c) 2025 Moonlight Stream. All rights reserved.
+//
+//  Modified by True砖家 since 2026/8/6.
+//  Copyright © 2026 True砖家 on Bilibili. All rights reserved.
+//
+
+
 @import AVFoundation;
 @import VideoToolbox;
 
@@ -24,6 +37,10 @@
     int _currentSoftCap;
     dispatch_queue_t _sq;
     dispatch_semaphore_t _frameSemaphore;
+
+    // The renderer session currently consuming from the queue. A stale session's
+    // async stop must not pause a newer session's queue.
+    __weak id _owner;
 }
 
 + (instancetype)sharedInstance {
@@ -301,7 +318,14 @@
 
 - (void)clear {
     os_unfair_lock_lock(&_lock);
+    // Release any frames still held in the ring buffer, otherwise their
+    // pixel/sample buffers stay retained for the lifetime of the singleton.
+    for (int i = 0; i < _capacity; i++) {
+        [_buffer replaceObjectAtIndex:i withObject:[NSNull null]];
+    }
     _head = _tail = _count = 0;
+    _droppedLast = NO;
+    _ptsCorrection = CMTimeMake(0, 90000);
     _frameDropMetrics = [[FloatBuffer alloc] initWithCapacity:512];
     os_unfair_lock_unlock(&_lock);
 }
@@ -336,15 +360,31 @@
     return cap;
 }
 
-- (void)stop {
+- (void)stopForOwner:(id)owner {
+    @synchronized (self) {
+        // Ignore stops from a previous session: cleanup is dispatched async and can
+        // land after a new renderer has already (re)started the queue.
+        if (_owner != nil && owner != _owner) {
+            Log(LOG_W, @"FrameQueue stop ignored: %p is not the current owner", owner);
+            return;
+        }
+        _owner = nil;
+    }
     // new frames will no longer be coming in, make sure consumer side is not left waiting
     self.paused = YES;
     Log(LOG_I, @"FrameQueue stopped");
     dispatch_semaphore_signal(_frameSemaphore);
+    // Don't keep the previous session's frames (and their pixel buffers) alive
+    [self clear];
 }
 
-- (void)start {
-    // (re)start for a new renderer
+- (void)startForOwner:(id)owner {
+    @synchronized (self) {
+        _owner = owner;
+    }
+    // Drop any frames left over from a previous renderer session; feeding them to a
+    // renderer with a different backend or video format can crash it.
+    [self clear];
     self.paused = NO;
     Log(LOG_I, @"FrameQueue started");
 }

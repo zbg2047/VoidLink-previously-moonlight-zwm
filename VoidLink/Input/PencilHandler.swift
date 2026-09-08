@@ -21,10 +21,11 @@ import UIKit
     private var manualTick: Bool
     private var pencilTickEnabled: Bool
     private var pressureCurveEnabled: Bool = false
+    @objc private(set) var pencilTipOffset: CGPoint = .zero
     private var manualHoverFlag: Bool = false
     @objc static var hoverSupported: Bool = false
     // @objc static private(set) var autoHoverTermination: Bool = false
-    @objc static private(set) var hoverMode: PencilHoverMode = .HoverPencil
+    @objc static private(set) var pencilAndHoverMode: PencilAndHoverMode = .pencilOnly
     private(set) var pencilProEnabled: Bool = false
     private var isFirstMove: Bool = false
     private var strokeSampleIndex: Int32 = 0
@@ -32,6 +33,8 @@ import UIKit
     private var touchBeganForce: Float = 0
     @objc static private(set) var isDrawing: Bool = false
     @objc static private(set) var pencilPausesNativeTouch: Bool = false
+    
+    @objc var disableTilt: Bool = false
 
     // static private let oscProfileMan = OSCProfilesManager.sharedManager(CGRectZero)
     static private var selectedProfile:OSCProfile?
@@ -64,6 +67,8 @@ import UIKit
         tickInterval = TimeInterval(settings.pencilTickIntervalUs.floatValue/1000000)
         manualTick = settings.pencilTickMode.intValue == PencilTickMode.ManualTick.rawValue
         pencilTickEnabled = settings.pencilTickMode.intValue != PencilTickMode.PencilTickDisabled.rawValue
+        pencilTipOffset = CGPoint(x: CGFloat(settings.pencilTipOffsetX?.floatValue ?? 0),
+                                  y: CGFloat(settings.pencilTipOffsetY?.floatValue ?? 0))
         // initialMoveEventIndexLimit = UIScreen.main.maximumFramesPerSecond > 60 ? 4 : 2
         initialMoveEventIndexLimit = 0
         super.init()
@@ -100,7 +105,7 @@ import UIKit
         }
         
         // PencilHandler.autoHoverTermination = selectedProfile.autoPencilHoverTermination
-        PencilHandler.hoverMode = selectedProfile.pencilHoverMode
+        PencilHandler.pencilAndHoverMode = selectedProfile.pencilAndHoverMode
         
         pressureCurveEnabled = selectedProfile.pressureCurveEnabled
         
@@ -108,6 +113,7 @@ import UIKit
             IAPManager.checkPurchaseInfo(.PencilProPack) { info in
                 self.pressureCurveEnabled = self.pressureCurveEnabled && info.valid
                 self.pencilTickEnabled = self.pencilTickEnabled && info.valid
+                self.pencilTipOffset = info.valid ? self.pencilTipOffset : .zero
                 self.pencilProEnabled = info.valid
                 PencilHandler.pencilPausesNativeTouch = selectedProfile.pencilPausesNativeTouch && info.valid
                 if info.valid {
@@ -145,6 +151,12 @@ import UIKit
         PencilHandler.isDrawing = true
         // isFirstMove = true
         strokeSampleIndex = 0
+        
+        guard PencilHandler.pencilAndHoverMode == .pencilOnly || PencilHandler.pencilAndHoverMode == .hoverDisabled else {
+            handleNonPencilModes(touches)
+            return
+        }
+        
         for touch in touches {
             let coalesced = event.coalescedTouches(for: touch) ?? []
             _ = self.sendStylusEvent(touchBatch: pencilTickEnabled ? coalesced : [touch])
@@ -153,6 +165,12 @@ import UIKit
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let event = event else { return }
+        
+        guard PencilHandler.pencilAndHoverMode == .pencilOnly || PencilHandler.pencilAndHoverMode == .hoverDisabled else {
+            handleNonPencilModes(touches)
+            return
+        }
+        
         for touch in touches {
             let coalesced = event.coalescedTouches(for: touch) ?? []
             _ = self.sendStylusEvent(touchBatch: pencilTickEnabled ? coalesced : [touch])
@@ -161,6 +179,12 @@ import UIKit
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let event = event else { return }
+        
+        guard PencilHandler.pencilAndHoverMode == .pencilOnly || PencilHandler.pencilAndHoverMode == .hoverDisabled else {
+            handleNonPencilModes(touches)
+            return
+        }
+
         for touch in touches {
             let coalesced = event.coalescedTouches(for: touch) ?? []
             _ = self.sendStylusEvent(touchBatch: pencilTickEnabled ? coalesced : [touch])
@@ -169,6 +193,34 @@ import UIKit
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.touchesEnded(touches, with: event)
+    }
+    
+    private func handleNonPencilModes(_ touches: Set<UITouch>) {
+        guard let touch = touches.first else { return }
+        let location = touch.location(in: streamView)
+        let normalizedLocation = self.getNormalizedLocation(point: location)
+        if let streamView = streamView as? StreamView {
+            switch touch.phase {
+            case .began where PencilHandler.pencilAndHoverMode == .pencilToMouse:
+                streamView.updateCursorLocation(location, isMouse: false)
+                LiSendMouseButtonEvent(CChar(BUTTON_ACTION_PRESS), BUTTON_LEFT)
+            case .began where PencilHandler.pencilAndHoverMode == .pencilToTouch:
+                LiSendTouchEvent(UInt8(LI_TOUCH_EVENT_DOWN), 666666, Float(normalizedLocation.x), Float(normalizedLocation.y), Float((touch.force/touch.maximumPossibleForce)/sin(touch.altitudeAngle)), 0, 0, getRotation(fromAzimuthAngle: Float(touch.azimuthAngle(in: streamView))))
+            case .moved where PencilHandler.pencilAndHoverMode == .pencilToMouse:
+                streamView.updateCursorLocation(location, isMouse: false)
+            case .moved where PencilHandler.pencilAndHoverMode == .pencilToTouch:
+                LiSendTouchEvent(UInt8(LI_TOUCH_EVENT_MOVE), 666666, Float(normalizedLocation.x), Float(normalizedLocation.y), Float((touch.force/touch.maximumPossibleForce)/sin(touch.altitudeAngle)), 0, 0, getRotation(fromAzimuthAngle: Float(touch.azimuthAngle(in: streamView))))
+            case .ended where PencilHandler.pencilAndHoverMode == .pencilToMouse,
+                 .cancelled where PencilHandler.pencilAndHoverMode == .pencilToMouse:
+                streamView.updateCursorLocation(location, isMouse: false)
+                LiSendMouseButtonEvent(CChar(BUTTON_ACTION_RELEASE), BUTTON_LEFT)
+            case .ended where PencilHandler.pencilAndHoverMode == .pencilToTouch,
+                 .cancelled where PencilHandler.pencilAndHoverMode == .pencilToTouch:
+                LiSendTouchEvent(UInt8(LI_TOUCH_EVENT_UP), 666666, Float(normalizedLocation.x), Float(normalizedLocation.y), 0, 0, 0, 0)
+            default:
+                break
+            }
+        }
     }
 
     // MARK: - Core Logic
@@ -223,7 +275,15 @@ import UIKit
     
     func getTilt(fromAltitudeAngle altitudeAngle: Float) -> UInt8 {
         let altitudeDegs = abs(Int16(altitudeAngle * (180.0 / .pi)))
-        return UInt8(90 - min(90, Int(altitudeDegs)))
+        let tilt = disableTilt ? 0 : UInt8(90 - min(90, Int(altitudeDegs)))
+        return tilt
+    }
+    
+    private func getNormalizedLocation(point: CGPoint) -> CGPoint {
+        let location = self.adjustCoordinatesForVideoArea(point: point)
+        let videoSize = self.getVideoAreaSize()
+        let normalizedLocation = CGPoint(x: location.x/videoSize.width, y: location.y/videoSize.height)
+        return normalizedLocation
     }
 
     var previousForce: Float = 0
@@ -241,11 +301,10 @@ import UIKit
 
         for touch in touchBatch {
             let point = touch.preciseLocation(in: streamView)
+                .applying(CGAffineTransform(translationX: pencilTipOffset.x, y: pencilTipOffset.y))
             let azimuth = touch.azimuthAngle(in: streamView)
             let altitude = touch.altitudeAngle
-            let location = self.adjustCoordinatesForVideoArea(point: point)
-            let videoSize = self.getVideoAreaSize()
-            let normalizedLocation = CGPoint(x: location.x/videoSize.width, y: location.y/videoSize.height)
+            let normalizedLocation = self.getNormalizedLocation(point: point)
             var force = Float(touch.force/touch.maximumPossibleForce)/sin(Float(altitude))
             force  = (self.pencilTickEnabled && force == 0) ? previousForce : force
             
@@ -325,7 +384,7 @@ import UIKit
                 
                 if eventType == UInt8(LI_TOUCH_EVENT_UP) {
                     PencilHandler.isDrawing = false
-                    if PencilHandler.hoverMode == .HoverDisabled || !PencilHandler.hoverSupported {
+                    if PencilHandler.pencilAndHoverMode == .hoverDisabled || !PencilHandler.hoverSupported {
                         LiSendPenEvent(UInt8(LI_TOUCH_EVENT_HOVER), UInt8(LI_TOOL_TYPE_PEN), 0, Float(normalizedLocation.x), Float(normalizedLocation.y), 0, 0, 0, self.getRotation(fromAzimuthAngle: Float(azimuth)), self.getTilt(fromAltitudeAngle: Float(altitude)))
                         DispatchQueue.global().asyncAfter(deadline: .now() + 0.0086){
                             if !PencilHandler.isDrawing {
@@ -342,6 +401,10 @@ import UIKit
     
     @objc public func switchPencilHover(){
         manualHoverFlag = !manualHoverFlag
+    }
+
+    @objc public func updatePencilTipOffset(x: CGFloat, y: CGFloat) {
+        pencilTipOffset = CGPoint(x: x, y: y)
     }
     
     @objc public func enablePencilHover(){

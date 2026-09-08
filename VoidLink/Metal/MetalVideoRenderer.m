@@ -106,7 +106,17 @@ static const NSUInteger MaxFramesInFlight = 3;
 // best to tone-map Windows content
 static BOOL useEDR = YES;
 
-CFStringRef __currentColorSpace;
+// Name of the colorspace most recently applied to the layer, for the stats overlay.
+// Class-level because the stats path only has access to the class; guarded by a lock
+// since it is written on the render thread and read from other threads, and multiple
+// renderer instances can briefly overlap during a session switch.
+static NSString *__currentColorSpace;
+
+static void setCurrentColorSpaceName(NSString *name) {
+    @synchronized ([MetalVideoRenderer class]) {
+        __currentColorSpace = name;
+    }
+}
 
 @implementation MetalVideoRenderer {
     dispatch_queue_t _sq;
@@ -225,11 +235,9 @@ CFStringRef __currentColorSpace;
     if (_renderPassDescriptor) {
         _renderPassDescriptor = nil;
     }
-    
-    if (__currentColorSpace) {
-        CFRelease(__currentColorSpace);
-        __currentColorSpace = NULL;
-    }
+
+    // Do NOT clear __currentColorSpace here: a new renderer instance may already be
+    // live (session switch) and have set its own value.
 }
 
 #if !TARGET_OS_TV
@@ -303,9 +311,10 @@ CFStringRef __currentColorSpace;
 
         // CAEDRMetadata is only available on iOS 16.0+
         if (@available(iOS 16.0, tvOS 16.0, *)) {
-            if (frame.pixelBuffer) {
-                CFDataRef masteringDisplayColorVolume = CVBufferCopyAttachment(frame.pixelBuffer, kCVImageBufferMasteringDisplayColorVolumeKey, nil);
-                CFDataRef contentLightLevel = CVBufferCopyAttachment(frame.pixelBuffer, kCVImageBufferContentLightLevelInfoKey, nil);
+            CVPixelBufferRef imageBuffer = frame.imageBuffer;
+            if (imageBuffer) {
+                CFDataRef masteringDisplayColorVolume = CVBufferCopyAttachment(imageBuffer, kCVImageBufferMasteringDisplayColorVolumeKey, nil);
+                CFDataRef contentLightLevel = CVBufferCopyAttachment(imageBuffer, kCVImageBufferContentLightLevelInfoKey, nil);
                 
                 // Configure optical output scale (100.0f is standard for HDR10)
                 const float opticalOutputScale = 100.0f;
@@ -404,9 +413,11 @@ CFStringRef __currentColorSpace;
                 paramBuffer.cscParams = (fullRange ? k_CscParams_Bt709Full : k_CscParams_Bt709Lim);
                 break;
             case COLORSPACE_REC_2020: {
+                // Frames without a format description (e.g. produced for the AVSB
+                // backend) must not crash us here
                 CFDictionaryRef ext = [frame getFormatDescExtensions];
-                CFStringRef frame_trc = CFDictionaryGetValue(ext, kCVImageBufferTransferFunctionKey);
-                if (CFEqual(frame_trc, kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ)) {
+                CFStringRef frame_trc = ext ? CFDictionaryGetValue(ext, kCVImageBufferTransferFunctionKey) : NULL;
+                if (frame_trc && CFEqual(frame_trc, kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ)) {
                     isHDR = YES;
                     newColorSpace = CGColorSpaceCreateWithName(_nonFullHdrColorSpace);
                     newPixelFormat = _nonFullHdrPixelFormat;
@@ -477,11 +488,7 @@ CFStringRef __currentColorSpace;
                 });
             }
 #endif
-            if (__currentColorSpace) {
-                CFRelease(__currentColorSpace);
-                __currentColorSpace = NULL;
-            }
-            __currentColorSpace = CGColorSpaceCopyName(newColorSpace);
+            setCurrentColorSpaceName(newColorSpace ? CFBridgingRelease(CGColorSpaceCopyName(newColorSpace)) : nil);
             CGColorSpaceRelease(newColorSpace);
         }
 
@@ -592,15 +599,16 @@ CFStringRef __currentColorSpace;
 
         FQLog(LOG_I, @"[%d / %.3f ms] Metal frame rendering", frame.frameNumber, frame.pts);
 
-        if (!frame.pixelBuffer) {
-            Log(LOG_W, @"Frame pixelBuffer is NULL, skipping render");
+        CVPixelBufferRef imageBuffer = frame.imageBuffer;
+        if (!imageBuffer) {
+            Log(LOG_W, @"Frame imageBuffer is NULL, skipping render");
             return;
         }
 
-        size_t planes = CVPixelBufferGetPlaneCount(frame.pixelBuffer);
+        size_t planes = CVPixelBufferGetPlaneCount(imageBuffer);
 
         // For packed formats like BGRA, plane count is 0 but we treat it as 1 plane
-        OSType pixelFormatType = CVPixelBufferGetPixelFormatType(frame.pixelBuffer);
+        OSType pixelFormatType = CVPixelBufferGetPixelFormatType(imageBuffer);
         BOOL isPackedFormat = (pixelFormatType == kCVPixelFormatType_32BGRA ||
                                pixelFormatType == kCVPixelFormatType_32ARGB);
         if (isPackedFormat) {
@@ -695,7 +703,7 @@ CFStringRef __currentColorSpace;
         if (isPackedFormat) {
             // Handle packed BGRA format - iOS/macOS uses BGRA internally
             // Check if the pixel buffer has IOSurface backing
-            CFTypeRef ioSurface = CVPixelBufferGetIOSurface(frame.pixelBuffer);
+            CFTypeRef ioSurface = CVPixelBufferGetIOSurface(imageBuffer);
             if (!ioSurface) {
                 Log(LOG_E, @"CVPixelBuffer does not have IOSurface backing - cannot create Metal texture");
                 return;
@@ -703,35 +711,35 @@ CFStringRef __currentColorSpace;
 
             CVReturn err = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
                                                                      _textureCache,
-                                                                     frame.pixelBuffer,
+                                                                     imageBuffer,
                                                                      NULL,
                                                                      MTLPixelFormatBGRA8Unorm,
-                                                                     CVPixelBufferGetWidth(frame.pixelBuffer),
-                                                                     CVPixelBufferGetHeight(frame.pixelBuffer),
+                                                                     CVPixelBufferGetWidth(imageBuffer),
+                                                                     CVPixelBufferGetHeight(imageBuffer),
                                                                      0,  // planeIndex must be 0 for non-planar
                                                                      &_cvMetalTextures[0]);
             if (err != kCVReturnSuccess) {
                 Log(LOG_E, @"CVMetalTextureCacheCreateTextureFromImage() failed for BGRA: %d", err);
                 Log(LOG_E, @"PixelBuffer info - format: 0x%X, width: %zu, height: %zu, IOSurface: %p",
                     pixelFormatType,
-                    CVPixelBufferGetWidth(frame.pixelBuffer),
-                    CVPixelBufferGetHeight(frame.pixelBuffer),
+                    CVPixelBufferGetWidth(imageBuffer),
+                    CVPixelBufferGetHeight(imageBuffer),
                     ioSurface);
                 return;
             } else {
                 id<MTLTexture> texture = CVMetalTextureGetTexture(_cvMetalTextures[0]);
                 Log(LOG_I, @"DEBUG: Created BGRA texture: format=%lu, width=%zu, height=%zu",
                     (unsigned long)MTLPixelFormatBGRA8Unorm,
-                    CVPixelBufferGetWidth(frame.pixelBuffer),
-                    CVPixelBufferGetHeight(frame.pixelBuffer));
+                    CVPixelBufferGetWidth(imageBuffer),
+                    CVPixelBufferGetHeight(imageBuffer));
             }
         } else {
             // Handle planar YUV formats
-            size_t actualPlanes = CVPixelBufferGetPlaneCount(frame.pixelBuffer);
+            size_t actualPlanes = CVPixelBufferGetPlaneCount(imageBuffer);
             for (size_t i = 0; i < actualPlanes; i++) {
                 MTLPixelFormat fmt;
 
-                switch (CVPixelBufferGetPixelFormatType(frame.pixelBuffer)) {
+                switch (CVPixelBufferGetPixelFormatType(imageBuffer)) {
                     case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
                     case kCVPixelFormatType_444YpCbCr8BiPlanarVideoRange:
                     case kCVPixelFormatType_420YpCbCr8BiPlanarFullRange:
@@ -747,17 +755,17 @@ CFStringRef __currentColorSpace;
                         break;
 
                     default:
-                        Log(LOG_E, @"Unknown pixel format: %@", CVPixelBufferGetPixelFormatType(frame.pixelBuffer));
+                        Log(LOG_E, @"Unknown pixel format: %@", CVPixelBufferGetPixelFormatType(imageBuffer));
                         return;
                 }
 
                 CVReturn err = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
                                                                          _textureCache,
-                                                                         frame.pixelBuffer,
+                                                                         imageBuffer,
                                                                          NULL,
                                                                          fmt,
-                                                                         CVPixelBufferGetWidthOfPlane(frame.pixelBuffer, i),
-                                                                         CVPixelBufferGetHeightOfPlane(frame.pixelBuffer, i),
+                                                                         CVPixelBufferGetWidthOfPlane(imageBuffer, i),
+                                                                         CVPixelBufferGetHeightOfPlane(imageBuffer, i),
                                                                          i,
                                                                          &_cvMetalTextures[i]);
                 if (err != kCVReturnSuccess) {
@@ -779,7 +787,7 @@ CFStringRef __currentColorSpace;
             [renderEncoder setFragmentTexture:CVMetalTextureGetTexture(_cvMetalTextures[0]) atIndex:0];
         } else {
             // For planar formats, set multiple textures
-            size_t actualPlanes = CVPixelBufferGetPlaneCount(frame.pixelBuffer);
+            size_t actualPlanes = CVPixelBufferGetPlaneCount(imageBuffer);
             for (size_t i = 0; i < actualPlanes; i++) {
                 [renderEncoder setFragmentTexture:CVMetalTextureGetTexture(_cvMetalTextures[i]) atIndex:i];
             }
@@ -813,7 +821,7 @@ CFStringRef __currentColorSpace;
 
         // signal semaphore, compute GPU time average, and clear textures
         __block dispatch_semaphore_t block_semaphore = _inFlightSemaphore;
-        __block size_t texturesToClean = isPackedFormat ? 1 : CVPixelBufferGetPlaneCount(frame.pixelBuffer);
+        __block size_t texturesToClean = isPackedFormat ? 1 : CVPixelBufferGetPlaneCount(imageBuffer);
         [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
             dispatch_semaphore_signal(block_semaphore);
 
@@ -902,10 +910,9 @@ CFStringRef __currentColorSpace;
 }
 
 + (NSString *)currentColorSpace {
-    if (__currentColorSpace) {
-        return (__bridge NSString *)__currentColorSpace;
+    @synchronized ([MetalVideoRenderer class]) {
+        return __currentColorSpace;
     }
-    return nil;
 }
 
 @end
